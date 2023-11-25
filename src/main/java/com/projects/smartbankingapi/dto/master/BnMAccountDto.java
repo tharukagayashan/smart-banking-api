@@ -28,6 +28,14 @@ public class BnMAccountDto implements Serializable {
     private Float currentBalance;
     private Float availableBalance;
     private LocalDate openedDate;
+    private Boolean isActive;
+
+    private Long customerId;
+    private Long accountTypeId;
+    private Long statusId;
+    private Long currencyId;
+    private Long branchId;
+
     private BnMCustomerDto bnMCustomer;
     private BnRAccountTypeDto bnRAccountType;
     private BnRStatusDto bnRStatus;

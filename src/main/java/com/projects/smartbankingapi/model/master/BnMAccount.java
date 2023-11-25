@@ -33,7 +33,7 @@ public class BnMAccount extends AuditModel {
     @Column(name = "ACCOUNT_ID", nullable = false)
     private Long accountId;
 
-    @Column(name = "ACCOUNT_NO", length = 25, unique = true)
+    @Column(name = "ACCOUNT_NO", length = 25, unique = true,updatable = false)
     private String accountNo;
 
     @Column(name = "CURRENT_BAL", nullable = false)
@@ -44,6 +44,9 @@ public class BnMAccount extends AuditModel {
 
     @Column(name = "OPEN_DATE", updatable = false)
     private LocalDate openedDate;
+
+    @Column(name = "IS_ACTIVE")
+    private Boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "CUSTOMER_ID", nullable = false)

@@ -176,7 +176,7 @@ public class CustomerServiceImpl implements CustomerService {
             if (isActive == null) {
                 throw new BadRequestAlertException("isActive is required", "BnMCustomer", "error");
             } else {
-                Boolean flag = false;
+                boolean flag = false;
                 if (isActive.equals(HardCodeConstant.ACTIVE.toString())) {
                     flag = true;
                 } else if (isActive.equals(HardCodeConstant.INACTIVE.toString())) {

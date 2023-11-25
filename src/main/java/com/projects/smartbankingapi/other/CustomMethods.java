@@ -1,11 +1,8 @@
 package com.projects.smartbankingapi.other;
 
-import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @Configuration
 public class CustomMethods {
@@ -24,5 +21,16 @@ public class CustomMethods {
             msg = "Invalid NIC";
         }
         return msg;
+    }
+
+    public String generateAccountNumber(String bankCode, String branchCode, String accountTypeCode, Long accountId) {
+        String accountNumber = "";
+        Integer year = LocalDate.now().getYear();
+        Integer month = LocalDate.now().getMonthValue();
+
+        String accountNumberPrefix = bankCode + branchCode + accountTypeCode;
+        String accountNumberSuffix = String.format("%06d", accountId);
+        accountNumber = accountNumberPrefix + year + month + accountNumberSuffix;
+        return accountNumber;
     }
 }
