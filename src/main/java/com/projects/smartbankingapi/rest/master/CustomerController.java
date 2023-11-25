@@ -1,0 +1,9 @@
+package com.projects.smartbankingapi.rest.master;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/customer")
+public class CustomerController {
+}
