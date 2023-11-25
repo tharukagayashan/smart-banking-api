@@ -70,7 +70,7 @@ public class AccountServiceImpl implements AccountService {
             if (account == null) {
                 throw new BadRequestAlertException("Error while creating account", "BnMAccount", "ERROR");
             } else {
-                String accountNo = customMethods.generateAccountNumber(account.getBnRBranch().getBnRBank().getCode(), account.getBnRBranch().getCode(), account.getBnRAccountType().getCode(), account.getAccountId());
+                String accountNo = customMethods.generateAccountNumber(account.getBnRBranch().getCode(), account.getBnRAccountType().getCode(), account.getAccountId());
                 account.setAccountNo(accountNo);
                 account = accountRepository.save(account);
                 BnMAccountDto accountDto = accountMapper.toDto(account);
@@ -248,6 +248,7 @@ public class AccountServiceImpl implements AccountService {
         account.setAccountNo(bnMAccountDto.getAccountNo());
         account.setCurrentBalance(bnMAccountDto.getCurrentBalance());
         account.setAvailableBalance(bnMAccountDto.getAvailableBalance());
+        account.setHoldBalance(bnMAccountDto.getHoldBalance());
         account.setOpenedDate(bnMAccountDto.getOpenedDate());
         account.setBnMCustomer(optCustomer.get());
         account.setBnRAccountType(optAccountType.get());
@@ -287,12 +288,14 @@ public class AccountServiceImpl implements AccountService {
 
         account.setCurrentBalance(new Float(0));
         account.setAvailableBalance(new Float(0));
+        account.setHoldBalance(new Float(0));
         account.setOpenedDate(LocalDate.now());
         account.setBnMCustomer(optCustomer.get());
         account.setBnRAccountType(optAccountType.get());
         account.setBnRCurrency(optCurrency.get());
         account.setBnRBranch(optBranch.get());
         account.setBnRStatus(optStatus.get());
+        account.setIsActive(true);
         return account;
     }
 

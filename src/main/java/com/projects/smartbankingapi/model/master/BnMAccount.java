@@ -33,7 +33,7 @@ public class BnMAccount extends AuditModel {
     @Column(name = "ACCOUNT_ID", nullable = false)
     private Long accountId;
 
-    @Column(name = "ACCOUNT_NO", length = 25, unique = true,updatable = false)
+    @Column(name = "ACCOUNT_NO", length = 25, unique = true)
     private String accountNo;
 
     @Column(name = "CURRENT_BAL", nullable = false)
@@ -41,6 +41,9 @@ public class BnMAccount extends AuditModel {
 
     @Column(name = "AVAILABLE_BAL", nullable = false)
     private Float availableBalance;
+
+    @Column(name = "HOLD_BAL", nullable = false)
+    private Float holdBalance;
 
     @Column(name = "OPEN_DATE", updatable = false)
     private LocalDate openedDate;

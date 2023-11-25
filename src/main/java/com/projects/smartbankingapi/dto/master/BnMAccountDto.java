@@ -27,6 +27,7 @@ public class BnMAccountDto implements Serializable {
     private String accountNo;
     private Float currentBalance;
     private Float availableBalance;
+    private Float holdBalance;
     private LocalDate openedDate;
     private Boolean isActive;
 
@@ -36,9 +37,9 @@ public class BnMAccountDto implements Serializable {
     private Long currencyId;
     private Long branchId;
 
-    private BnMCustomerDto bnMCustomer;
-    private BnRAccountTypeDto bnRAccountType;
-    private BnRStatusDto bnRStatus;
-    private BnRCurrencyDto bnRCurrency;
-    private BnRBranchDto bnRBranch;
+//    private BnMCustomerDto bnMCustomer;
+//    private BnRAccountTypeDto bnRAccountType;
+//    private BnRStatusDto bnRStatus;
+//    private BnRCurrencyDto bnRCurrency;
+//    private BnRBranchDto bnRBranch;
 }

@@ -23,14 +23,13 @@ public class CustomMethods {
         return msg;
     }
 
-    public String generateAccountNumber(String bankCode, String branchCode, String accountTypeCode, Long accountId) {
+    public String generateAccountNumber(String branchCode, String accountTypeCode, Long accountId) {
         String accountNumber = "";
         Integer year = LocalDate.now().getYear();
         Integer month = LocalDate.now().getMonthValue();
-
-        String accountNumberPrefix = bankCode + branchCode + accountTypeCode;
-        String accountNumberSuffix = String.format("%06d", accountId);
-        accountNumber = accountNumberPrefix + year + month + accountNumberSuffix;
+        String accountNumberPrefix = branchCode + accountTypeCode + year.toString().substring(2) + month;
+        String accountNumberSuffix = String.format("%04d", accountId);
+        accountNumber = accountNumberPrefix + accountNumberSuffix;
         return accountNumber;
     }
 }
