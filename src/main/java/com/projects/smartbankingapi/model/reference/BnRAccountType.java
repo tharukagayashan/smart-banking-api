@@ -11,7 +11,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "BN_R_ACCOUNT_TYPE",indexes = {
+@Table(name = "BN_R_ACCOUNT_TYPE", indexes = {
         @Index(name = "BN_R_ACCOUNT_TYPE_ACCOUNT_TYPE_ID_IDX", columnList = "ACCOUNT_TYPE_ID"),
         @Index(name = "BN_R_ACCOUNT_TYPE_ACCOUNT_TYPE_CODE_IDX", columnList = "ACCOUNT_TYPE_CODE", unique = true)
 })

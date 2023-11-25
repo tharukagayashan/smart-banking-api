@@ -1,4 +1,4 @@
-package com.projects.smartbankingapi.dto.master;
+package com.projects.smartbankingapi.dto.other;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,23 +7,12 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
-/**
- * DTO for {@link com.projects.smartbankingapi.model.master.BnMCustomer}
- */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class BnMCustomerDto implements Serializable {
-    private String createdBy;
-    private String updatedBy;
-    private Date createdOn;
-    private Date updatedOn;
-    @NotNull
-    private Long customerId;
+public class CustomerCreateReqDto {
     @NotNull
     @NotEmpty
     @NotBlank
@@ -54,6 +43,4 @@ public class BnMCustomerDto implements Serializable {
     @NotEmpty
     @NotBlank
     private String gender;
-    @NotNull
-    private Boolean isActive;
 }

@@ -1,6 +1,5 @@
 package com.projects.smartbankingapi.audit;
 
-import com.projects.smartbankingapi.audit.AuditListener;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;

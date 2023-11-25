@@ -28,7 +28,7 @@ public class BnRCharge extends AuditModel {
     @Column(name = "CHARGE_DESC", length = 100)
     private String description;
 
-    @Column(name = "AMOUNT",nullable = false)
+    @Column(name = "AMOUNT", nullable = false)
     private Float amount;
 
     @Column(name = "EFFECTIVE_DATE")

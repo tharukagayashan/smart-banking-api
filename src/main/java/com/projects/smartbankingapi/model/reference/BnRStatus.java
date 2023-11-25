@@ -12,7 +12,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "BN_R_STATUS",indexes = {
+@Table(name = "BN_R_STATUS", indexes = {
         @Index(name = "BN_R_STATUS_STATUS_ID_IDX", columnList = "STATUS_ID"),
         @Index(name = "BN_R_STATUS_STATUS_CODE_IDX", columnList = "STATUS_CODE", unique = true)
 })
