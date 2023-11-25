@@ -28,6 +28,35 @@ public class CustomerServiceImpl implements CustomerService {
         this.customerMapper = customerMapper;
     }
 
+    private static BnMCustomer getBnMCustomer(CustomerCreateReqDto customerCreateReqDto) {
+        BnMCustomer customer = new BnMCustomer();
+        customer.setFirstName(customerCreateReqDto.getFirstName());
+        customer.setLastName(customerCreateReqDto.getLastName());
+        customer.setDob(customerCreateReqDto.getDob());
+        customer.setAddress(customerCreateReqDto.getAddress());
+        customer.setEmail(customerCreateReqDto.getEmail());
+        customer.setMobileNo(customerCreateReqDto.getMobileNo());
+        customer.setNic(customerCreateReqDto.getNic());
+        customer.setGender(customerCreateReqDto.getGender());
+        customer.setIsActive(HardCodeConstant.ACTIVE);
+        return customer;
+    }
+
+    private static BnMCustomer getBnMCustomer(BnMCustomer entity, BnMCustomerDto bnMCustomerDto) {
+        BnMCustomer customer = entity;
+        customer.setCustomerId(bnMCustomerDto.getCustomerId());
+        customer.setFirstName(bnMCustomerDto.getFirstName());
+        customer.setLastName(bnMCustomerDto.getLastName());
+        customer.setDob(bnMCustomerDto.getDob());
+        customer.setAddress(bnMCustomerDto.getAddress());
+        customer.setEmail(bnMCustomerDto.getEmail());
+        customer.setMobileNo(bnMCustomerDto.getMobileNo());
+        customer.setNic(bnMCustomerDto.getNic());
+        customer.setGender(bnMCustomerDto.getGender());
+        customer.setIsActive(bnMCustomerDto.getIsActive());
+        return customer;
+    }
+
     @Override
     public ResponseEntity<BnMCustomerDto> createCustomer(CustomerCreateReqDto customerCreateReqDto) {
         try {
@@ -134,34 +163,5 @@ public class CustomerServiceImpl implements CustomerService {
             log.error("Error occurred while deleting customer: {}", e.getMessage());
             throw new BadRequestAlertException(e.getMessage(), "BnMCustomer", "error");
         }
-    }
-
-    private static BnMCustomer getBnMCustomer(CustomerCreateReqDto customerCreateReqDto) {
-        BnMCustomer customer = new BnMCustomer();
-        customer.setFirstName(customerCreateReqDto.getFirstName());
-        customer.setLastName(customerCreateReqDto.getLastName());
-        customer.setDob(customerCreateReqDto.getDob());
-        customer.setAddress(customerCreateReqDto.getAddress());
-        customer.setEmail(customerCreateReqDto.getEmail());
-        customer.setMobileNo(customerCreateReqDto.getMobileNo());
-        customer.setNic(customerCreateReqDto.getNic());
-        customer.setGender(customerCreateReqDto.getGender());
-        customer.setIsActive(HardCodeConstant.ACTIVE);
-        return customer;
-    }
-
-    private static BnMCustomer getBnMCustomer(BnMCustomer entity, BnMCustomerDto bnMCustomerDto) {
-        BnMCustomer customer = entity;
-        customer.setCustomerId(bnMCustomerDto.getCustomerId());
-        customer.setFirstName(bnMCustomerDto.getFirstName());
-        customer.setLastName(bnMCustomerDto.getLastName());
-        customer.setDob(bnMCustomerDto.getDob());
-        customer.setAddress(bnMCustomerDto.getAddress());
-        customer.setEmail(bnMCustomerDto.getEmail());
-        customer.setMobileNo(bnMCustomerDto.getMobileNo());
-        customer.setNic(bnMCustomerDto.getNic());
-        customer.setGender(bnMCustomerDto.getGender());
-        customer.setIsActive(bnMCustomerDto.getIsActive());
-        return customer;
     }
 }

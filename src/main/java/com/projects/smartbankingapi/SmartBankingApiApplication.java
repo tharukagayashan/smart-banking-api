@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class SmartBankingApiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SmartBankingApiApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SmartBankingApiApplication.class, args);
+    }
 
 }

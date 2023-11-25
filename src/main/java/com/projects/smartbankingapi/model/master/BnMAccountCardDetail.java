@@ -11,10 +11,10 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "BN_M_ACC_CARD_DETAILS",indexes = {
-        @Index(name = "BN_M_ACC_CARD_DETAILS_ACC_CARD_ID",columnList = "ACC_CARD_ID"),
-        @Index(name = "BN_M_ACC_CARD_DETAILS_ACCOUNT_ID",columnList = "ACCOUNT_ID"),
-        @Index(name = "BN_M_ACC_CARD_DETAILS_CARD_ID",columnList = "CARD_ID")
+@Table(name = "BN_M_ACC_CARD_DETAILS", indexes = {
+        @Index(name = "BN_M_ACC_CARD_DETAILS_ACC_CARD_ID", columnList = "ACC_CARD_ID"),
+        @Index(name = "BN_M_ACC_CARD_DETAILS_ACCOUNT_ID", columnList = "ACCOUNT_ID"),
+        @Index(name = "BN_M_ACC_CARD_DETAILS_CARD_ID", columnList = "CARD_ID")
 })
 public class BnMAccountCardDetail extends AuditModel {
 

@@ -29,7 +29,7 @@ public class BnRIntRate extends AuditModel {
     @Column(name = "INT_RATE_DESC", length = 100)
     private String description;
 
-    @Column(name = "RATE",nullable = false)
+    @Column(name = "RATE", nullable = false)
     private Float rate;
 
     @OneToMany(mappedBy = "bnRIntRate", fetch = FetchType.LAZY)

@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Data
 @Table(name = "BN_M_CARD_DETAIL", indexes = {
         @Index(name = "BN_M_CARD_DETAIL_CARD_ID_IDX", columnList = "CARD_ID"),
-        @Index(name = "BN_M_CARD_DETAIL_CARD_NO_UNIQUE_IDX",columnList = "CARD_NO",unique = true)
+        @Index(name = "BN_M_CARD_DETAIL_CARD_NO_UNIQUE_IDX", columnList = "CARD_NO", unique = true)
 })
 public class BnMCardDetail extends AuditModel {
 

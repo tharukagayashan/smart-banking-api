@@ -5,7 +5,6 @@ import com.projects.smartbankingapi.dto.reference.BnRTranTypeDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 
 import java.io.Serializable;
 import java.time.LocalDate;
