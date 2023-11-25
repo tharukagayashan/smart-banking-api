@@ -1,9 +1,15 @@
 package com.projects.smartbankingapi.other;
 
+import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Configuration
 public class CustomMethods {
+
     public String validateNIC(String nic) {
         String msg = "";
         if (nic.length() == 10) {

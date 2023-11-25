@@ -3,12 +3,17 @@ package com.projects.smartbankingapi.service.master.impl;
 import com.projects.smartbankingapi.constant.HardCodeConstant;
 import com.projects.smartbankingapi.dao.master.BnMCustomerRepository;
 import com.projects.smartbankingapi.dto.master.BnMCustomerDto;
+import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
+import com.projects.smartbankingapi.dto.miscellaneous.PaginationDto;
 import com.projects.smartbankingapi.dto.other.CustomerCreateReqDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.mapper.master.BnMCustomerMapper;
 import com.projects.smartbankingapi.model.master.BnMCustomer;
 import com.projects.smartbankingapi.service.master.CustomerService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -161,6 +166,61 @@ public class CustomerServiceImpl implements CustomerService {
             }
         } catch (Exception e) {
             log.error("Error occurred while deleting customer: {}", e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "BnMCustomer", "error");
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<BnMCustomerDto>> getAllCustomersByIsActive(String isActive) {
+        try {
+            if (isActive == null) {
+                throw new BadRequestAlertException("isActive is required", "BnMCustomer", "error");
+            } else {
+                Boolean flag = false;
+                if (isActive.equals(HardCodeConstant.ACTIVE.toString())) {
+                    flag = true;
+                } else if (isActive.equals(HardCodeConstant.INACTIVE.toString())) {
+                    flag = false;
+                } else {
+                    throw new BadRequestAlertException("isActive should be true or false", "BnMCustomer", "error");
+                }
+                List<BnMCustomer> customers = customerRepository.findAllByIsActive(flag);
+                if (customers.isEmpty()) {
+                    throw new BadRequestAlertException("No customers found", "BnMCustomer", "error");
+                } else {
+                    List<BnMCustomerDto> customerDtoList = customerMapper.entityListToDtoList(customers);
+                    return ResponseEntity.ok(customerDtoList);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while getting all customers by isActive: {}", e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "BnMCustomer", "error");
+        }
+    }
+
+    @Override
+    public ResponseEntity<ApiResponseDto<List<BnMCustomerDto>>> getCustomersForTable(Integer page, Integer perPage, String sort, String direction, String search) {
+        try {
+            Page<BnMCustomer> dbData = null;
+            if (direction.equalsIgnoreCase("")) {
+                dbData = customerRepository.findAllForTable(search, PageRequest.of(page, perPage, Sort.by(Sort.Direction.ASC, sort)));
+            } else {
+                dbData = customerRepository.findAllForTable(search, PageRequest.of(page, perPage, Sort.by(Sort.Direction.DESC, sort)));
+            }
+
+            ApiResponseDto<List<BnMCustomerDto>> response = new ApiResponseDto<>();
+            PaginationDto pagination = new PaginationDto();
+            pagination.setTotal(dbData.getTotalElements());
+            pagination.setPerPage(perPage);
+            pagination.setCurrentPage(page);
+            pagination.setFrom((page * perPage) + dbData.getNumberOfElements());
+            pagination.setTo((page * perPage) + dbData.getNumberOfElements());
+            response.setPagination(pagination);
+            response.setResult(customerMapper.entityListToDtoList(dbData.getContent()));
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Error occurred while getting customers for table: {}", e.getMessage());
             throw new BadRequestAlertException(e.getMessage(), "BnMCustomer", "error");
         }
     }
