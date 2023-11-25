@@ -1,12 +1,12 @@
-package com.projects.smartbankingapi.error;
+package com.projects.smartbankingapi.global;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class ErrorResponseDto {
     private int httpCode;
     private String errorCode;

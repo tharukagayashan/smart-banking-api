@@ -4,6 +4,8 @@ import com.projects.smartbankingapi.dto.master.BnMCustomerDto;
 import com.projects.smartbankingapi.model.master.BnMCustomer;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface BnMCustomerMapper {
     BnMCustomer toEntity(BnMCustomerDto bnMCustomerDto);
@@ -12,4 +14,6 @@ public interface BnMCustomerMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     BnMCustomer partialUpdate(BnMCustomerDto bnMCustomerDto, @MappingTarget BnMCustomer bnMCustomer);
+
+    List<BnMCustomerDto> entityListToDtoList(List<BnMCustomer> customers);
 }
