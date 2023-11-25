@@ -1,6 +1,5 @@
 package com.projects.smartbankingapi.global;
 
-import com.projects.smartbankingapi.error.ErrorResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +23,7 @@ public class CustomExceptionHandler {
         errorResponse.setHttpCode(400);
         errorResponse.setErrorCode("VALIDATION FAILED!");
         errorResponse.setDescription(message);
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
 }
