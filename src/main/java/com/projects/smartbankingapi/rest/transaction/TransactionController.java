@@ -1,6 +1,7 @@
 package com.projects.smartbankingapi.rest.transaction;
 
-import com.projects.smartbankingapi.dto.other.TranCreateReqDto;
+import com.projects.smartbankingapi.dto.other.BankDepositTranCreateReqDto;
+import com.projects.smartbankingapi.dto.other.DebitTranCreateReqDto;
 import com.projects.smartbankingapi.dto.transaction.BnTTranDto;
 import com.projects.smartbankingapi.service.transaction.TransactionService;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +24,15 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @PostMapping
-    public ResponseEntity<BnTTranDto> createTransaction(@Valid @RequestBody TranCreateReqDto tranCreateReqDto) {
-        ResponseEntity<BnTTranDto> response = transactionService.createTransaction(tranCreateReqDto);
+    @PostMapping("/bank-deposit-transaction")
+    public ResponseEntity<BnTTranDto> createBankDepositTransaction(@Valid @RequestBody BankDepositTranCreateReqDto bankDepositTranCreateReqDto) {
+        ResponseEntity<BnTTranDto> response = transactionService.createBankDepositTransaction(bankDepositTranCreateReqDto);
+        return response;
+    }
+
+    @PostMapping("/debit-transaction")
+    public ResponseEntity<BnTTranDto> createDebitTransaction(@Valid @RequestBody DebitTranCreateReqDto debitTranCreateReqDto) {
+        ResponseEntity<BnTTranDto> response = transactionService.createDebitTransaction(debitTranCreateReqDto);
         return response;
     }
 

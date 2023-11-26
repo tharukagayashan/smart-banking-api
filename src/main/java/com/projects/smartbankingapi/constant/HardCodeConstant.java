@@ -4,10 +4,13 @@ public class HardCodeConstant {
     public static final Integer STATUS_NEW = 1;
     public static final Integer STATUS_PENDING = 2;
     public static final Integer STATUS_APPROVED = 3;
-    public static final Integer STATUS_REJECTED = 4;
-    public static final Integer STATUS_CANCELLED = 5;
-    public static final Integer STATUS_CLOSED = 6;
 
     public static final Boolean ACTIVE = true;
     public static final Boolean INACTIVE = false;
+
+    public static final Integer TRAN_TYPE_DEBIT = 1;
+    public static final Integer TRAN_TYPE_CREDIT = 2;
+
+    public static final String HEAD_OFFICE_ACCOUNT_NO = "010123110012";
+
 }

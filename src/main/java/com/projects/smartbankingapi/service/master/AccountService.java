@@ -21,4 +21,6 @@ public interface AccountService {
     ResponseEntity<List<BnMAccountDto>> getAllAccountsByIsActive(String isActive);
 
     ResponseEntity<ApiResponseDto<List<BnMAccountDto>>> getAccountsForTable(Integer page, Integer perPage, String sort, String direction, String search);
+
+    ResponseEntity<BnMAccountDto> getAccountByAccountNo(String accountNo);
 }
