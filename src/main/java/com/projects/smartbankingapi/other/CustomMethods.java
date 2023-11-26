@@ -18,6 +18,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -237,4 +239,42 @@ public class CustomMethods {
         }
     }
 
+    public Float calculateInterest(Float amount, Float rate, Integer month, Long loanTypeId) {
+        float interest = 0;
+        float totalAmount = 0;
+        float i = 0;
+        float t = 0;
+        float emi = 0;
+        if (loanTypeId == HardCodeConstant.LOAN_TYPE_FLAT.longValue()) {
+            i = rate / 100;
+            t = month;
+            emi = (amount * i * t) / 12;
+
+            totalAmount = emi * t;
+            interest = emi * t - amount;
+
+            return interest;
+        } else if (loanTypeId == HardCodeConstant.LOAN_TYPE_REDUCING.longValue()) {
+            i = rate / (100 * 12);
+            t = month;
+            emi = (amount * i * (float) Math.pow(1 + i, t)) / ((float) Math.pow(1 + i, t) - 1);
+
+            totalAmount = emi * t;
+            interest = emi * t - amount;
+
+            return interest;
+        } else {
+            throw new BadRequestAlertException("Loan type not found", "Loan", "loan_type_not_found");
+        }
+    }
+
+    public float calculateNextInstallmentAmt(Float amount, Float interest, Integer totInstallments, Integer remInstallments, Long loanTypeId) {
+        if (loanTypeId == HardCodeConstant.LOAN_TYPE_FLAT.longValue()) {
+            return (amount + interest) / remInstallments;
+        } else if (loanTypeId == HardCodeConstant.LOAN_TYPE_REDUCING.longValue()) {
+            return (amount / totInstallments) + (interest / remInstallments);
+        } else {
+            throw new BadRequestAlertException("Loan type not found", "Loan", "loan_type_not_found");
+        }
+    }
 }
