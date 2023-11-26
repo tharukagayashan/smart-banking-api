@@ -42,8 +42,14 @@ public class BnMAccount extends AuditModel {
     @Column(name = "AVAILABLE_BAL", nullable = false)
     private Float availableBalance;
 
+    @Column(name = "HOLD_BAL", nullable = false)
+    private Float holdBalance;
+
     @Column(name = "OPEN_DATE", updatable = false)
     private LocalDate openedDate;
+
+    @Column(name = "IS_ACTIVE")
+    private Boolean isActive;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "CUSTOMER_ID", nullable = false)
