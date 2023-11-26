@@ -70,4 +70,10 @@ public class AccountController {
         return response;
     }
 
+    @GetMapping("/accountNo/{accountNo}")
+    public ResponseEntity<BnMAccountDto> getAccountByAccountNo(@PathVariable String accountNo) {
+        ResponseEntity<BnMAccountDto> response = accountService.getAccountByAccountNo(accountNo);
+        return response;
+    }
+
 }

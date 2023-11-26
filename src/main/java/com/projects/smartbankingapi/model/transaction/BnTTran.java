@@ -1,7 +1,7 @@
 package com.projects.smartbankingapi.model.transaction;
 
 import com.projects.smartbankingapi.audit.AuditModel;
-import com.projects.smartbankingapi.model.master.BnMAccount;
+import com.projects.smartbankingapi.model.reference.BnRStatus;
 import com.projects.smartbankingapi.model.reference.BnRTranType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,8 +17,7 @@ import java.time.LocalTime;
 @Data
 @Table(name = "BN_T_TRAN", indexes = {
         @Index(name = "BN_T_TRAN_TRAN_ID_IDX", columnList = "TRAN_ID"),
-        @Index(name = "BN_T_TRAN_TRAN_TYPE_ID_IDX", columnList = "TRAN_TYPE_ID"),
-        @Index(name = "BN_T_TRAN_ACCOUNT_ID_IDX", columnList = "ACCOUNT_ID")
+        @Index(name = "BN_T_TRAN_TRAN_TYPE_ID_IDX", columnList = "TRAN_TYPE_ID")
 })
 public class BnTTran extends AuditModel {
 
@@ -41,8 +40,17 @@ public class BnTTran extends AuditModel {
     @JoinColumn(name = "TRAN_TYPE_ID", nullable = false, referencedColumnName = "TRAN_TYPE_ID")
     private BnRTranType bnRTranType;
 
+    @Column(name = "DESCRIPTION", nullable = false)
+    private String description;
+
+    @Column(name = "FROM_ACCOUNT_NO", nullable = false)
+    private String fromAccountNo;
+
+    @Column(name = "TO_ACCOUNT_NO", nullable = false)
+    private String toAccountNo;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ACCOUNT_ID", nullable = false, referencedColumnName = "ACCOUNT_ID")
-    private BnMAccount bnMAccount;
+    @JoinColumn(name = "STATUS_ID", nullable = false, referencedColumnName = "STATUS_ID")
+    private BnRStatus bnRStatus;
 
 }

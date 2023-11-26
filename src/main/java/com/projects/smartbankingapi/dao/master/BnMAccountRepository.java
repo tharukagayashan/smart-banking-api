@@ -17,4 +17,6 @@ public interface BnMAccountRepository extends JpaRepository<BnMAccount, Long> {
 
     @Query("SELECT a FROM BnMAccount a WHERE a.isActive = true AND (a.accountNo LIKE %?1% OR a.bnMCustomer.firstName LIKE %?1% OR a.bnMCustomer.lastName LIKE %?1% OR a.bnMCustomer.nic LIKE %?1% OR a.bnMCustomer.mobileNo LIKE %?1% OR a.bnMCustomer.email LIKE %?1%)")
     Page<BnMAccount> findAllForTable(String search, PageRequest of);
+
+    Optional<BnMAccount> findByAccountNo(String accountNo);
 }

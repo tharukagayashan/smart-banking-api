@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @Table(name = "BN_M_LOAN", indexes = {
         @Index(name = "BN_M_LOAN_LOAN_ID_IDX", columnList = "LOAN_ID"),
         @Index(name = "BN_M_LOAN_STATUS_ID_IDX", columnList = "STATUS_ID"),
-        @Index(name = "BN_M_LOAN_CUSTOMER_ID_IDX", columnList = "CUSTOMER_ID"),
+        @Index(name = "BN_M_LOAN_ACCOUNT_ID_IDX", columnList = "ACCOUNT_ID"),
         @Index(name = "BN_M_LOAN_LOAN_PRODUCT_ID_IDX", columnList = "LOAN_PRODUCT_ID")
 })
 public class BnMLoan extends AuditModel {
@@ -66,8 +66,8 @@ public class BnMLoan extends AuditModel {
     private BnRStatus bnRStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "CUSTOMER_ID", nullable = false)
-    private BnMCustomer bnMCustomer;
+    @JoinColumn(name = "ACCOUNT_ID", referencedColumnName = "ACCOUNT_ID", nullable = false)
+    private BnMAccount bnMAccount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "LOAN_PRODUCT_ID", referencedColumnName = "LOAN_PRODUCT_ID", nullable = false)

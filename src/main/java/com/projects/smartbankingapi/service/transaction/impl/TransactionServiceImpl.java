@@ -1,93 +1,123 @@
 package com.projects.smartbankingapi.service.transaction.impl;
 
-import com.projects.smartbankingapi.dao.master.BnMAccountRepository;
 import com.projects.smartbankingapi.dao.transaction.BnTTranRepository;
-import com.projects.smartbankingapi.dto.other.TranCreateReqDto;
+import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
+import com.projects.smartbankingapi.dto.miscellaneous.PaginationDto;
+import com.projects.smartbankingapi.dto.other.BankDepositTranCreateReqDto;
+import com.projects.smartbankingapi.dto.other.DebitTranCreateReqDto;
 import com.projects.smartbankingapi.dto.transaction.BnTTranDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.mapper.transaction.BnTTranMapper;
-import com.projects.smartbankingapi.model.master.BnMAccount;
+import com.projects.smartbankingapi.model.transaction.BnTTran;
+import com.projects.smartbankingapi.other.CustomMethods;
 import com.projects.smartbankingapi.service.transaction.TransactionService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-    private final BnTTranRepository tranRepository;
+    private final CustomMethods customMethods;
+    private final BnTTranRepository tranRepo;
     private final BnTTranMapper tranMapper;
-    private final BnMAccountRepository accountRepository;
 
-    public TransactionServiceImpl(BnTTranRepository tranRepository, BnTTranMapper tranMapper, BnMAccountRepository accountRepository) {
-        this.tranRepository = tranRepository;
+    public TransactionServiceImpl(CustomMethods customMethods, BnTTranRepository tranRepo, BnTTranMapper tranMapper) {
+        this.customMethods = customMethods;
+        this.tranRepo = tranRepo;
         this.tranMapper = tranMapper;
-        this.accountRepository = accountRepository;
     }
 
     @Override
-    public ResponseEntity<BnTTranDto> createTransaction(TranCreateReqDto tranCreateReqDto) {
+    public ResponseEntity<BnTTranDto> createBankDepositTransaction(BankDepositTranCreateReqDto bankDepositTranCreateReqDto) {
         try {
-            Optional<BnMAccount> optAccount = accountRepository.findById(tranCreateReqDto.getAccountId());
-            if (!optAccount.isPresent()) {
-                throw new BadRequestAlertException("Account not found", "account", "accountNotFound");
+            BnTTran createdTran = customMethods.createBankDepositTransaction(bankDepositTranCreateReqDto);
+            if (createdTran == null) {
+                throw new BadRequestAlertException("Error occurred while creating bank deposit transaction", "Transaction", "bank-deposit-transaction-error");
             } else {
-                BnMAccount account = optAccount.get();
+                BnTTranDto response = tranMapper.toDto(createdTran);
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating bank deposit transaction: ", e);
+            throw new BadRequestAlertException(e.getMessage(), "Transaction", "bank-deposit-transaction-error");
+        }
+    }
 
-                Float availableBalance = account.getAvailableBalance();
-                Float currentBalance = account.getCurrentBalance();
-                Float holdBalance = account.getHoldBalance();
+    @Override
+    public ResponseEntity<BnTTranDto> createDebitTransaction(DebitTranCreateReqDto debitTranCreateReqDto) {
+        try {
+            BnTTran createdTran = customMethods.createDebitFundTransaction(debitTranCreateReqDto);
+            if (createdTran == null) {
+                throw new BadRequestAlertException("Error occurred while creating debit transaction", "Transaction", "debit-transaction-error");
+            } else {
+                BnTTranDto response = tranMapper.toDto(createdTran);
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating debit transaction: ", e);
+            throw new BadRequestAlertException(e.getMessage(), "Transaction", "debit-transaction-error");
+        }
+    }
 
-                if (tranCreateReqDto.getTranTypeId() == 1) {
-                    availableBalance = availableBalance + tranCreateReqDto.getAmount();
-                    currentBalance = currentBalance + tranCreateReqDto.getAmount();
-                } else if (tranCreateReqDto.getTranTypeId() == 2) {
-                    if (availableBalance < tranCreateReqDto.getAmount()) {
-                        throw new BadRequestAlertException("Insufficient balance", "account", "insufficientBalance");
-                    } else {
-                        availableBalance = availableBalance - tranCreateReqDto.getAmount();
-                        currentBalance = currentBalance - tranCreateReqDto.getAmount();
-                    }
-                } else if (tranCreateReqDto.getTranTypeId() == 3) {
-                    if (availableBalance < tranCreateReqDto.getAmount()) {
-                        throw new BadRequestAlertException("Insufficient balance", "account", "insufficientBalance");
-                    } else {
-                        availableBalance = availableBalance - tranCreateReqDto.getAmount();
-                        holdBalance = holdBalance + tranCreateReqDto.getAmount();
-                    }
-                } else if (tranCreateReqDto.getTranTypeId() == 4) {
-                    holdBalance = holdBalance - tranCreateReqDto.getAmount();
-                    currentBalance = currentBalance + tranCreateReqDto.getAmount();
+    @Override
+    public ResponseEntity<BnTTranDto> getTransaction(Long tranId) {
+        try {
+            if (tranId == null) {
+                throw new BadRequestAlertException("tranId is required", "Transacton", "ERROR");
+            } else {
+                Optional<BnTTran> optTran = tranRepo.findById(tranId);
+                if (!optTran.isPresent()) {
+                    log.error("Transaction not found");
+                    throw new BadRequestAlertException("Transaction not found", "Transaction", "ERROR");
                 } else {
-                    throw new BadRequestAlertException("Invalid transaction type", "transaction", "invalidTransactionType");
-                }
-
-                account.setAvailableBalance(availableBalance);
-                account.setCurrentBalance(currentBalance);
-                account.setHoldBalance(holdBalance);
-                account = accountRepository.save(account);
-                if (account != null) {
-                    BnTTranDto tranDto = new BnTTranDto();
-                    tranDto.setAccountId(account.getAccountId());
-                    tranDto.setAmount(tranCreateReqDto.getAmount());
-                    tranDto.setTranTypeId(tranCreateReqDto.getTranTypeId());
-                    tranDto.setTranDate(LocalDate.now());
-                    tranDto.setTranTime(LocalTime.now());
-                    tranDto = tranMapper.toDto(tranRepository.save(tranMapper.toEntity(tranDto)));
-                    log.info("Transaction created successfully");
-                    return ResponseEntity.ok(tranDto);
-                } else {
-                    throw new BadRequestAlertException("Error while creating transaction", "transaction", "errorCreatingTransaction");
+                    return ResponseEntity.ok(tranMapper.toDto(optTran.get()));
                 }
             }
         } catch (Exception e) {
-            log.error("Error while creating transaction", e);
-            throw new BadRequestAlertException(e.getMessage(), "transaction", "errorCreatingTransaction");
+            log.error("Error occurred while getting transaction: ", e);
+            throw new BadRequestAlertException(e.getMessage(), "Transaction", "ERROR");
+        }
+    }
+
+    @Override
+    public ResponseEntity<ApiResponseDto<List<BnTTranDto>>> getTransactionsForTable(Integer page, Integer perPage, String direction, String sort, String search, String fromAccountNo, String toAccountNo, LocalDate fromDate, LocalDate toDate) {
+        try {
+            Page<BnTTran> dbData = null;
+            if (direction.equalsIgnoreCase("asc")) {
+                dbData = tranRepo.findByFilter(search, fromAccountNo, toAccountNo, PageRequest.of(page, perPage, Sort.by(Sort.Direction.ASC, sort)));
+            } else {
+                dbData = tranRepo.findByFilter(search, fromAccountNo, toAccountNo, PageRequest.of(page, perPage, Sort.by(Sort.Direction.DESC, sort)));
+            }
+
+            List<BnTTran> dbDataList = dbData.getContent();
+            for (BnTTran tran : dbData.getContent()) {
+                if (!tran.getTranDate().isAfter(fromDate) && !tran.getTranDate().isBefore(toDate)) {
+                    dbDataList.remove(tran);
+                }
+            }
+
+            ApiResponseDto<List<BnTTranDto>> response = new ApiResponseDto<>();
+            PaginationDto pagination = new PaginationDto();
+            pagination.setTotal(dbData.getTotalElements());
+            pagination.setPerPage(perPage);
+            pagination.setCurrentPage(page);
+            pagination.setFrom((page * perPage) + 1);
+            pagination.setTo((page * perPage) + dbData.getNumberOfElements());
+            response.setPagination(pagination);
+            response.setResult(tranMapper.entityListToDtoList(dbDataList));
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error occurred while getting transaction: ", e);
+            throw new BadRequestAlertException(e.getMessage(), "Transaction", "ERROR");
         }
     }
 }
