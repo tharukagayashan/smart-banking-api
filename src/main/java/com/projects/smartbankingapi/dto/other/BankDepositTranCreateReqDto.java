@@ -9,20 +9,12 @@ import javax.validation.constraints.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class TranCreateReqDto {
-    @Max(1000000)
-    @Min(0)
+public class BankDepositTranCreateReqDto {
+    @Max(value = 1000000, message = "Amount must be less than 1000000")
+    @Min(value = 0, message = "Amount must be greater than 0")
     private Float amount;
-    private String description;
     @NotNull
     @NotEmpty
     @NotBlank
-    private String fromAccountNo;
-    @NotNull
-    @NotEmpty
-    @NotBlank
-    private String toAccountNo;
-    @NotNull
-    private Long tranTypeId;
-    private Long statusId;
+    private String toAccountNo; // to account
 }

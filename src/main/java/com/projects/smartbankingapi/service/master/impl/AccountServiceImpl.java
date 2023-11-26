@@ -217,6 +217,26 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    @Override
+    public ResponseEntity<BnMAccountDto> getAccountByAccountNo(String accountNo) {
+        try {
+            if (accountNo == null || accountNo.isEmpty()) {
+                throw new BadRequestAlertException("Account no is required", "BnMAccount", "REQUIRED");
+            } else {
+                Optional<BnMAccount> optAccount = accountRepository.findByAccountNo(accountNo);
+                if (!optAccount.isPresent()) {
+                    throw new BadRequestAlertException("Account not found", "BnMAccount", "NOT_FOUND");
+                } else {
+                    BnMAccountDto accountDto = accountMapper.toDto(optAccount.get());
+                    return ResponseEntity.ok(accountDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while getting account by accountNo: {}", e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "BnMAccount", "ERROR");
+        }
+    }
+
     private BnMAccount getBnMAccount(BnMAccount entity, BnMAccountDto bnMAccountDto) {
         Optional<BnMCustomer> optCustomer = customerRepository.findById(bnMAccountDto.getCustomerId());
         if (!optCustomer.isPresent()) {

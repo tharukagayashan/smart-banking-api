@@ -9,14 +9,12 @@ import org.mapstruct.*;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring", uses = {BnRTranTypeMapper.class, BnMAccountMapper.class})
 public interface BnTTranMapper {
     @Mappings({
-            @Mapping(target = "bnRTranType.tranTypeId", source = "tranTypeId"),
-            @Mapping(target = "bnMAccount.accountId", source = "accountId"),
+            @Mapping(target = "bnRTranType.tranTypeId", source = "tranTypeId")
     })
     BnTTran toEntity(BnTTranDto bnTTranDto);
 
     @Mappings({
-            @Mapping(target = "tranTypeId", source = "bnRTranType.tranTypeId"),
-            @Mapping(target = "accountId", source = "bnMAccount.accountId"),
+            @Mapping(target = "tranTypeId", source = "bnRTranType.tranTypeId")
     })
     BnTTranDto toDto(BnTTran bnTTran);
 

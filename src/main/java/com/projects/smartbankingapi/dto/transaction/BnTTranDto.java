@@ -1,5 +1,7 @@
 package com.projects.smartbankingapi.dto.transaction;
 
+import com.projects.smartbankingapi.dto.reference.BnRStatusDto;
+import com.projects.smartbankingapi.dto.reference.BnRTranTypeDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,10 +26,13 @@ public class BnTTranDto implements Serializable {
     private Float amount;
     private LocalDate tranDate;
     private LocalTime tranTime;
+    private String description;
+    private String fromAccountNo;
+    private String toAccountNo;
 
     private Long tranTypeId;
-    private Long accountId;
+    private Long statusId;
 
-//    private BnRTranTypeDto bnRTranType;
-//    private BnMAccountDto bnMAccount;
+    private BnRTranTypeDto bnRTranType;
+    private BnRStatusDto bnRStatus;
 }
