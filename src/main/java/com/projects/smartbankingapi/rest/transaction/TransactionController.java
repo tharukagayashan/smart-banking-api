@@ -4,7 +4,9 @@ import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.other.BankDepositTranCreateReqDto;
 import com.projects.smartbankingapi.dto.other.DebitTranCreateReqDto;
 import com.projects.smartbankingapi.dto.transaction.BnTTranDto;
+import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.service.transaction.TransactionService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
+
+import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
 
 @Validated
 @RestController
@@ -51,10 +56,15 @@ public class TransactionController {
             @RequestParam(defaultValue = "", required = false) String search,
             @RequestParam(defaultValue = "", required = false) String fromAccountNo,
             @RequestParam(defaultValue = "", required = false) String toAccountNo,
-            @RequestParam(defaultValue = "",required = false) LocalDate fromDate,
-            @RequestParam(defaultValue = "",required = false) LocalDate toDate
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate
     ) {
-        ResponseEntity<ApiResponseDto<List<BnTTranDto>>> response = transactionService.getTransactionsForTable(page, perPage, direction, sort, search, fromAccountNo, toAccountNo, fromDate,toDate);
+        if (!Objects.isNull(fromDate) && Objects.isNull(toDate)) {
+            throw new BadRequestAlertException("PLEASE SELECT TO DATE!", ENTITY_NAME, "FILTER_DATES");
+        } else if (!Objects.isNull(toDate) && Objects.isNull(fromDate)) {
+            throw new BadRequestAlertException("PLEASE SELECT FROM DATE", ENTITY_NAME, "FILTER_DATES");
+        }
+        ResponseEntity<ApiResponseDto<List<BnTTranDto>>> response = transactionService.getTransactionsForTable(page, perPage, direction, sort, search, fromAccountNo, toAccountNo, fromDate, toDate);
         return response;
     }
 

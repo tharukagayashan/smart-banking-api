@@ -93,9 +93,16 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             Page<BnTTran> dbData = null;
             if (direction.equalsIgnoreCase("asc")) {
-                dbData = tranRepo.findByFilter(search, fromAccountNo, toAccountNo, fromDate, toDate, PageRequest.of(page, perPage, Sort.by(Sort.Direction.ASC, sort)));
+                dbData = tranRepo.findByFilter(search, fromAccountNo, toAccountNo, PageRequest.of(page, perPage, Sort.by(Sort.Direction.ASC, sort)));
             } else {
-                dbData = tranRepo.findByFilter(search, fromAccountNo, toAccountNo, fromDate, toDate, PageRequest.of(page, perPage, Sort.by(Sort.Direction.DESC, sort)));
+                dbData = tranRepo.findByFilter(search, fromAccountNo, toAccountNo, PageRequest.of(page, perPage, Sort.by(Sort.Direction.DESC, sort)));
+            }
+
+            List<BnTTran> dbDataList = dbData.getContent();
+            for (BnTTran tran : dbData.getContent()) {
+                if (!tran.getTranDate().isAfter(fromDate) && !tran.getTranDate().isBefore(toDate)) {
+                    dbDataList.remove(tran);
+                }
             }
 
             ApiResponseDto<List<BnTTranDto>> response = new ApiResponseDto<>();
@@ -103,10 +110,10 @@ public class TransactionServiceImpl implements TransactionService {
             pagination.setTotal(dbData.getTotalElements());
             pagination.setPerPage(perPage);
             pagination.setCurrentPage(page);
-            pagination.setFrom((page * perPage) + dbData.getNumberOfElements());
+            pagination.setFrom((page * perPage) + 1);
             pagination.setTo((page * perPage) + dbData.getNumberOfElements());
             response.setPagination(pagination);
-            response.setResult(tranMapper.entityListToDtoList(dbData.getContent()));
+            response.setResult(tranMapper.entityListToDtoList(dbDataList));
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error occurred while getting transaction: ", e);

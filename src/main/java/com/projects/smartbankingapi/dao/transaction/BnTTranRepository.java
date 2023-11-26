@@ -6,17 +6,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.time.LocalDate;
-
 public interface BnTTranRepository extends JpaRepository<BnTTran, Long> {
 
     @Query("SELECT t FROM BnTTran t " +
-            "WHERE (:fromAccountNo IS '' OR t.fromAccountNo LIKE %:fromAccountNo%) " +
-            "AND (:toAccountNo IS '' OR t.toAccountNo LIKE %:toAccountNo%) " +
-            "AND (:search IS '' OR t.description LIKE %:search%) " +
-            "AND (:fromDate IS '' OR t.tranDate >= :fromDate) " +
-            "AND (:toDate IS '' OR t.tranDate <= :toDate)"
+            "WHERE (:fromAccountNo IS NULL OR t.fromAccountNo LIKE %:fromAccountNo%) " +
+            "AND (:toAccountNo IS NULL OR t.toAccountNo LIKE %:toAccountNo%) " +
+            "AND (:search IS NULL OR t.description LIKE %:search%)"
     )
-    Page<BnTTran> findByFilter(String search, String fromAccountNo, String toAccountNo, LocalDate fromDate, LocalDate toDate, PageRequest of);
+    Page<BnTTran> findByFilter(String search, String fromAccountNo, String toAccountNo, PageRequest of);
 
 }
