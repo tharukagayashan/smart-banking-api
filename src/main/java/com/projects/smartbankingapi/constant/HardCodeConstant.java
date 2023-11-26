@@ -13,4 +13,7 @@ public class HardCodeConstant {
 
     public static final String HEAD_OFFICE_ACCOUNT_NO = "010123110012";
 
+    public static final Integer LOAN_TYPE_FLAT = 1;
+
+    public static final Integer LOAN_TYPE_REDUCING = 2;
 }

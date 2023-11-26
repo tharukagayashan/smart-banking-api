@@ -2,6 +2,7 @@ package com.projects.smartbankingapi.dto.master;
 
 import com.projects.smartbankingapi.dto.reference.BnRLoanProductDto;
 import com.projects.smartbankingapi.dto.reference.BnRStatusDto;
+import com.projects.smartbankingapi.model.master.BnMAccount;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,7 +34,12 @@ public class BnMLoanDto implements Serializable {
     private Float totSettledAmt;
     private Float totInterestPaid;
     private Float totPaid;
+
+    private Long accountId;
+    private Long statusId;
+    private Long productId;
+
     private BnRStatusDto bnRStatus;
-    private BnMCustomerDto bnMCustomer;
+    private BnMAccountDto bnMAccount;
     private BnRLoanProductDto bnRLoanProduct;
 }
