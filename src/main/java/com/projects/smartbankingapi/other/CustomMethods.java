@@ -15,6 +15,7 @@ import com.projects.smartbankingapi.model.reference.BnRTranType;
 import com.projects.smartbankingapi.model.transaction.BnTTran;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
