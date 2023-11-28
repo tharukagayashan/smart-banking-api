@@ -26,7 +26,7 @@ public class BnRLoanPeriod extends AuditModel {
     @Column(name = "LOAN_PERIOD_DESC", length = 100)
     private String description;
 
-    @Column(name = "MONTH", columnDefinition = "INT(5)")
+    @Column(name = "MONTH")
     private Integer month;
 
     @OneToMany(mappedBy = "bnRLoanPeriod", fetch = FetchType.LAZY)
