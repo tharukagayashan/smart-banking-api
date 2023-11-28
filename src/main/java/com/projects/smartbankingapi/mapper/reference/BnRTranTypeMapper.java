@@ -4,6 +4,8 @@ import com.projects.smartbankingapi.dto.reference.BnRTranTypeDto;
 import com.projects.smartbankingapi.model.reference.BnRTranType;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface BnRTranTypeMapper {
     BnRTranType toEntity(BnRTranTypeDto bnRTranTypeDto);
@@ -12,4 +14,6 @@ public interface BnRTranTypeMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     BnRTranType partialUpdate(BnRTranTypeDto bnRTranTypeDto, @MappingTarget BnRTranType bnRTranType);
+
+    List<BnRTranTypeDto> entityListToDtoList(List<BnRTranType> tranTypes);
 }

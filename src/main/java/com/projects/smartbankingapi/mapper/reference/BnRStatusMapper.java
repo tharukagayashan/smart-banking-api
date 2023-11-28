@@ -4,6 +4,8 @@ import com.projects.smartbankingapi.dto.reference.BnRStatusDto;
 import com.projects.smartbankingapi.model.reference.BnRStatus;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface BnRStatusMapper {
     BnRStatus toEntity(BnRStatusDto bnRStatusDto);
@@ -12,4 +14,6 @@ public interface BnRStatusMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     BnRStatus partialUpdate(BnRStatusDto bnRStatusDto, @MappingTarget BnRStatus bnRStatus);
+
+    List<BnRStatusDto> entityListToDtoList(List<BnRStatus> statuses);
 }
