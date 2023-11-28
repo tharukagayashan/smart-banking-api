@@ -4,6 +4,8 @@ import com.projects.smartbankingapi.dto.reference.BnRIntRateDto;
 import com.projects.smartbankingapi.model.reference.BnRIntRate;
 import org.mapstruct.*;
 
+import java.util.List;
+
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring")
 public interface BnRIntRateMapper {
     BnRIntRate toEntity(BnRIntRateDto bnRIntRateDto);
@@ -12,4 +14,6 @@ public interface BnRIntRateMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     BnRIntRate partialUpdate(BnRIntRateDto bnRIntRateDto, @MappingTarget BnRIntRate bnRIntRate);
+
+    List<BnRIntRateDto> entityListToDtoList(List<BnRIntRate> intRates);
 }

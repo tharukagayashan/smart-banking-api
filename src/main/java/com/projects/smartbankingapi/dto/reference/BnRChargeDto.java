@@ -24,6 +24,10 @@ public class BnRChargeDto implements Serializable {
     private Float amount;
     private LocalDate effectiveDate;
     private LocalDate expirationDate;
+
+    private Long feeTypeId;
+    private Long currencyId;
+
     private BnRFeeTypeDto bnRFeeType;
     private BnRCurrencyDto bnRCurrency;
 }

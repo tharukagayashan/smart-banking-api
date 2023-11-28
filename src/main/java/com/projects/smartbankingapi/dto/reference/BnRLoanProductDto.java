@@ -19,6 +19,11 @@ public class BnRLoanProductDto implements Serializable {
     private Date createdOn;
     private Date updatedOn;
     private Long productId;
+
+    private Long loanTypeId;
+    private Long intRateId;
+    private Long periodId;
+
     private BnRLoanTypeDto bnRLoanType;
     private BnRIntRateDto bnRIntRate;
     private BnRLoanPeriodDto bnRLoanPeriod;
