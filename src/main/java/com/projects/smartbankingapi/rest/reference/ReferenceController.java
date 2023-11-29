@@ -1,15 +1,16 @@
 package com.projects.smartbankingapi.rest.reference;
 
+import com.projects.smartbankingapi.dto.other.*;
 import com.projects.smartbankingapi.dto.reference.*;
 import com.projects.smartbankingapi.service.reference.ReferenceService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/reference")
 public class ReferenceController {
@@ -19,6 +20,8 @@ public class ReferenceController {
     public ReferenceController(ReferenceService referenceService) {
         this.referenceService = referenceService;
     }
+
+    /* GET ALL APIs (FDD) */
 
     @GetMapping("/account-type/fdd")
     public ResponseEntity<List<BnRAccountTypeDto>> getAllAccountTypes() {
@@ -83,6 +86,42 @@ public class ReferenceController {
     @GetMapping("/tran-type/fdd")
     public ResponseEntity<List<BnRTranTypeDto>> getAllTranTypes() {
         return referenceService.getAllTranTypes();
+    }
+
+    @GetMapping("/product-type/filter")
+    public ResponseEntity<List<BnRLoanProductDto>> getAllLoanProductsByFilter(
+            @RequestParam(required = false) Long loanTypeId,
+            @RequestParam(required = false) Long intRateId,
+            @RequestParam(required = false) Long periodId
+    ) {
+        return referenceService.getAllLoanProductsByFilter(loanTypeId, intRateId, periodId);
+    }
+
+    /* POST APIs */
+
+    @PostMapping("/account-type")
+    public ResponseEntity<BnRAccountTypeDto> createAccountType(@Valid @RequestBody AccountTypeCreateReqDto accountTypeCreateReqDto) {
+        return referenceService.createAccountType(accountTypeCreateReqDto);
+    }
+
+    @PostMapping("/bank")
+    public ResponseEntity<BnRBankDto> createBank(@Valid @RequestBody BankCreateReqDto bankCreateReqDto) {
+        return referenceService.createBank(bankCreateReqDto);
+    }
+
+    @PostMapping("/branch")
+    public ResponseEntity<BnRBranchDto> createBranch(@Valid @RequestBody BranchCreateReqDto branchCreateReqDto) {
+        return referenceService.createBranch(branchCreateReqDto);
+    }
+
+    @PostMapping("/charge")
+    public ResponseEntity<BnRChargeDto> createCharge(@Valid @RequestBody ChargeCreateReqDto chargeCreateReqDto) {
+        return referenceService.createCharge(chargeCreateReqDto);
+    }
+
+    @PostMapping("/currency")
+    public ResponseEntity<BnRCurrencyDto> createCurrency(@Valid @RequestBody CurrencyCreateReqDto currencyCreateReqDto) {
+        return referenceService.createCurrency(currencyCreateReqDto);
     }
 
 }
