@@ -41,8 +41,10 @@ public class ReferenceServiceImpl implements ReferenceService {
     private final BnRStatusMapper statusMapper;
     private final BnRTranTypeRepository tranTypeRepository;
     private final BnRTranTypeMapper tranTypeMapper;
+    private final BnRRoleRepository roleRepository;
+    private final BnRRoleMapper roleMapper;
 
-    public ReferenceServiceImpl(BnRAccountTypeRepository accountTypeRepository, BnRAccountTypeMapper accountTypeMapper, BnRBankRepository bankRepository, BnRBankMapper bankMapper, BnRBranchRepository branchRepository, BnRBranchMapper branchMapper, BnRChargeRepository chargeRepository, BnRChargeMapper chargeMapper, BnRCurrencyRepository currencyRepository, BnRCurrencyMapper currencyMapper, BnRFeeTypeRepository feeTypeRepository, BnRFeeTypeMapper feeTypeMapper, BnRIntRateRepository intRateRepository, BnRIntRateMapper intRateMapper, BnRLoanPeriodRepository loanPeriodRepository, BnRLoanPeriodMapper loanPeriodMapper, BnRLoanProductRepository loanProductRepository, BnRLoanProductMapper loanProductMapper, BnRLoanTypeRepository loanTypeRepository, BnRLoanTypeMapper loanTypeMapper, BnRStatusRepository statusRepository, BnRStatusMapper statusMapper, BnRTranTypeRepository tranTypeRepository, BnRTranTypeMapper tranTypeMapper) {
+    public ReferenceServiceImpl(BnRAccountTypeRepository accountTypeRepository, BnRAccountTypeMapper accountTypeMapper, BnRBankRepository bankRepository, BnRBankMapper bankMapper, BnRBranchRepository branchRepository, BnRBranchMapper branchMapper, BnRChargeRepository chargeRepository, BnRChargeMapper chargeMapper, BnRCurrencyRepository currencyRepository, BnRCurrencyMapper currencyMapper, BnRFeeTypeRepository feeTypeRepository, BnRFeeTypeMapper feeTypeMapper, BnRIntRateRepository intRateRepository, BnRIntRateMapper intRateMapper, BnRLoanPeriodRepository loanPeriodRepository, BnRLoanPeriodMapper loanPeriodMapper, BnRLoanProductRepository loanProductRepository, BnRLoanProductMapper loanProductMapper, BnRLoanTypeRepository loanTypeRepository, BnRLoanTypeMapper loanTypeMapper, BnRStatusRepository statusRepository, BnRStatusMapper statusMapper, BnRTranTypeRepository tranTypeRepository, BnRTranTypeMapper tranTypeMapper, BnRRoleRepository roleRepository, BnRRoleMapper roleMapper) {
         this.accountTypeRepository = accountTypeRepository;
         this.accountTypeMapper = accountTypeMapper;
         this.bankRepository = bankRepository;
@@ -67,6 +69,8 @@ public class ReferenceServiceImpl implements ReferenceService {
         this.statusMapper = statusMapper;
         this.tranTypeRepository = tranTypeRepository;
         this.tranTypeMapper = tranTypeMapper;
+        this.roleRepository = roleRepository;
+        this.roleMapper = roleMapper;
     }
 
     @Override
@@ -313,6 +317,23 @@ public class ReferenceServiceImpl implements ReferenceService {
     }
 
     @Override
+    public ResponseEntity<List<BnRRoleDto>> getAllRoles() {
+        try {
+
+            List<BnRRole> roles = roleRepository.findAll();
+            if (roles.isEmpty()) {
+                throw new BadRequestAlertException("No role found", "Reference", "getAllRoles");
+            } else {
+                List<BnRRoleDto> roleDtoList = roleMapper.entityListToDtoList(roles);
+                return ResponseEntity.ok(roleDtoList);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching all roles", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getAllRoles");
+        }
+    }
+
+    @Override
     public ResponseEntity<BnRAccountTypeDto> createAccountType(AccountTypeCreateReqDto accountTypeCreateReqDto) {
         try {
             Optional<BnRAccountType> optAccountType = accountTypeRepository.findByCode(accountTypeCreateReqDto.getCode());
@@ -366,7 +387,7 @@ public class ReferenceServiceImpl implements ReferenceService {
     public ResponseEntity<BnRBranchDto> createBranch(BranchCreateReqDto branchCreateReqDto) {
         try {
             Optional<BnRBank> optBank = bankRepository.findById(branchCreateReqDto.getBankId());
-            if (optBank.isPresent()) {
+            if (!optBank.isPresent()) {
                 throw new BadRequestAlertException("Bank not found for given id", "Reference", "createBranch");
             } else {
                 Optional<BnRBranch> optBranch = branchRepository.findByCode(branchCreateReqDto.getCode());
@@ -411,7 +432,6 @@ public class ReferenceServiceImpl implements ReferenceService {
             charge.setExpirationDate(chargeCreateReqDto.getExpirationDate());
             charge.setBnRFeeType(optFeeType.get());
             charge.setBnRCurrency(optCurrency.get());
-
             charge = chargeRepository.save(charge);
             if (charge.getChargeId() == null) {
                 throw new BadRequestAlertException("Error occurred while creating charge", "Reference", "createCharge");
@@ -419,7 +439,6 @@ public class ReferenceServiceImpl implements ReferenceService {
                 BnRChargeDto chargeDto = chargeMapper.toDto(charge);
                 return ResponseEntity.ok(chargeDto);
             }
-
         } catch (Exception e) {
             log.error("Error occurred while creating charge", e);
             throw new BadRequestAlertException(e.getMessage(), "Reference", "createCharge");
@@ -447,6 +466,195 @@ public class ReferenceServiceImpl implements ReferenceService {
         } catch (Exception e) {
             log.error("Error occurred while creating currency", e);
             throw new BadRequestAlertException(e.getMessage(), "Reference", "createCurrency");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRFeeTypeDto> createFeeType(FeeTypeCreateReqDto feeTypeCreateReqDto) {
+        try {
+            BnRFeeType feeType = new BnRFeeType();
+            feeType.setName(feeTypeCreateReqDto.getName());
+            feeType.setDescription(feeTypeCreateReqDto.getDescription());
+            feeType = feeTypeRepository.save(feeType);
+            if (feeType.getFeeTypeId() == null) {
+                throw new BadRequestAlertException("Error occurred while creating fee type", "Reference", "createFeeType");
+            } else {
+                BnRFeeTypeDto feeTypeDto = feeTypeMapper.toDto(feeType);
+                return ResponseEntity.ok(feeTypeDto);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating fee type", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "createFeeType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRIntRateDto> createIntRate(IntRateCreateReqDto intRateCreateReqDto) {
+        try {
+            BnRIntRate intRate = new BnRIntRate();
+            intRate.setName(intRateCreateReqDto.getName());
+            intRate.setDescription(intRateCreateReqDto.getDescription());
+            intRate.setRate(intRateCreateReqDto.getRate());
+            intRate = intRateRepository.save(intRate);
+            if (intRate.getIntRateId() == null) {
+                throw new BadRequestAlertException("Error occurred while creating interest rate", "Reference", "createIntRate");
+            } else {
+                BnRIntRateDto intRateDto = intRateMapper.toDto(intRate);
+                return ResponseEntity.ok(intRateDto);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating interest rate", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "createIntRate");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRLoanPeriodDto> createLoanPeriod(LoanPeriodCreateReqDto loanPeriodCreateReqDto) {
+        try {
+            BnRLoanPeriod loanPeriod = new BnRLoanPeriod();
+            loanPeriod.setName(loanPeriodCreateReqDto.getName());
+            loanPeriod.setDescription(loanPeriodCreateReqDto.getDescription());
+            loanPeriod.setMonth(loanPeriodCreateReqDto.getMonth());
+            loanPeriod = loanPeriodRepository.save(loanPeriod);
+            if (loanPeriod.getPeriodId() == null) {
+                throw new BadRequestAlertException("Error occurred while creating loan period", "Reference", "createLoanPeriod");
+            } else {
+                BnRLoanPeriodDto loanPeriodDto = loanPeriodMapper.toDto(loanPeriod);
+                return ResponseEntity.ok(loanPeriodDto);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating loan period", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "createLoanPeriod");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRLoanProductDto> createLoanProduct(LoanProductCreateReqDto loanProductCreateReqDto) {
+        try {
+            BnRLoanProduct loanProduct = new BnRLoanProduct();
+            Optional<BnRLoanType> optLoanType = loanTypeRepository.findById(loanProductCreateReqDto.getLoanTypeId());
+            Optional<BnRIntRate> optIntRate = intRateRepository.findById(loanProductCreateReqDto.getIntRateId());
+            Optional<BnRLoanPeriod> optLoanPeriod = loanPeriodRepository.findById(loanProductCreateReqDto.getPeriodId());
+            if (!optLoanType.isPresent()) {
+                throw new BadRequestAlertException("Loan type not found for given id", "Reference", "createLoanProduct");
+            } else if (!optIntRate.isPresent()) {
+                throw new BadRequestAlertException("Interest rate not found for given id", "Reference", "createLoanProduct");
+            } else if (!optLoanPeriod.isPresent()) {
+                throw new BadRequestAlertException("Loan period not found for given id", "Reference", "createLoanProduct");
+            } else {
+                log.info("Loan type, interest rate and loan period found");
+            }
+            loanProduct.setBnRLoanType(optLoanType.get());
+            loanProduct.setBnRIntRate(optIntRate.get());
+            loanProduct.setBnRLoanPeriod(optLoanPeriod.get());
+            loanProduct = loanProductRepository.save(loanProduct);
+            if (loanProduct.getProductId() == null) {
+                throw new BadRequestAlertException("Error occurred while creating loan product", "Reference", "createLoanProduct");
+            } else {
+                BnRLoanProductDto loanProductDto = loanProductMapper.toDto(loanProduct);
+                return ResponseEntity.ok(loanProductDto);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating loan product", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "createLoanProduct");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRLoanTypeDto> createLoanType(LoanTypeCreateReqDto loanTypeCreateReqDto) {
+        try {
+            Optional<BnRLoanType> optLoanType = loanTypeRepository.findByCode(loanTypeCreateReqDto.getCode());
+            if (optLoanType.isPresent()) {
+                throw new BadRequestAlertException("Loan type already exists for given code", "Reference", "createLoanType");
+            } else {
+                BnRLoanType loanType = new BnRLoanType();
+                loanType.setName(loanTypeCreateReqDto.getName());
+                loanType.setCode(loanTypeCreateReqDto.getCode());
+                loanType.setDescription(loanTypeCreateReqDto.getDescription());
+                loanType = loanTypeRepository.save(loanType);
+                if (loanType.getLoanTypeId() == null) {
+                    throw new BadRequestAlertException("Error occurred while creating loan type", "Reference", "createLoanType");
+                } else {
+                    BnRLoanTypeDto loanTypeDto = loanTypeMapper.toDto(loanType);
+                    return ResponseEntity.ok(loanTypeDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating loan type", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "createLoanType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRStatusDto> createStatus(StatusCreateReqDto statusCreateReqDto) {
+        try {
+            Optional<BnRStatus> optStatus = statusRepository.findByCode(statusCreateReqDto.getCode());
+            if (optStatus.isPresent()) {
+                throw new BadRequestAlertException("Status already exists for given code", "Reference", "createStatus");
+            } else {
+                BnRStatus status = new BnRStatus();
+                status.setName(statusCreateReqDto.getName());
+                status.setCode(statusCreateReqDto.getCode());
+                status.setType(statusCreateReqDto.getType());
+                status = statusRepository.save(status);
+                if (status.getStatusId() == null) {
+                    throw new BadRequestAlertException("Error occurred while creating status", "Reference", "createStatus");
+                } else {
+                    BnRStatusDto statusDto = statusMapper.toDto(status);
+                    return ResponseEntity.ok(statusDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating status", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "createStatus");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRTranTypeDto> createTranType(TranTypeCreateReqDto tranTypeCreateReqDto) {
+        try {
+            Optional<BnRTranType> optTranType = tranTypeRepository.findByCode(tranTypeCreateReqDto.getCode());
+            if (optTranType.isPresent()) {
+                throw new BadRequestAlertException("Transaction type already exists for given code", "Reference", "createTranType");
+            } else {
+                BnRTranType tranType = new BnRTranType();
+                tranType.setName(tranTypeCreateReqDto.getName());
+                tranType.setCode(tranTypeCreateReqDto.getCode());
+                tranType = tranTypeRepository.save(tranType);
+                if (tranType.getTranTypeId() == null) {
+                    throw new BadRequestAlertException("Error occurred while creating transaction type", "Reference", "createTranType");
+                } else {
+                    BnRTranTypeDto tranTypeDto = tranTypeMapper.toDto(tranType);
+                    return ResponseEntity.ok(tranTypeDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating transaction type", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "createTranType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRRoleDto> createRole(RoleCreateReqDto roleCreateReqDto) {
+        try {
+            Optional<BnRRole> optRole = roleRepository.findByRoleName(roleCreateReqDto.getRoleName());
+            if (optRole.isPresent()) {
+                throw new BadRequestAlertException("Role already exists for given role name", "Reference", "createRole");
+            } else {
+                BnRRole role = new BnRRole();
+                role.setRoleName(roleCreateReqDto.getRoleName());
+                role.setDescription(roleCreateReqDto.getDescription());
+                role = roleRepository.save(role);
+                if (role.getRoleId() == null) {
+                    throw new BadRequestAlertException("Error occurred while creating role", "Reference", "createRole");
+                } else {
+                    BnRRoleDto roleDto = roleMapper.toDto(role);
+                    return ResponseEntity.ok(roleDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating role", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "createRole");
         }
     }
 }
