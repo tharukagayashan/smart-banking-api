@@ -10,12 +10,12 @@ import java.util.List;
 public interface BnRBranchMapper {
 
     @Mappings({
-            @Mapping(target = "bnRBank.bankId",source = "bankId")
+            @Mapping(target = "bnRBank.bankId", source = "bankId")
     })
     BnRBranch toEntity(BnRBranchDto bnRBranchDto);
 
     @Mappings({
-            @Mapping(target = "bankId",source = "bnRBank.bankId")
+            @Mapping(target = "bankId", source = "bnRBank.bankId")
 
     })
     BnRBranchDto toDto(BnRBranch bnRBranch);
@@ -24,7 +24,7 @@ public interface BnRBranchMapper {
     BnRBranch partialUpdate(BnRBranchDto bnRBranchDto, @MappingTarget BnRBranch bnRBranch);
 
     @Mappings({
-            @Mapping(target = "bankId",source = "bnRBank.bankId")
+            @Mapping(target = "bankId", source = "bnRBank.bankId")
 
     })
     List<BnRBranchDto> entityListToDtoList(List<BnRBranch> branches);

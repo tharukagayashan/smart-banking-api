@@ -41,8 +41,10 @@ public class ReferenceServiceImpl implements ReferenceService {
     private final BnRStatusMapper statusMapper;
     private final BnRTranTypeRepository tranTypeRepository;
     private final BnRTranTypeMapper tranTypeMapper;
+    private final BnRRoleRepository roleRepository;
+    private final BnRRoleMapper roleMapper;
 
-    public ReferenceServiceImpl(BnRAccountTypeRepository accountTypeRepository, BnRAccountTypeMapper accountTypeMapper, BnRBankRepository bankRepository, BnRBankMapper bankMapper, BnRBranchRepository branchRepository, BnRBranchMapper branchMapper, BnRChargeRepository chargeRepository, BnRChargeMapper chargeMapper, BnRCurrencyRepository currencyRepository, BnRCurrencyMapper currencyMapper, BnRFeeTypeRepository feeTypeRepository, BnRFeeTypeMapper feeTypeMapper, BnRIntRateRepository intRateRepository, BnRIntRateMapper intRateMapper, BnRLoanPeriodRepository loanPeriodRepository, BnRLoanPeriodMapper loanPeriodMapper, BnRLoanProductRepository loanProductRepository, BnRLoanProductMapper loanProductMapper, BnRLoanTypeRepository loanTypeRepository, BnRLoanTypeMapper loanTypeMapper, BnRStatusRepository statusRepository, BnRStatusMapper statusMapper, BnRTranTypeRepository tranTypeRepository, BnRTranTypeMapper tranTypeMapper) {
+    public ReferenceServiceImpl(BnRAccountTypeRepository accountTypeRepository, BnRAccountTypeMapper accountTypeMapper, BnRBankRepository bankRepository, BnRBankMapper bankMapper, BnRBranchRepository branchRepository, BnRBranchMapper branchMapper, BnRChargeRepository chargeRepository, BnRChargeMapper chargeMapper, BnRCurrencyRepository currencyRepository, BnRCurrencyMapper currencyMapper, BnRFeeTypeRepository feeTypeRepository, BnRFeeTypeMapper feeTypeMapper, BnRIntRateRepository intRateRepository, BnRIntRateMapper intRateMapper, BnRLoanPeriodRepository loanPeriodRepository, BnRLoanPeriodMapper loanPeriodMapper, BnRLoanProductRepository loanProductRepository, BnRLoanProductMapper loanProductMapper, BnRLoanTypeRepository loanTypeRepository, BnRLoanTypeMapper loanTypeMapper, BnRStatusRepository statusRepository, BnRStatusMapper statusMapper, BnRTranTypeRepository tranTypeRepository, BnRTranTypeMapper tranTypeMapper, BnRRoleRepository roleRepository, BnRRoleMapper roleMapper) {
         this.accountTypeRepository = accountTypeRepository;
         this.accountTypeMapper = accountTypeMapper;
         this.bankRepository = bankRepository;
@@ -67,6 +69,8 @@ public class ReferenceServiceImpl implements ReferenceService {
         this.statusMapper = statusMapper;
         this.tranTypeRepository = tranTypeRepository;
         this.tranTypeMapper = tranTypeMapper;
+        this.roleRepository = roleRepository;
+        this.roleMapper = roleMapper;
     }
 
     @Override
@@ -309,6 +313,23 @@ public class ReferenceServiceImpl implements ReferenceService {
             }
         } catch (Exception e) {
             throw new BadRequestAlertException(e.getMessage(), "Reference", "getAllLoanProductsByFilter");
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<BnRRoleDto>> getAllRoles() {
+        try {
+
+            List<BnRRole> roles = roleRepository.findAll();
+            if (roles.isEmpty()) {
+                throw new BadRequestAlertException("No role found", "Reference", "getAllRoles");
+            } else {
+                List<BnRRoleDto> roleDtoList = roleMapper.entityListToDtoList(roles);
+                return ResponseEntity.ok(roleDtoList);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching all roles", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getAllRoles");
         }
     }
 
@@ -610,6 +631,30 @@ public class ReferenceServiceImpl implements ReferenceService {
         } catch (Exception e) {
             log.error("Error occurred while creating transaction type", e);
             throw new BadRequestAlertException(e.getMessage(), "Reference", "createTranType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRRoleDto> createRole(RoleCreateReqDto roleCreateReqDto) {
+        try {
+            Optional<BnRRole> optRole = roleRepository.findByRoleName(roleCreateReqDto.getRoleName());
+            if (optRole.isPresent()) {
+                throw new BadRequestAlertException("Role already exists for given role name", "Reference", "createRole");
+            } else {
+                BnRRole role = new BnRRole();
+                role.setRoleName(roleCreateReqDto.getRoleName());
+                role.setDescription(roleCreateReqDto.getDescription());
+                role = roleRepository.save(role);
+                if (role.getRoleId() == null) {
+                    throw new BadRequestAlertException("Error occurred while creating role", "Reference", "createRole");
+                } else {
+                    BnRRoleDto roleDto = roleMapper.toDto(role);
+                    return ResponseEntity.ok(roleDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating role", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "createRole");
         }
     }
 }

@@ -97,6 +97,11 @@ public class ReferenceController {
         return referenceService.getAllLoanProductsByFilter(loanTypeId, intRateId, periodId);
     }
 
+    @GetMapping("/role/fdd")
+    public ResponseEntity<List<BnRRoleDto>> getAllRoles() {
+        return referenceService.getAllRoles();
+    }
+
     /* POST APIs */
 
     @PostMapping("/account-type")
@@ -157,6 +162,11 @@ public class ReferenceController {
     @PostMapping("/tran-type")
     public ResponseEntity<BnRTranTypeDto> createTranType(@Valid @RequestBody TranTypeCreateReqDto tranTypeCreateReqDto) {
         return referenceService.createTranType(tranTypeCreateReqDto);
+    }
+
+    @PostMapping("/role")
+    public ResponseEntity<BnRRoleDto> createRole(@Valid @RequestBody RoleCreateReqDto roleCreateReqDto) {
+        return referenceService.createRole(roleCreateReqDto);
     }
 
 }

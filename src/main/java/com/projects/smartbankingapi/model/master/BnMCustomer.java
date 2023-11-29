@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @Data
 @Table(name = "BN_M_CUSTOMER", indexes = {
         @Index(name = "BN_M_CUSTOMER_CUSTOMER_ID_IDX", columnList = "CUSTOMER_ID"),
-        @Index(name = "BN_M_CUSTOMER_DOB_UNIQUE_IDX", columnList = "NIC", unique = true)
+        @Index(name = "BN_M_CUSTOMER_NIC_UNIQUE_IDX", columnList = "NIC", unique = true)
 })
 public class BnMCustomer extends AuditModel {
 
