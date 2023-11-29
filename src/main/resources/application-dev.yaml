@@ -9,3 +9,8 @@ spring:
     hibernate:
       ddl-auto: update
       dialect: org.hibernate.dialect.PostgresSQL8Dialect
+
+
+JWT_SECRET: "OJDW93R02C289M39920XM"
+JWT_EXPIRATION_TIME: 500000
+JWT_ISSUER: "smart-bank"

@@ -97,6 +97,11 @@ public class ReferenceController {
         return referenceService.getAllLoanProductsByFilter(loanTypeId, intRateId, periodId);
     }
 
+    @GetMapping("/role/fdd")
+    public ResponseEntity<List<BnRRoleDto>> getAllRoles() {
+        return referenceService.getAllRoles();
+    }
+
     /* POST APIs */
 
     @PostMapping("/account-type")
@@ -122,6 +127,46 @@ public class ReferenceController {
     @PostMapping("/currency")
     public ResponseEntity<BnRCurrencyDto> createCurrency(@Valid @RequestBody CurrencyCreateReqDto currencyCreateReqDto) {
         return referenceService.createCurrency(currencyCreateReqDto);
+    }
+
+    @PostMapping("/fee-type")
+    public ResponseEntity<BnRFeeTypeDto> createFeeType(@Valid @RequestBody FeeTypeCreateReqDto feeTypeCreateReqDto) {
+        return referenceService.createFeeType(feeTypeCreateReqDto);
+    }
+
+    @PostMapping("/int-rate")
+    public ResponseEntity<BnRIntRateDto> createIntRate(@Valid @RequestBody IntRateCreateReqDto intRateCreateReqDto) {
+        return referenceService.createIntRate(intRateCreateReqDto);
+    }
+
+    @PostMapping("/loan-period")
+    public ResponseEntity<BnRLoanPeriodDto> createLoanPeriod(@Valid @RequestBody LoanPeriodCreateReqDto loanPeriodCreateReqDto) {
+        return referenceService.createLoanPeriod(loanPeriodCreateReqDto);
+    }
+
+    @PostMapping("/loan-product")
+    public ResponseEntity<BnRLoanProductDto> createLoanProduct(@Valid @RequestBody LoanProductCreateReqDto loanProductCreateReqDto) {
+        return referenceService.createLoanProduct(loanProductCreateReqDto);
+    }
+
+    @PostMapping("/loan-type")
+    public ResponseEntity<BnRLoanTypeDto> createLoanType(@Valid @RequestBody LoanTypeCreateReqDto loanTypeCreateReqDto) {
+        return referenceService.createLoanType(loanTypeCreateReqDto);
+    }
+
+    @PostMapping("/status")
+    public ResponseEntity<BnRStatusDto> createStatus(@Valid @RequestBody StatusCreateReqDto statusCreateReqDto) {
+        return referenceService.createStatus(statusCreateReqDto);
+    }
+
+    @PostMapping("/tran-type")
+    public ResponseEntity<BnRTranTypeDto> createTranType(@Valid @RequestBody TranTypeCreateReqDto tranTypeCreateReqDto) {
+        return referenceService.createTranType(tranTypeCreateReqDto);
+    }
+
+    @PostMapping("/role")
+    public ResponseEntity<BnRRoleDto> createRole(@Valid @RequestBody RoleCreateReqDto roleCreateReqDto) {
+        return referenceService.createRole(roleCreateReqDto);
     }
 
 }

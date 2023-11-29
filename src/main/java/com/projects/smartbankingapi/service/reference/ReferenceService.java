@@ -36,6 +36,8 @@ public interface ReferenceService {
 
     ResponseEntity<List<BnRLoanProductDto>> getAllLoanProductsByFilter(Long loanTypeId, Long intRateId, Long periodId);
 
+    ResponseEntity<List<BnRRoleDto>> getAllRoles();
+
     ResponseEntity<BnRAccountTypeDto> createAccountType(AccountTypeCreateReqDto accountTypeCreateReqDto);
 
     ResponseEntity<BnRBankDto> createBank(BankCreateReqDto bankCreateReqDto);
@@ -45,4 +47,20 @@ public interface ReferenceService {
     ResponseEntity<BnRChargeDto> createCharge(ChargeCreateReqDto chargeCreateReqDto);
 
     ResponseEntity<BnRCurrencyDto> createCurrency(CurrencyCreateReqDto currencyCreateReqDto);
+
+    ResponseEntity<BnRFeeTypeDto> createFeeType(FeeTypeCreateReqDto feeTypeCreateReqDto);
+
+    ResponseEntity<BnRIntRateDto> createIntRate(IntRateCreateReqDto intRateCreateReqDto);
+
+    ResponseEntity<BnRLoanPeriodDto> createLoanPeriod(LoanPeriodCreateReqDto loanPeriodCreateReqDto);
+
+    ResponseEntity<BnRLoanProductDto> createLoanProduct(LoanProductCreateReqDto loanProductCreateReqDto);
+
+    ResponseEntity<BnRLoanTypeDto> createLoanType(LoanTypeCreateReqDto loanTypeCreateReqDto);
+
+    ResponseEntity<BnRStatusDto> createStatus(StatusCreateReqDto statusCreateReqDto);
+
+    ResponseEntity<BnRTranTypeDto> createTranType(TranTypeCreateReqDto tranTypeCreateReqDto);
+
+    ResponseEntity<BnRRoleDto> createRole(RoleCreateReqDto roleCreateReqDto);
 }
