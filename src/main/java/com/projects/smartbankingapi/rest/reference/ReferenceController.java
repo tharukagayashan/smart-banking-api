@@ -124,4 +124,39 @@ public class ReferenceController {
         return referenceService.createCurrency(currencyCreateReqDto);
     }
 
+    @PostMapping("/fee-type")
+    public ResponseEntity<BnRFeeTypeDto> createFeeType(@Valid @RequestBody FeeTypeCreateReqDto feeTypeCreateReqDto) {
+        return referenceService.createFeeType(feeTypeCreateReqDto);
+    }
+
+    @PostMapping("/int-rate")
+    public ResponseEntity<BnRIntRateDto> createIntRate(@Valid @RequestBody IntRateCreateReqDto intRateCreateReqDto) {
+        return referenceService.createIntRate(intRateCreateReqDto);
+    }
+
+    @PostMapping("/loan-period")
+    public ResponseEntity<BnRLoanPeriodDto> createLoanPeriod(@Valid @RequestBody LoanPeriodCreateReqDto loanPeriodCreateReqDto) {
+        return referenceService.createLoanPeriod(loanPeriodCreateReqDto);
+    }
+
+    @PostMapping("/loan-product")
+    public ResponseEntity<BnRLoanProductDto> createLoanProduct(@Valid @RequestBody LoanProductCreateReqDto loanProductCreateReqDto) {
+        return referenceService.createLoanProduct(loanProductCreateReqDto);
+    }
+
+    @PostMapping("/loan-type")
+    public ResponseEntity<BnRLoanTypeDto> createLoanType(@Valid @RequestBody LoanTypeCreateReqDto loanTypeCreateReqDto) {
+        return referenceService.createLoanType(loanTypeCreateReqDto);
+    }
+
+    @PostMapping("/status")
+    public ResponseEntity<BnRStatusDto> createStatus(@Valid @RequestBody StatusCreateReqDto statusCreateReqDto) {
+        return referenceService.createStatus(statusCreateReqDto);
+    }
+
+    @PostMapping("/tran-type")
+    public ResponseEntity<BnRTranTypeDto> createTranType(@Valid @RequestBody TranTypeCreateReqDto tranTypeCreateReqDto) {
+        return referenceService.createTranType(tranTypeCreateReqDto);
+    }
+
 }
