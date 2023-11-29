@@ -22,5 +22,8 @@ public class BnRBranchDto implements Serializable {
     private String name;
     private String code;
     private Boolean isActive;
+
+    private Long bankId;
+
     private BnRBankDto bnRBank;
 }

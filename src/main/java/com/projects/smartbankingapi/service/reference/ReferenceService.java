@@ -1,5 +1,6 @@
 package com.projects.smartbankingapi.service.reference;
 
+import com.projects.smartbankingapi.dto.other.*;
 import com.projects.smartbankingapi.dto.reference.*;
 import com.projects.smartbankingapi.model.reference.BnRAccountType;
 import org.springframework.http.ResponseEntity;
@@ -32,4 +33,16 @@ public interface ReferenceService {
     ResponseEntity<List<BnRStatusDto>> getAllStatuses();
 
     ResponseEntity<List<BnRTranTypeDto>> getAllTranTypes();
+
+    ResponseEntity<List<BnRLoanProductDto>> getAllLoanProductsByFilter(Long loanTypeId, Long intRateId, Long periodId);
+
+    ResponseEntity<BnRAccountTypeDto> createAccountType(AccountTypeCreateReqDto accountTypeCreateReqDto);
+
+    ResponseEntity<BnRBankDto> createBank(BankCreateReqDto bankCreateReqDto);
+
+    ResponseEntity<BnRBranchDto> createBranch(BranchCreateReqDto branchCreateReqDto);
+
+    ResponseEntity<BnRChargeDto> createCharge(ChargeCreateReqDto chargeCreateReqDto);
+
+    ResponseEntity<BnRCurrencyDto> createCurrency(CurrencyCreateReqDto currencyCreateReqDto);
 }
