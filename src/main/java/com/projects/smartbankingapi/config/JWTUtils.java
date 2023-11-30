@@ -1,12 +1,12 @@
 package com.projects.smartbankingapi.config;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.projects.smartbankingapi.dto.auth.TokenDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -28,7 +28,16 @@ public class JWTUtils {
                     .withIssuedAt(new Date())
                     .withExpiresAt(expiration)
                     .withSubject(tokenDto.getUsername())
-                    .withClaim("details", tokenDto.toString())
+                    .withClaim("bank", tokenDto.getBank())
+                    .withClaim("branch", tokenDto.getBranch())
+                    .withClaim("role", tokenDto.getRole())
+                    .withClaim("email", tokenDto.getEmail())
+                    .withClaim("bankCode", tokenDto.getBankCode())
+                    .withClaim("branchCode", tokenDto.getBranchCode())
+                    .withClaim("firstName", tokenDto.getFirstName())
+                    .withClaim("lastName", tokenDto.getLastName())
+                    .withClaim("roleId", tokenDto.getRoleId())
+                    .withClaim("username", tokenDto.getUsername())
                     .sign(algorithm);
 
             return token;
@@ -84,4 +93,24 @@ public class JWTUtils {
         }
     }
 
+    public static void TokenVerification(String auth) {
+        try {
+            String[] parts = auth.split(" ");
+            String token;
+            if (parts.length < 2) {
+                token = parts[0];
+            } else {
+                token = parts[1];
+            }
+            Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET);
+            JWTVerifier verifier = JWT.require(algorithm).withIssuer(JWT_ISSUER).build();
+            verifier.verify(token);
+        } catch (Exception e) {
+            if (e.getMessage() == null) {
+                throw new BadRequestAlertException("Unauthorized", "JWTUtils", "generateJWTToken");
+            } else {
+                throw new BadRequestAlertException(e.getMessage(), "JWTUtils", "generateJWTToken");
+            }
+        }
+    }
 }

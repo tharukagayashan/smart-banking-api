@@ -112,11 +112,12 @@ public class AuthServiceImpl implements AuthService {
                             tokenDto.setBranch(staff.getBnRBranch().getName());
                             tokenDto.setBankCode(staff.getBnRBranch().getBnRBank().getCode());
                             tokenDto.setBranchCode(staff.getBnRBranch().getCode());
+                            tokenDto.setRoleId(staff.getBnRRole().getRoleId());
 
-                            String generetedToken = JWTUtils.generateJWTToken(tokenDto);
+                            String generatedToken = JWTUtils.generateJWTToken(tokenDto);
 
                             LoginResponseDto loginResponseDto = new LoginResponseDto();
-                            loginResponseDto.setToken(generetedToken);
+                            loginResponseDto.setToken(generatedToken);
                             loginResponseDto.setDetails(tokenDto);
 
                             return ResponseEntity.ok(loginResponseDto);
