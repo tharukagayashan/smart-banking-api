@@ -18,9 +18,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Configuration
@@ -187,6 +186,7 @@ public class CustomMethods {
             tran.setFromAccountNo(tranCreateReqDto.getFromAccountNo());
             tran.setToAccountNo(tranCreateReqDto.getToAccountNo());
             tran.setBnRStatus(optStatus.get());
+            tran.setTranReference(UUID.randomUUID().toString());
             tran = tranRepo.save(tran);
             if (tran != null) {
                 log.info("Pending transaction record created successfully");

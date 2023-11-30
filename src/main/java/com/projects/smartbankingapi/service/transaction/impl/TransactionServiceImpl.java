@@ -1,13 +1,16 @@
 package com.projects.smartbankingapi.service.transaction.impl;
 
+import com.projects.smartbankingapi.dao.master.BnMAccountRepository;
 import com.projects.smartbankingapi.dao.transaction.BnTTranRepository;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.miscellaneous.PaginationDto;
 import com.projects.smartbankingapi.dto.other.BankDepositTranCreateReqDto;
 import com.projects.smartbankingapi.dto.other.DebitTranCreateReqDto;
+import com.projects.smartbankingapi.dto.other.TransactionReceiptDto;
 import com.projects.smartbankingapi.dto.transaction.BnTTranDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.mapper.transaction.BnTTranMapper;
+import com.projects.smartbankingapi.model.master.BnMAccount;
 import com.projects.smartbankingapi.model.transaction.BnTTran;
 import com.projects.smartbankingapi.other.CustomMethods;
 import com.projects.smartbankingapi.service.transaction.TransactionService;
@@ -29,11 +32,13 @@ public class TransactionServiceImpl implements TransactionService {
     private final CustomMethods customMethods;
     private final BnTTranRepository tranRepo;
     private final BnTTranMapper tranMapper;
+    private final BnMAccountRepository accountRepository;
 
-    public TransactionServiceImpl(CustomMethods customMethods, BnTTranRepository tranRepo, BnTTranMapper tranMapper) {
+    public TransactionServiceImpl(CustomMethods customMethods, BnTTranRepository tranRepo, BnTTranMapper tranMapper, BnMAccountRepository accountRepository) {
         this.customMethods = customMethods;
         this.tranRepo = tranRepo;
         this.tranMapper = tranMapper;
+        this.accountRepository = accountRepository;
     }
 
     @Override
@@ -117,6 +122,58 @@ public class TransactionServiceImpl implements TransactionService {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             log.error("Error occurred while getting transaction: ", e);
+            throw new BadRequestAlertException(e.getMessage(), "Transaction", "ERROR");
+        }
+    }
+
+    @Override
+    public ResponseEntity<TransactionReceiptDto> getTranStatement(Long tranId) {
+        try {
+            if (tranId == null) {
+                throw new BadRequestAlertException("tranId is required", "Transacton", "ERROR");
+            } else {
+                Optional<BnTTran> optTran = tranRepo.findById(tranId);
+                if (!optTran.isPresent()) {
+                    log.error("Transaction not found");
+                    throw new BadRequestAlertException("Transaction not found", "Transaction", "ERROR");
+                } else {
+
+                    BnMAccount fromAccount;
+                    BnMAccount toAccount;
+                    BnTTran tran = optTran.get();
+                    Optional<BnMAccount> optFromAccount = accountRepository.findByAccountNo(tran.getFromAccountNo());
+                    Optional<BnMAccount> optToAccount = accountRepository.findByAccountNo(tran.getToAccountNo());
+                    if (!optFromAccount.isPresent()) {
+                        throw new BadRequestAlertException("From Account not found", "Transaction", "ERROR");
+                    } else if (!optToAccount.isPresent()) {
+                        throw new BadRequestAlertException("To Account not found", "Transaction", "ERROR");
+                    } else {
+                        log.info("From and To Account found");
+                        fromAccount = optFromAccount.get();
+                        toAccount = optToAccount.get();
+                    }
+
+                    TransactionReceiptDto response = new TransactionReceiptDto();
+                    response.setTransactionType(tran.getBnRTranType().getName());
+                    response.setTransactionDate(tran.getTranDate());
+                    response.setTransactionTime(tran.getTranTime());
+                    response.setTransactionId(tran.getTranId());
+                    response.setFromAccountNo(tran.getFromAccountNo());
+                    response.setToAccountNo(tran.getToAccountNo());
+                    response.setFromAccountName(fromAccount.getBnMCustomer().getFirstName() + " " + fromAccount.getBnMCustomer().getLastName());
+                    response.setToAccountName(toAccount.getBnMCustomer().getFirstName() + " " + toAccount.getBnMCustomer().getLastName());
+                    response.setFromAccountBalance(fromAccount.getAvailableBalance());
+                    response.setTranAmount(tran.getAmount());
+                    response.setNarration(tran.getTranReference());
+                    response.setBranchName(tran.getBnRBranch().getName());
+                    response.setTranStatus(tran.getBnRStatus().getName());
+                    response.setTranCode(tran.getBnRTranType().getCode());
+                    response.setTranReference(tran.getTranReference());
+                    return ResponseEntity.ok(response);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while getting transaction statement: ", e);
             throw new BadRequestAlertException(e.getMessage(), "Transaction", "ERROR");
         }
     }

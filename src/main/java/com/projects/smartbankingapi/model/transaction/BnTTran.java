@@ -1,6 +1,7 @@
 package com.projects.smartbankingapi.model.transaction;
 
 import com.projects.smartbankingapi.audit.AuditModel;
+import com.projects.smartbankingapi.model.reference.BnRBranch;
 import com.projects.smartbankingapi.model.reference.BnRStatus;
 import com.projects.smartbankingapi.model.reference.BnRTranType;
 import lombok.AllArgsConstructor;
@@ -49,8 +50,15 @@ public class BnTTran extends AuditModel {
     @Column(name = "TO_ACCOUNT_NO", nullable = false)
     private String toAccountNo;
 
+    @Column(name = "TRAN_REFERENCE", length = 200)
+    private String tranReference;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "STATUS_ID", nullable = false, referencedColumnName = "STATUS_ID")
     private BnRStatus bnRStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BRANCH_ID", nullable = false, referencedColumnName = "BRANCH_ID")
+    private BnRBranch bnRBranch;
 
 }
