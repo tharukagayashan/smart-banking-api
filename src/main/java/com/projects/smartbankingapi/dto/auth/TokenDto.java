@@ -17,4 +17,5 @@ public class TokenDto {
     private String branch;
     private String bankCode;
     private String branchCode;
+    private Long roleId;
 }

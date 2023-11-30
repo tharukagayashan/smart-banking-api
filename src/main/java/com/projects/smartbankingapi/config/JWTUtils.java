@@ -28,7 +28,16 @@ public class JWTUtils {
                     .withIssuedAt(new Date())
                     .withExpiresAt(expiration)
                     .withSubject(tokenDto.getUsername())
-                    .withClaim("details", tokenDto.toString())
+                    .withClaim("bank", tokenDto.getBank())
+                    .withClaim("branch", tokenDto.getBranch())
+                    .withClaim("role", tokenDto.getRole())
+                    .withClaim("email", tokenDto.getEmail())
+                    .withClaim("bankCode", tokenDto.getBankCode())
+                    .withClaim("branchCode", tokenDto.getBranchCode())
+                    .withClaim("firstName", tokenDto.getFirstName())
+                    .withClaim("lastName", tokenDto.getLastName())
+                    .withClaim("roleId", tokenDto.getRoleId())
+                    .withClaim("username", tokenDto.getUsername())
                     .sign(algorithm);
 
             return token;
