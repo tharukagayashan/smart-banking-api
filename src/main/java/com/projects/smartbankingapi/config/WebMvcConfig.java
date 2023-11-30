@@ -7,15 +7,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final JETInterceptor JETInterceptor;
+    private final JWTInterceptor jwtInterceptor;
 
-    public WebMvcConfig(JETInterceptor JETInterceptor) {
-        this.JETInterceptor = JETInterceptor;
+    public WebMvcConfig(JWTInterceptor jwtInterceptor) {
+        this.jwtInterceptor = jwtInterceptor;
     }
+
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(JETInterceptor)
+        registry.addInterceptor(jwtInterceptor)
                 .excludePathPatterns(
                         "/auth/**",
                         "/swagger-ui/**",
