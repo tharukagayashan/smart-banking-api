@@ -11,12 +11,16 @@ import java.util.List;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE, componentModel = "spring", uses = {BnRTranTypeMapper.class, BnMAccountMapper.class})
 public interface BnTTranMapper {
     @Mappings({
-            @Mapping(target = "bnRTranType.tranTypeId", source = "tranTypeId")
+            @Mapping(target = "bnRTranType.tranTypeId", source = "tranTypeId"),
+            @Mapping(target = "bnRStatus.statusId", source = "statusId"),
+            @Mapping(target = "bnRBranch.branchId", source = "branchId")
     })
     BnTTran toEntity(BnTTranDto bnTTranDto);
 
     @Mappings({
-            @Mapping(target = "tranTypeId", source = "bnRTranType.tranTypeId")
+            @Mapping(target = "tranTypeId", source = "bnRTranType.tranTypeId"),
+            @Mapping(target = "statusId", source = "bnRStatus.statusId"),
+            @Mapping(target = "branchId", source = "bnRBranch.branchId")
     })
     BnTTranDto toDto(BnTTran bnTTran);
 
@@ -24,7 +28,9 @@ public interface BnTTranMapper {
     BnTTran partialUpdate(BnTTranDto bnTTranDto, @MappingTarget BnTTran bnTTran);
 
     @Mappings({
-            @Mapping(target = "tranTypeId", source = "bnRTranType.tranTypeId")
+            @Mapping(target = "tranTypeId", source = "bnRTranType.tranTypeId"),
+            @Mapping(target = "statusId", source = "bnRStatus.statusId"),
+            @Mapping(target = "branchId", source = "bnRBranch.branchId")
     })
     List<BnTTranDto> entityListToDtoList(List<BnTTran> content);
 }
