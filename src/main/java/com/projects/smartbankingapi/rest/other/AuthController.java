@@ -31,7 +31,7 @@ public class AuthController {
     }
 
     @GetMapping("/login-user-details")
-    public ResponseEntity<BnMStaffDto> getLoginUserDetails(@RequestHeader("Authorization") String token ) {
+    public ResponseEntity<BnMStaffDto> getLoginUserDetails(@RequestHeader("Authorization") String token) {
         ResponseEntity<BnMStaffDto> response = authService.getLoginUserDetails(token);
         return response;
     }
