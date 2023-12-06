@@ -38,7 +38,7 @@ public class CustomMethods {
     }
 
     public String validateNIC(String nic) {
-        String msg = "";
+        String msg;
         if (nic.length() == 10) {
             if (nic.charAt(9) == 'V' || nic.charAt(9) == 'v') {
                 msg = "Valid NIC";
@@ -54,10 +54,10 @@ public class CustomMethods {
     }
 
     public String generateAccountNumber(String branchCode, String accountTypeCode, Long accountId) {
-        String accountNumber = "";
-        Integer year = LocalDate.now().getYear();
-        Integer month = LocalDate.now().getMonthValue();
-        String accountNumberPrefix = branchCode + accountTypeCode + year.toString().substring(2) + month;
+        String accountNumber;
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+        String accountNumberPrefix = branchCode + accountTypeCode + Integer.toString(year).substring(2) + month;
         String accountNumberSuffix = String.format("%04d", accountId);
         accountNumber = accountNumberPrefix + accountNumberSuffix;
         return accountNumber;
@@ -69,14 +69,12 @@ public class CustomMethods {
             Optional<BnMAccount> optToAccount = accountRepo.findByAccountNo(debitTranCreateReqDto.getToAccountNo());
 
             BnMAccount fromAccount;
-            BnMAccount toAccount;
             if (!optFromAccount.isPresent()) {
                 throw new BadRequestAlertException("From account not found", "Transaction", "from_account_not_found");
             } else if (!optToAccount.isPresent()) {
                 throw new BadRequestAlertException("To account not found", "Transaction", "to_account_not_found");
             } else {
                 fromAccount = optFromAccount.get();
-                toAccount = optToAccount.get();
 
                 if (fromAccount.getAvailableBalance() < debitTranCreateReqDto.getAmount()) {
                     throw new BadRequestAlertException("Insufficient balance", "Transaction", "insufficient_balance");
@@ -99,7 +97,6 @@ public class CustomMethods {
                     ));
                     log.info("Debit transaction created successfully");
 
-                    /** Auto approve transaction */
                     savedTran = approveDebitFundTransaction(savedTran.getTranId());
                     log.info("Debit transaction auto approved successfully");
 
@@ -240,17 +237,15 @@ public class CustomMethods {
     }
 
     public Float calculateInterest(Float amount, Float rate, Integer month, Long loanTypeId) {
-        float interest = 0;
-        float totalAmount = 0;
-        float i = 0;
-        float t = 0;
-        float emi = 0;
+        float interest;
+        float i;
+        float t;
+        float emi;
         if (loanTypeId == HardCodeConstant.LOAN_TYPE_FLAT_ID.longValue()) {
             i = rate / 100;
             t = month;
             emi = (amount * i * t) / 12;
 
-            totalAmount = emi * t;
             interest = emi * t - amount;
 
             return interest;
@@ -259,7 +254,6 @@ public class CustomMethods {
             t = month;
             emi = (amount * i * (float) Math.pow(1 + i, t)) / ((float) Math.pow(1 + i, t) - 1);
 
-            totalAmount = emi * t;
             interest = emi * t - amount;
 
             return interest;
