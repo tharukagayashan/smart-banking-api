@@ -11,6 +11,7 @@ import com.projects.smartbankingapi.dto.master.BnMAccountDto;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.miscellaneous.PaginationDto;
 import com.projects.smartbankingapi.dto.other.AccountCreateReqDto;
+import com.projects.smartbankingapi.dto.other.ResponseDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.mapper.master.BnMAccountMapper;
 import com.projects.smartbankingapi.model.master.BnMAccount;
@@ -57,10 +58,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public ResponseEntity<BnMAccountDto> createAccount(AccountCreateReqDto accountCreateReqDto) {
+    public ResponseEntity<ResponseDto> createAccount(AccountCreateReqDto accountCreateReqDto) {
         try {
             BnMAccount account = getBnMAccount(accountCreateReqDto);
-
             Optional<BnMAccount> optAccount = accountRepository.findByBnMCustomerNic(account.getBnMCustomer().getNic());
             if (optAccount.isPresent()) {
                 throw new BadRequestAlertException("Account already exists for given customer", "BnMAccount", "ALREADY_EXISTS");
@@ -70,11 +70,31 @@ public class AccountServiceImpl implements AccountService {
             if (account == null) {
                 throw new BadRequestAlertException("Error while creating account", "BnMAccount", "ERROR");
             } else {
+                ResponseDto response = new ResponseDto();
                 String accountNo = customMethods.generateAccountNumber(account.getBnRBranch().getCode(), account.getBnRAccountType().getCode(), account.getAccountId());
                 account.setAccountNo(accountNo);
+                ;
                 account = accountRepository.save(account);
                 BnMAccountDto accountDto = accountMapper.toDto(account);
-                return ResponseEntity.ok(accountDto);
+
+                float minimumBalance;
+                if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.SAVING_ACCOUNT_TYPE_ID.longValue()) {
+                    minimumBalance = HardCodeConstant.SAVING_MIN_BALANCE;
+                } else if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.CHECK_ACCOUNT_TYPE_ID.longValue()) {
+                    minimumBalance = HardCodeConstant.CHECK_MIN_BALANCE;
+                } else if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.FIXED_ACCOUNT_TYPE_ID.longValue()) {
+                    minimumBalance = HardCodeConstant.FIXED_MIN_BALANCE;
+                }else {
+                    throw new BadRequestAlertException("Account type not found", "BnRAccountType", "NOT_FOUND");
+                }
+
+                log.info("Account successfully created and account no is: {}", accountNo);
+                log.info("Please deposit minimum amount to activate account");
+
+                response.setData(accountDto);
+                response.setMessage("Account successfully created and account no is: " + accountNo + ". Please deposit " + minimumBalance + " to activate account");
+                response.setStatus(HttpStatus.OK.value());
+                return ResponseEntity.ok(response);
             }
         } catch (Exception e) {
             log.error("Error while creating account: {}", e.getMessage());
@@ -315,7 +335,8 @@ public class AccountServiceImpl implements AccountService {
         account.setBnRCurrency(optCurrency.get());
         account.setBnRBranch(optBranch.get());
         account.setBnRStatus(optStatus.get());
-        account.setIsActive(true);
+        account.setIsActive(false);
+        account.setIsFirstDepositDone(false);
         return account;
     }
 

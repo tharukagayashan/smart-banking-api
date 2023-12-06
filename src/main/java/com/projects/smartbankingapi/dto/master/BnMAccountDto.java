@@ -26,6 +26,7 @@ public class BnMAccountDto implements Serializable {
     private Float holdBalance;
     private LocalDate openedDate;
     private Boolean isActive;
+    private Boolean isFirstDepositDone;
 
     private Long customerId;
     private Long accountTypeId;

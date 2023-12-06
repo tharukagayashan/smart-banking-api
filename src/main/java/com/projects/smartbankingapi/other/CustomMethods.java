@@ -205,6 +205,39 @@ public class CustomMethods {
                 throw new BadRequestAlertException("Account not found", "Transaction", "account_not_found");
             } else {
                 BnMAccount account = optAccount.get();
+                boolean flag = false;
+                if (!account.getIsFirstDepositDone()) {
+                    if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.SAVING_ACCOUNT_TYPE_ID.longValue()) {
+                        if (bankDepositTranCreateReqDto.getAmount() < HardCodeConstant.SAVING_MIN_BALANCE) {
+                            log.info("Minimum first deposit amount for saving account is {}", HardCodeConstant.SAVING_MIN_BALANCE);
+                        } else {
+                            flag = true;
+                        }
+                    } else if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.CHECK_ACCOUNT_TYPE_ID.longValue()) {
+                        if (bankDepositTranCreateReqDto.getAmount() < HardCodeConstant.CHECK_MIN_BALANCE) {
+                            log.info("Minimum first deposit amount for check account is {}", HardCodeConstant.CHECK_MIN_BALANCE);
+                        } else {
+                            flag = true;
+                        }
+                    } else if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.FIXED_MIN_BALANCE) {
+                        if (bankDepositTranCreateReqDto.getAmount() < HardCodeConstant.FIXED_MIN_BALANCE) {
+                            log.info("Minimum first deposit amount for fixed deposit account is {}" + HardCodeConstant.FIXED_MIN_BALANCE);
+                        } else {
+                            flag = true;
+                        }
+                    } else {
+                        throw new BadRequestAlertException("Account type not found", "Transaction", "account_type_not_found");
+                    }
+                }
+
+                if (!flag) {
+                    log.info("Minimum first deposit amount not satisfied");
+                } else {
+                    log.info("Minimum first deposit amount satisfied");
+                    account.setIsFirstDepositDone(true);
+                    account.setIsActive(true);
+                }
+
                 log.info("Account found");
                 log.info("Deposit amount: " + bankDepositTranCreateReqDto.getAmount());
                 log.info("Available balance: " + account.getAvailableBalance());
