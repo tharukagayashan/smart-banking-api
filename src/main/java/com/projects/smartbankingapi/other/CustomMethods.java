@@ -38,7 +38,7 @@ public class CustomMethods {
     }
 
     public String validateNIC(String nic) {
-        String msg = "";
+        String msg;
         if (nic.length() == 10) {
             if (nic.charAt(9) == 'V' || nic.charAt(9) == 'v') {
                 msg = "Valid NIC";
@@ -54,10 +54,10 @@ public class CustomMethods {
     }
 
     public String generateAccountNumber(String branchCode, String accountTypeCode, Long accountId) {
-        String accountNumber = "";
-        Integer year = LocalDate.now().getYear();
-        Integer month = LocalDate.now().getMonthValue();
-        String accountNumberPrefix = branchCode + accountTypeCode + year.toString().substring(2) + month;
+        String accountNumber;
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+        String accountNumberPrefix = branchCode + accountTypeCode + Integer.toString(year).substring(2) + month;
         String accountNumberSuffix = String.format("%04d", accountId);
         accountNumber = accountNumberPrefix + accountNumberSuffix;
         return accountNumber;
@@ -69,14 +69,12 @@ public class CustomMethods {
             Optional<BnMAccount> optToAccount = accountRepo.findByAccountNo(debitTranCreateReqDto.getToAccountNo());
 
             BnMAccount fromAccount;
-            BnMAccount toAccount;
             if (!optFromAccount.isPresent()) {
                 throw new BadRequestAlertException("From account not found", "Transaction", "from_account_not_found");
             } else if (!optToAccount.isPresent()) {
                 throw new BadRequestAlertException("To account not found", "Transaction", "to_account_not_found");
             } else {
                 fromAccount = optFromAccount.get();
-                toAccount = optToAccount.get();
 
                 if (fromAccount.getAvailableBalance() < debitTranCreateReqDto.getAmount()) {
                     throw new BadRequestAlertException("Insufficient balance", "Transaction", "insufficient_balance");
@@ -94,12 +92,11 @@ public class CustomMethods {
                             "Debit fund",
                             debitTranCreateReqDto.getFromAccountNo(),
                             debitTranCreateReqDto.getToAccountNo(),
-                            HardCodeConstant.TRAN_TYPE_DEBIT.longValue(), // debit transaction type hard coded
-                            HardCodeConstant.STATUS_PENDING.longValue() // debit transaction status hard coded
+                            HardCodeConstant.TRAN_TYPE_DEBIT_ID.longValue(), // debit transaction type hard coded
+                            HardCodeConstant.STATUS_PENDING_ID.longValue() // debit transaction status hard coded
                     ));
                     log.info("Debit transaction created successfully");
 
-                    /** Auto approve transaction */
                     savedTran = approveDebitFundTransaction(savedTran.getTranId());
                     log.info("Debit transaction auto approved successfully");
 
@@ -119,7 +116,7 @@ public class CustomMethods {
                 throw new BadRequestAlertException("Transaction not found", "Transaction", "transaction_not_found");
             } else {
 
-                Optional<BnRStatus> optStatus = statusRepo.findById(HardCodeConstant.STATUS_APPROVED.longValue());
+                Optional<BnRStatus> optStatus = statusRepo.findById(HardCodeConstant.STATUS_APPROVED_ID.longValue());
                 if (!optStatus.isPresent()) {
                     throw new BadRequestAlertException("Status not found", "Transaction", "status_not_found");
                 }
@@ -188,7 +185,7 @@ public class CustomMethods {
             tran.setBnRStatus(optStatus.get());
             tran.setTranReference(UUID.randomUUID().toString());
             tran = tranRepo.save(tran);
-            if (tran != null) {
+            if (tran.getTranId() != null) {
                 log.info("Pending transaction record created successfully");
                 return tran;
             } else {
@@ -208,6 +205,39 @@ public class CustomMethods {
                 throw new BadRequestAlertException("Account not found", "Transaction", "account_not_found");
             } else {
                 BnMAccount account = optAccount.get();
+                boolean flag = false;
+                if (!account.getIsFirstDepositDone()) {
+                    if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.SAVING_ACCOUNT_TYPE_ID.longValue()) {
+                        if (bankDepositTranCreateReqDto.getAmount() < HardCodeConstant.SAVING_MIN_BALANCE) {
+                            log.info("Minimum first deposit amount for saving account is {}", HardCodeConstant.SAVING_MIN_BALANCE);
+                        } else {
+                            flag = true;
+                        }
+                    } else if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.CHECK_ACCOUNT_TYPE_ID.longValue()) {
+                        if (bankDepositTranCreateReqDto.getAmount() < HardCodeConstant.CHECK_MIN_BALANCE) {
+                            log.info("Minimum first deposit amount for check account is {}", HardCodeConstant.CHECK_MIN_BALANCE);
+                        } else {
+                            flag = true;
+                        }
+                    } else if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.FIXED_MIN_BALANCE) {
+                        if (bankDepositTranCreateReqDto.getAmount() < HardCodeConstant.FIXED_MIN_BALANCE) {
+                            log.info("Minimum first deposit amount for fixed deposit account is {}", HardCodeConstant.FIXED_MIN_BALANCE);
+                        } else {
+                            flag = true;
+                        }
+                    } else {
+                        throw new BadRequestAlertException("Account type not found", "Transaction", "account_type_not_found");
+                    }
+                }
+
+                if (!flag) {
+                    log.info("Minimum first deposit amount not satisfied");
+                } else {
+                    log.info("Minimum first deposit amount satisfied");
+                    account.setIsFirstDepositDone(true);
+                    account.setIsActive(true);
+                }
+
                 log.info("Account found");
                 log.info("Deposit amount: " + bankDepositTranCreateReqDto.getAmount());
                 log.info("Available balance: " + account.getAvailableBalance());
@@ -226,8 +256,8 @@ public class CustomMethods {
                         "Bank deposit",
                         "",
                         bankDepositTranCreateReqDto.getToAccountNo(),
-                        HardCodeConstant.TRAN_TYPE_CREDIT.longValue(), // bank deposit transaction type hard coded
-                        HardCodeConstant.STATUS_APPROVED.longValue() // bank deposit transaction status hard coded
+                        HardCodeConstant.TRAN_TYPE_CREDIT_ID.longValue(), // bank deposit transaction type hard coded
+                        HardCodeConstant.STATUS_APPROVED_ID.longValue() // bank deposit transaction status hard coded
                 ));
                 log.info("Bank deposit transaction created successfully");
                 return savedTran;
@@ -240,26 +270,23 @@ public class CustomMethods {
     }
 
     public Float calculateInterest(Float amount, Float rate, Integer month, Long loanTypeId) {
-        float interest = 0;
-        float totalAmount = 0;
-        float i = 0;
-        float t = 0;
-        float emi = 0;
-        if (loanTypeId == HardCodeConstant.LOAN_TYPE_FLAT.longValue()) {
+        float interest;
+        float i;
+        float t;
+        float emi;
+        if (loanTypeId == HardCodeConstant.LOAN_TYPE_FLAT_ID.longValue()) {
             i = rate / 100;
             t = month;
             emi = (amount * i * t) / 12;
 
-            totalAmount = emi * t;
             interest = emi * t - amount;
 
             return interest;
-        } else if (loanTypeId == HardCodeConstant.LOAN_TYPE_REDUCING.longValue()) {
+        } else if (loanTypeId == HardCodeConstant.LOAN_TYPE_REDUCING_ID.longValue()) {
             i = rate / (100 * 12);
             t = month;
             emi = (amount * i * (float) Math.pow(1 + i, t)) / ((float) Math.pow(1 + i, t) - 1);
 
-            totalAmount = emi * t;
             interest = emi * t - amount;
 
             return interest;
@@ -269,9 +296,9 @@ public class CustomMethods {
     }
 
     public float calculateNextInstallmentAmt(Float amount, Float interest, Integer totInstallments, Integer remInstallments, Long loanTypeId) {
-        if (loanTypeId == HardCodeConstant.LOAN_TYPE_FLAT.longValue()) {
+        if (loanTypeId == HardCodeConstant.LOAN_TYPE_FLAT_ID.longValue()) {
             return (amount + interest) / remInstallments;
-        } else if (loanTypeId == HardCodeConstant.LOAN_TYPE_REDUCING.longValue()) {
+        } else if (loanTypeId == HardCodeConstant.LOAN_TYPE_REDUCING_ID.longValue()) {
             return (amount / totInstallments) + (interest / remInstallments);
         } else {
             throw new BadRequestAlertException("Loan type not found", "Loan", "loan_type_not_found");

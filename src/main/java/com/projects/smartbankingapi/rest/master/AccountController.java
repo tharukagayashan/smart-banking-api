@@ -3,6 +3,7 @@ package com.projects.smartbankingapi.rest.master;
 import com.projects.smartbankingapi.dto.master.BnMAccountDto;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.other.AccountCreateReqDto;
+import com.projects.smartbankingapi.dto.other.ResponseDto;
 import com.projects.smartbankingapi.service.master.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,8 +24,8 @@ public class AccountController {
     }
 
     @PostMapping
-    public ResponseEntity<BnMAccountDto> createAccount(@Valid @RequestBody AccountCreateReqDto accountCreateReqDto) {
-        ResponseEntity<BnMAccountDto> response = accountService.createAccount(accountCreateReqDto);
+    public ResponseEntity<ResponseDto> createAccount(@Valid @RequestBody AccountCreateReqDto accountCreateReqDto) {
+        ResponseEntity<ResponseDto> response = accountService.createAccount(accountCreateReqDto);
         return response;
     }
 

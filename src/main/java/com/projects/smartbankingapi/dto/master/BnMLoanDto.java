@@ -2,7 +2,6 @@ package com.projects.smartbankingapi.dto.master;
 
 import com.projects.smartbankingapi.dto.reference.BnRLoanProductDto;
 import com.projects.smartbankingapi.dto.reference.BnRStatusDto;
-import com.projects.smartbankingapi.model.master.BnMAccount;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
