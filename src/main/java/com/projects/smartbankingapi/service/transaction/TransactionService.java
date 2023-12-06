@@ -15,8 +15,6 @@ public interface TransactionService {
     ResponseEntity<BnTTranDto> createBankDepositTransaction(BankDepositTranCreateReqDto bankDepositTranCreateReqDto);
     ResponseEntity<BnTTranDto> createDebitTransaction(DebitTranCreateReqDto debitTranCreateReqDto);
     ResponseEntity<BnTTranDto> getTransaction(Long tranId);
-
     ResponseEntity<ApiResponseDto<List<BnTTranDto>>> getTransactionsForTable(Integer page, Integer perPage, String direction, String sort, String search, String fromAccountNo, String toAccountNo, LocalDate fromDate, LocalDate toDate);
-
     ResponseEntity<TransactionReceiptDto> getTranStatement(Long tranId);
 }
