@@ -185,7 +185,7 @@ public class CustomMethods {
             tran.setBnRStatus(optStatus.get());
             tran.setTranReference(UUID.randomUUID().toString());
             tran = tranRepo.save(tran);
-            if (tran != null) {
+            if (tran.getTranId() != null) {
                 log.info("Pending transaction record created successfully");
                 return tran;
             } else {
