@@ -169,4 +169,203 @@ public class ReferenceController {
         return referenceService.createRole(roleCreateReqDto);
     }
 
+    /*** GET BY ID APIs (FDD) ***/
+
+    @GetMapping("/account-type/{id}")
+    public ResponseEntity<BnRAccountTypeDto> getAccountTypeById(@PathVariable Long id) {
+        return referenceService.getAccountTypeById(id);
+    }
+
+    @GetMapping("/bank/{id}")
+    public ResponseEntity<BnRBankDto> getBankById(@PathVariable Long id) {
+        return referenceService.getBankById(id);
+    }
+
+    @GetMapping("/branch/{id}")
+    public ResponseEntity<BnRBranchDto> getBranchById(@PathVariable Long id) {
+        return referenceService.getBranchById(id);
+    }
+
+    @GetMapping("/charge/{id}")
+    public ResponseEntity<BnRChargeDto> getChargeById(@PathVariable Long id) {
+        return referenceService.getChargeById(id);
+    }
+
+    @GetMapping("/currency/{id}")
+    public ResponseEntity<BnRCurrencyDto> getCurrencyById(@PathVariable Long id) {
+        return referenceService.getCurrencyById(id);
+    }
+
+    @GetMapping("/fee-type/{id}")
+    public ResponseEntity<BnRFeeTypeDto> getFeeTypeById(@PathVariable Long id) {
+        return referenceService.getFeeTypeById(id);
+    }
+
+    @GetMapping("/int-rate/{id}")
+    public ResponseEntity<BnRIntRateDto> getIntRateById(@PathVariable Long id) {
+        return referenceService.getIntRateById(id);
+    }
+
+    @GetMapping("/loan-period/{id}")
+    public ResponseEntity<BnRLoanPeriodDto> getLoanPeriodById(@PathVariable Long id) {
+        return referenceService.getLoanPeriodById(id);
+    }
+
+    @GetMapping("/loan-product/{id}")
+    public ResponseEntity<BnRLoanProductDto> getLoanProductById(@PathVariable Long id) {
+        return referenceService.getLoanProductById(id);
+    }
+
+    @GetMapping("/loan-type/{id}")
+    public ResponseEntity<BnRLoanTypeDto> getLoanTypeById(@PathVariable Long id) {
+        return referenceService.getLoanTypeById(id);
+    }
+
+    @GetMapping("/status/{id}")
+    public ResponseEntity<BnRStatusDto> getStatusById(@PathVariable Long id) {
+        return referenceService.getStatusById(id);
+    }
+
+    @GetMapping("/tran-type/{id}")
+    public ResponseEntity<BnRTranTypeDto> getTranTypeById(@PathVariable Long id) {
+        return referenceService.getTranTypeById(id);
+    }
+
+    @GetMapping("/role/{id}")
+    public ResponseEntity<BnRRoleDto> getRoleById(@PathVariable Long id) {
+        return referenceService.getRoleById(id);
+    }
+
+    /*** PUT APIs ***/
+    @PutMapping("/account-type/{id}")
+    public ResponseEntity<BnRAccountTypeDto> updateAccountType(@PathVariable Long id, @RequestBody BnRAccountTypeDto bnRAccountTypeDto) {
+        return referenceService.updateAccountType(id, bnRAccountTypeDto);
+    }
+
+    @PutMapping("/bank/{id}")
+    public ResponseEntity<BnRBankDto> updateBank(@PathVariable Long id, @RequestBody BnRBankDto bnRBankDto) {
+        return referenceService.updateBank(id, bnRBankDto);
+    }
+
+    @PutMapping("/branch/{id}")
+    public ResponseEntity<BnRBranchDto> updateBranch(@PathVariable Long id, @RequestBody BnRBranchDto bnRBranchDto) {
+        return referenceService.updateBranch(id, bnRBranchDto);
+    }
+
+    @PutMapping("/charge/{id}")
+    public ResponseEntity<BnRChargeDto> updateCharge(@PathVariable Long id, @RequestBody BnRChargeDto bnRChargeDto) {
+        return referenceService.updateCharge(id, bnRChargeDto);
+    }
+
+    @PutMapping("/currency/{id}")
+    public ResponseEntity<BnRCurrencyDto> updateCurrency(@PathVariable Long id, @RequestBody BnRCurrencyDto bnRCurrencyDto) {
+        return referenceService.updateCurrency(id, bnRCurrencyDto);
+    }
+
+    @PutMapping("/fee-type/{id}")
+    public ResponseEntity<BnRFeeTypeDto> updateFeeType(@PathVariable Long id, @RequestBody BnRFeeTypeDto bnRFeeTypeDto) {
+        return referenceService.updateFeeType(id, bnRFeeTypeDto);
+    }
+
+    @PutMapping("/int-rate/{id}")
+    public ResponseEntity<BnRIntRateDto> updateIntRate(@PathVariable Long id, @RequestBody BnRIntRateDto bnRIntRateDto) {
+        return referenceService.updateIntRate(id, bnRIntRateDto);
+    }
+
+    @PutMapping("/loan-period/{id}")
+    public ResponseEntity<BnRLoanPeriodDto> updateLoanPeriod(@PathVariable Long id, @RequestBody BnRLoanPeriodDto bnRLoanPeriodDto) {
+        return referenceService.updateLoanPeriod(id, bnRLoanPeriodDto);
+    }
+
+    @PutMapping("/loan-product/{id}")
+    public ResponseEntity<BnRLoanProductDto> updateLoanProduct(@PathVariable Long id, @RequestBody BnRLoanProductDto bnRLoanProductDto) {
+        return referenceService.updateLoanProduct(id, bnRLoanProductDto);
+    }
+
+    @PutMapping("/loan-type/{id}")
+    public ResponseEntity<BnRLoanTypeDto> updateLoanType(@PathVariable Long id, @RequestBody BnRLoanTypeDto bnRLoanTypeDto) {
+        return referenceService.updateLoanType(id, bnRLoanTypeDto);
+    }
+
+    @PutMapping("/status/{id}")
+    public ResponseEntity<BnRStatusDto> updateStatus(@PathVariable Long id, @RequestBody BnRStatusDto bnRStatusDto) {
+        return referenceService.updateStatus(id, bnRStatusDto);
+    }
+
+    @PutMapping("/tran-type/{id}")
+    public ResponseEntity<BnRTranTypeDto> updateTranType(@PathVariable Long id, @RequestBody BnRTranTypeDto bnRTranTypeDto) {
+        return referenceService.updateTranType(id, bnRTranTypeDto);
+    }
+
+    @PutMapping("/role/{id}")
+    public ResponseEntity<BnRRoleDto> updateRole(@PathVariable Long id, @RequestBody BnRRoleDto bnRRoleDto) {
+        return referenceService.updateRole(id, bnRRoleDto);
+    }
+
+    /* DELETE APIs */
+    @DeleteMapping("/account-type/{id}")
+    public ResponseEntity<String> deleteAccountType(@PathVariable Long id) {
+        return referenceService.deleteAccountType(id);
+    }
+
+    @DeleteMapping("/bank/{id}")
+    public ResponseEntity<String> deleteBank(@PathVariable Long id) {
+        return referenceService.deleteBank(id);
+    }
+
+    @DeleteMapping("/branch/{id}")
+    public ResponseEntity<String> deleteBranch(@PathVariable Long id) {
+        return referenceService.deleteBranch(id);
+    }
+
+    @DeleteMapping("/charge/{id}")
+    public ResponseEntity<String> deleteCharge(@PathVariable Long id) {
+        return referenceService.deleteCharge(id);
+    }
+
+    @DeleteMapping("/currency/{id}")
+    public ResponseEntity<String> deleteCurrency(@PathVariable Long id) {
+        return referenceService.deleteCurrency(id);
+    }
+
+    @DeleteMapping("/fee-type/{id}")
+    public ResponseEntity<String> deleteFeeType(@PathVariable Long id) {
+        return referenceService.deleteFeeType(id);
+    }
+
+    @DeleteMapping("/int-rate/{id}")
+    public ResponseEntity<String> deleteIntRate(@PathVariable Long id) {
+        return referenceService.deleteIntRate(id);
+    }
+
+    @DeleteMapping("/loan-period/{id}")
+    public ResponseEntity<String> deleteLoanPeriod(@PathVariable Long id) {
+        return referenceService.deleteLoanPeriod(id);
+    }
+
+    @DeleteMapping("/loan-product/{id}")
+    public ResponseEntity<String> deleteLoanProduct(@PathVariable Long id) {
+        return referenceService.deleteLoanProduct(id);
+    }
+
+    @DeleteMapping("/loan-type/{id}")
+    public ResponseEntity<String> deleteLoanType(@PathVariable Long id) {
+        return referenceService.deleteLoanType(id);
+    }
+
+    @DeleteMapping("/status/{id}")
+    public ResponseEntity<String> deleteStatus(@PathVariable Long id) {
+        return referenceService.deleteStatus(id);
+    }
+
+    @DeleteMapping("/tran-type/{id}")
+    public ResponseEntity<String> deleteTranType(@PathVariable Long id) {
+        return referenceService.deleteTranType(id);
+    }
+
+    @DeleteMapping("/role/{id}")
+    public ResponseEntity<String> deleteRole(@PathVariable Long id) {
+        return referenceService.deleteRole(id);
+    }
+
 }
