@@ -5,11 +5,13 @@ import com.projects.smartbankingapi.model.reference.BnRBank;
 import com.projects.smartbankingapi.model.reference.BnRBranch;
 import com.projects.smartbankingapi.model.reference.BnRRole;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Builder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
