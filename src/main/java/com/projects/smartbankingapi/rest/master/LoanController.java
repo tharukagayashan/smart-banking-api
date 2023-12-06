@@ -38,11 +38,11 @@ public class LoanController {
 
     @GetMapping("/table")
     public ResponseEntity<ApiResponseDto<List<BnMLoanDto>>> getLoanForTable(
-            @RequestParam(defaultValue = "0",required = false) Integer page,
-            @RequestParam(defaultValue = "10",required = false) Integer perPage,
-            @RequestParam(defaultValue = "loanId",required = false) String sort,
-            @RequestParam(defaultValue = "desc",required = false) String direction,
-            @RequestParam(defaultValue = "",required = false) String search
+            @RequestParam(defaultValue = "0", required = false) Integer page,
+            @RequestParam(defaultValue = "10", required = false) Integer perPage,
+            @RequestParam(defaultValue = "loanId", required = false) String sort,
+            @RequestParam(defaultValue = "desc", required = false) String direction,
+            @RequestParam(defaultValue = "", required = false) String search
     ) {
         ResponseEntity<ApiResponseDto<List<BnMLoanDto>>> response = loanService.getLoanForTable(page, perPage, sort, direction, search);
         return response;

@@ -2,7 +2,6 @@ package com.projects.smartbankingapi.service.reference;
 
 import com.projects.smartbankingapi.dto.other.*;
 import com.projects.smartbankingapi.dto.reference.*;
-import com.projects.smartbankingapi.model.reference.BnRAccountType;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

@@ -53,6 +53,9 @@ public class BnMAccount extends AuditModel {
     @Column(name = "IS_ACTIVE")
     private Boolean isActive;
 
+    @Column(name = "IS_FIRST_DEPOSIT_DONE")
+    private Boolean isFirstDepositDone;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CUSTOMER_ID", referencedColumnName = "CUSTOMER_ID", nullable = false)
     private BnMCustomer bnMCustomer;
