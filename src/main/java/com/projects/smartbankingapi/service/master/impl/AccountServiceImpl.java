@@ -299,7 +299,7 @@ public class AccountServiceImpl implements AccountService {
             throw new BadRequestAlertException("Account type not found", "BnRAccountType", "NOT_FOUND");
         }
 
-        Optional<BnRStatus> optStatus = statusRepository.findById(HardCodeConstant.STATUS_NEW.longValue());
+        Optional<BnRStatus> optStatus = statusRepository.findById(HardCodeConstant.STATUS_NEW_ID.longValue());
         if (!optStatus.isPresent()) {
             throw new BadRequestAlertException("Status not found", "BnRStatus", "NOT_FOUND");
         }

@@ -54,7 +54,7 @@ public class LoanServiceImpl implements LoanService {
                 throw new BadRequestAlertException("Account not found", "Loan", "createLoan");
             } else {
 
-                Optional<BnRStatus> optStatus = statusRepository.findById(HardCodeConstant.STATUS_PENDING.longValue());
+                Optional<BnRStatus> optStatus = statusRepository.findById(HardCodeConstant.STATUS_PENDING_ID.longValue());
 
                 BnMAccount account = optAccount.get();
                 Optional<BnRLoanProduct> optLoanProduct = loanProductRepository.findById(loanCreateReqDto.getLoanProductId());
@@ -109,7 +109,7 @@ public class LoanServiceImpl implements LoanService {
                     throw new BadRequestAlertException("Loan not found", "Loan", "approveLoan");
                 } else {
                     BnMLoan loan = optLoan.get();
-                    Optional<BnRStatus> optStatus = statusRepository.findById(HardCodeConstant.STATUS_APPROVED.longValue());
+                    Optional<BnRStatus> optStatus = statusRepository.findById(HardCodeConstant.STATUS_APPROVED_ID.longValue());
 
                     float nextInstallmentAmt = customMethods.calculateNextInstallmentAmt(loan.getAmount(), loan.getInterest(), loan.getTotInstallments(), loan.getRemInstallments(), loan.getBnRLoanProduct().getBnRLoanType().getLoanTypeId());
 
