@@ -221,7 +221,7 @@ public class CustomMethods {
                         }
                     } else if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.FIXED_MIN_BALANCE) {
                         if (bankDepositTranCreateReqDto.getAmount() < HardCodeConstant.FIXED_MIN_BALANCE) {
-                            log.info("Minimum first deposit amount for fixed deposit account is {}" + HardCodeConstant.FIXED_MIN_BALANCE);
+                            log.info("Minimum first deposit amount for fixed deposit account is {}", HardCodeConstant.FIXED_MIN_BALANCE);
                         } else {
                             flag = true;
                         }
