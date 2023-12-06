@@ -63,4 +63,82 @@ public interface ReferenceService {
     ResponseEntity<BnRTranTypeDto> createTranType(TranTypeCreateReqDto tranTypeCreateReqDto);
 
     ResponseEntity<BnRRoleDto> createRole(RoleCreateReqDto roleCreateReqDto);
+
+    ResponseEntity<BnRAccountTypeDto> getAccountTypeById(Long id);
+
+    ResponseEntity<BnRBankDto> getBankById(Long id);
+
+    ResponseEntity<BnRBranchDto> getBranchById(Long id);
+
+    ResponseEntity<BnRChargeDto> getChargeById(Long id);
+
+    ResponseEntity<BnRCurrencyDto> getCurrencyById(Long id);
+
+    ResponseEntity<BnRFeeTypeDto> getFeeTypeById(Long id);
+
+    ResponseEntity<BnRIntRateDto> getIntRateById(Long id);
+
+    ResponseEntity<BnRLoanPeriodDto> getLoanPeriodById(Long id);
+
+    ResponseEntity<BnRLoanProductDto> getLoanProductById(Long id);
+
+    ResponseEntity<BnRLoanTypeDto> getLoanTypeById(Long id);
+
+    ResponseEntity<BnRStatusDto> getStatusById(Long id);
+
+    ResponseEntity<BnRTranTypeDto> getTranTypeById(Long id);
+
+    ResponseEntity<BnRRoleDto> getRoleById(Long id);
+
+    ResponseEntity<BnRAccountTypeDto> updateAccountType(Long id, BnRAccountTypeDto bnRAccountTypeDto);
+
+    ResponseEntity<BnRBankDto> updateBank(Long id, BnRBankDto bnRBankDto);
+
+    ResponseEntity<BnRBranchDto> updateBranch(Long id, BnRBranchDto bnRBranchDto);
+
+    ResponseEntity<BnRChargeDto> updateCharge(Long id, BnRChargeDto bnRChargeDto);
+
+    ResponseEntity<BnRCurrencyDto> updateCurrency(Long id, BnRCurrencyDto bnRCurrencyDto);
+
+    ResponseEntity<BnRFeeTypeDto> updateFeeType(Long id, BnRFeeTypeDto bnRFeeTypeDto);
+
+    ResponseEntity<BnRIntRateDto> updateIntRate(Long id, BnRIntRateDto bnRIntRateDto);
+
+    ResponseEntity<BnRLoanPeriodDto> updateLoanPeriod(Long id, BnRLoanPeriodDto bnRLoanPeriodDto);
+
+    ResponseEntity<BnRLoanProductDto> updateLoanProduct(Long id, BnRLoanProductDto bnRLoanProductDto);
+
+    ResponseEntity<BnRLoanTypeDto> updateLoanType(Long id, BnRLoanTypeDto bnRLoanTypeDto);
+
+    ResponseEntity<BnRStatusDto> updateStatus(Long id, BnRStatusDto bnRStatusDto);
+
+    ResponseEntity<BnRTranTypeDto> updateTranType(Long id, BnRTranTypeDto bnRTranTypeDto);
+
+    ResponseEntity<BnRRoleDto> updateRole(Long id, BnRRoleDto bnRRoleDto);
+
+    ResponseEntity<String> deleteAccountType(Long id);
+
+    ResponseEntity<String> deleteBank(Long id);
+
+    ResponseEntity<String> deleteBranch(Long id);
+
+    ResponseEntity<String> deleteCharge(Long id);
+
+    ResponseEntity<String> deleteCurrency(Long id);
+
+    ResponseEntity<String> deleteFeeType(Long id);
+
+    ResponseEntity<String> deleteIntRate(Long id);
+
+    ResponseEntity<String> deleteLoanPeriod(Long id);
+
+    ResponseEntity<String> deleteLoanProduct(Long id);
+
+    ResponseEntity<String> deleteLoanType(Long id);
+
+    ResponseEntity<String> deleteStatus(Long id);
+
+    ResponseEntity<String> deleteTranType(Long id);
+
+    ResponseEntity<String> deleteRole(Long id);
 }
