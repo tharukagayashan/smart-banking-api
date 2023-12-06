@@ -657,4 +657,912 @@ public class ReferenceServiceImpl implements ReferenceService {
             throw new BadRequestAlertException(e.getMessage(), "Reference", "createRole");
         }
     }
+
+    @Override
+    public ResponseEntity<BnRAccountTypeDto> getAccountTypeById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Account type id is required", "Reference", "getAccountTypeById");
+            } else {
+                Optional<BnRAccountType> optAccountType = accountTypeRepository.findById(id);
+                if (!optAccountType.isPresent()) {
+                    throw new BadRequestAlertException("Account type not found for given id", "Reference", "getAccountTypeById");
+                } else {
+                    BnRAccountTypeDto accountTypeDto = accountTypeMapper.toDto(optAccountType.get());
+                    return ResponseEntity.ok(accountTypeDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching account type by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getAccountTypeById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRBankDto> getBankById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Bank id is required", "Reference", "getBankById");
+            } else {
+                Optional<BnRBank> optBank = bankRepository.findById(id);
+                if (!optBank.isPresent()) {
+                    throw new BadRequestAlertException("Bank not found for given id", "Reference", "getBankById");
+                } else {
+                    BnRBankDto bankDto = bankMapper.toDto(optBank.get());
+                    return ResponseEntity.ok(bankDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching bank by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getBankById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRBranchDto> getBranchById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Branch id is required", "Reference", "getBranchById");
+            } else {
+                Optional<BnRBranch> optBranch = branchRepository.findById(id);
+                if (!optBranch.isPresent()) {
+                    throw new BadRequestAlertException("Branch not found for given id", "Reference", "getBranchById");
+                } else {
+                    BnRBranchDto branchDto = branchMapper.toDto(optBranch.get());
+                    return ResponseEntity.ok(branchDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching branch by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getBranchById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRChargeDto> getChargeById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Charge id is required", "Reference", "getChargeById");
+            } else {
+                Optional<BnRCharge> optCharge = chargeRepository.findById(id);
+                if (!optCharge.isPresent()) {
+                    throw new BadRequestAlertException("Charge not found for given id", "Reference", "getChargeById");
+                } else {
+                    BnRChargeDto chargeDto = chargeMapper.toDto(optCharge.get());
+                    return ResponseEntity.ok(chargeDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching charge by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getChargeById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRCurrencyDto> getCurrencyById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Currency id is required", "Reference", "getCurrencyById");
+            } else {
+                Optional<BnRCurrency> optCurrency = currencyRepository.findById(id);
+                if (!optCurrency.isPresent()) {
+                    throw new BadRequestAlertException("Currency not found for given id", "Reference", "getCurrencyById");
+                } else {
+                    BnRCurrencyDto currencyDto = currencyMapper.toDto(optCurrency.get());
+                    return ResponseEntity.ok(currencyDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching currency by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getCurrencyById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRFeeTypeDto> getFeeTypeById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Fee type id is required", "Reference", "getFeeTypeById");
+            } else {
+                Optional<BnRFeeType> optFeeType = feeTypeRepository.findById(id);
+                if (!optFeeType.isPresent()) {
+                    throw new BadRequestAlertException("Fee type not found for given id", "Reference", "getFeeTypeById");
+                } else {
+                    BnRFeeTypeDto feeTypeDto = feeTypeMapper.toDto(optFeeType.get());
+                    return ResponseEntity.ok(feeTypeDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching fee type by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getFeeTypeById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRIntRateDto> getIntRateById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Interest rate id is required", "Reference", "getIntRateById");
+            } else {
+                Optional<BnRIntRate> optIntRate = intRateRepository.findById(id);
+                if (!optIntRate.isPresent()) {
+                    throw new BadRequestAlertException("Interest rate not found for given id", "Reference", "getIntRateById");
+                } else {
+                    BnRIntRateDto intRateDto = intRateMapper.toDto(optIntRate.get());
+                    return ResponseEntity.ok(intRateDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching interest rate by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getIntRateById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRLoanPeriodDto> getLoanPeriodById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Loan period id is required", "Reference", "getLoanPeriodById");
+            } else {
+                Optional<BnRLoanPeriod> optLoanPeriod = loanPeriodRepository.findById(id);
+                if (!optLoanPeriod.isPresent()) {
+                    throw new BadRequestAlertException("Loan period not found for given id", "Reference", "getLoanPeriodById");
+                } else {
+                    BnRLoanPeriodDto loanPeriodDto = loanPeriodMapper.toDto(optLoanPeriod.get());
+                    return ResponseEntity.ok(loanPeriodDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching loan period by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getLoanPeriodById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRLoanProductDto> getLoanProductById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Loan product id is required", "Reference", "getLoanProductById");
+            } else {
+                Optional<BnRLoanProduct> optLoanProduct = loanProductRepository.findById(id);
+                if (!optLoanProduct.isPresent()) {
+                    throw new BadRequestAlertException("Loan product not found for given id", "Reference", "getLoanProductById");
+                } else {
+                    BnRLoanProductDto loanProductDto = loanProductMapper.toDto(optLoanProduct.get());
+                    return ResponseEntity.ok(loanProductDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching loan product by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getLoanProductById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRLoanTypeDto> getLoanTypeById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Loan type id is required", "Reference", "getLoanTypeById");
+            } else {
+                Optional<BnRLoanType> optLoanType = loanTypeRepository.findById(id);
+                if (!optLoanType.isPresent()) {
+                    throw new BadRequestAlertException("Loan type not found for given id", "Reference", "getLoanTypeById");
+                } else {
+                    BnRLoanTypeDto loanTypeDto = loanTypeMapper.toDto(optLoanType.get());
+                    return ResponseEntity.ok(loanTypeDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching loan type by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getLoanTypeById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRStatusDto> getStatusById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Status id is required", "Reference", "getStatusById");
+            } else {
+                Optional<BnRStatus> optStatus = statusRepository.findById(id);
+                if (!optStatus.isPresent()) {
+                    throw new BadRequestAlertException("Status not found for given id", "Reference", "getStatusById");
+                } else {
+                    BnRStatusDto statusDto = statusMapper.toDto(optStatus.get());
+                    return ResponseEntity.ok(statusDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching status by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getStatusById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRTranTypeDto> getTranTypeById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Transaction type id is required", "Reference", "getTranTypeById");
+            } else {
+                Optional<BnRTranType> optTranType = tranTypeRepository.findById(id);
+                if (!optTranType.isPresent()) {
+                    throw new BadRequestAlertException("Transaction type not found for given id", "Reference", "getTranTypeById");
+                } else {
+                    BnRTranTypeDto tranTypeDto = tranTypeMapper.toDto(optTranType.get());
+                    return ResponseEntity.ok(tranTypeDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching transaction type by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getTranTypeById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRRoleDto> getRoleById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Role id is required", "Reference", "getRoleById");
+            } else {
+                Optional<BnRRole> optRole = roleRepository.findById(id);
+                if (!optRole.isPresent()) {
+                    throw new BadRequestAlertException("Role not found for given id", "Reference", "getRoleById");
+                } else {
+                    BnRRoleDto roleDto = roleMapper.toDto(optRole.get());
+                    return ResponseEntity.ok(roleDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while fetching role by id", e);
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getRoleById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRAccountTypeDto> updateAccountType(Long id, BnRAccountTypeDto bnRAccountTypeDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Account type id is required", "Reference", "updateAccountType");
+            } else if (id != bnRAccountTypeDto.getAccountTypeId()) {
+                throw new BadRequestAlertException("Account type id mismatch", "Reference", "updateAccountType");
+            } else {
+                Optional<BnRAccountType> optAccountType = accountTypeRepository.findById(id);
+                if (!optAccountType.isPresent()) {
+                    throw new BadRequestAlertException("Account type not found for given id", "Reference", "updateAccountType");
+                } else {
+                    BnRAccountType accountType = optAccountType.get();
+                    accountType.setName(bnRAccountTypeDto.getName());
+                    accountType.setCode(bnRAccountTypeDto.getCode());
+                    accountType = accountTypeRepository.save(accountType);
+                    return ResponseEntity.ok(accountTypeMapper.toDto(accountType));
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateAccountType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRBankDto> updateBank(Long id, BnRBankDto bnRBankDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Bank id is required", "Reference", "updateBank");
+            } else if (id != bnRBankDto.getBankId()) {
+                throw new BadRequestAlertException("Bank id mismatch", "Reference", "updateBank");
+            } else {
+                Optional<BnRBank> optBank = bankRepository.findById(id);
+                if (!optBank.isPresent()) {
+                    throw new BadRequestAlertException("Bank not found for given id", "Reference", "updateBank");
+                } else {
+                    BnRBank bank = optBank.get();
+                    bank.setName(bnRBankDto.getName());
+                    bank.setCode(bnRBankDto.getCode());
+                    bank.setIsActive(bnRBankDto.getIsActive());
+                    bank = bankRepository.save(bank);
+                    return ResponseEntity.ok(bankMapper.toDto(bank));
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateBank");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRBranchDto> updateBranch(Long id, BnRBranchDto bnRBranchDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Branch id is required", "Reference", "updateBranch");
+            } else if (id != bnRBranchDto.getBranchId()) {
+                throw new BadRequestAlertException("Branch id mismatch", "Reference", "updateBranch");
+            } else {
+                Optional<BnRBranch> optBranch = branchRepository.findById(id);
+                if (!optBranch.isPresent()) {
+                    throw new BadRequestAlertException("Branch not found for given id", "Reference", "updateBranch");
+                } else {
+                    Optional<BnRBank> optBank = bankRepository.findById(bnRBranchDto.getBankId());
+                    if (!optBank.isPresent()) {
+                        throw new BadRequestAlertException("Bank not found for given id", "Reference", "updateBranch");
+                    } else {
+                        BnRBranch branch = optBranch.get();
+                        branch.setName(bnRBranchDto.getName());
+                        branch.setCode(bnRBranchDto.getCode());
+                        branch.setBnRBank(optBank.get());
+                        branch.setIsActive(bnRBranchDto.getIsActive());
+                        branch = branchRepository.save(branch);
+                        return ResponseEntity.ok(branchMapper.toDto(branch));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateBranch");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRChargeDto> updateCharge(Long id, BnRChargeDto bnRChargeDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Charge id is required", "Reference", "updateCharge");
+            } else if (id != bnRChargeDto.getChargeId()) {
+                throw new BadRequestAlertException("Charge id mismatch", "Reference", "updateCharge");
+            } else {
+                Optional<BnRCharge> optCharge = chargeRepository.findById(id);
+                if (!optCharge.isPresent()) {
+                    throw new BadRequestAlertException("Charge not found for given id", "Reference", "updateCharge");
+                } else {
+                    Optional<BnRFeeType> optFeeType = feeTypeRepository.findById(bnRChargeDto.getFeeTypeId());
+                    Optional<BnRCurrency> optCurrency = currencyRepository.findById(bnRChargeDto.getCurrencyId());
+                    if (!optFeeType.isPresent()) {
+                        throw new BadRequestAlertException("Fee type not found for given id", "Reference", "updateCharge");
+                    } else if (!optCurrency.isPresent()) {
+                        throw new BadRequestAlertException("Currency not found for given id", "Reference", "updateCharge");
+                    } else {
+                        BnRCharge charge = optCharge.get();
+                        charge.setDescription(bnRChargeDto.getDescription());
+                        charge.setAmount(bnRChargeDto.getAmount());
+                        charge.setEffectiveDate(bnRChargeDto.getEffectiveDate());
+                        charge.setExpirationDate(bnRChargeDto.getExpirationDate());
+                        charge.setBnRFeeType(optFeeType.get());
+                        charge.setBnRCurrency(optCurrency.get());
+                        charge = chargeRepository.save(charge);
+                        return ResponseEntity.ok(chargeMapper.toDto(charge));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateCharge");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRCurrencyDto> updateCurrency(Long id, BnRCurrencyDto bnRCurrencyDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Currency id is required", "Reference", "updateCurrency");
+            } else if (id != bnRCurrencyDto.getCurrencyId()) {
+                throw new BadRequestAlertException("Currency id mismatch", "Reference", "updateCurrency");
+            } else {
+                Optional<BnRCurrency> optCurrency = currencyRepository.findById(id);
+                if (!optCurrency.isPresent()) {
+                    throw new BadRequestAlertException("Currency not found for given id", "Reference", "updateCurrency");
+                } else {
+                    BnRCurrency currency = optCurrency.get();
+                    currency.setName(bnRCurrencyDto.getName());
+                    currency.setCode(bnRCurrencyDto.getCode());
+                    currency = currencyRepository.save(currency);
+                    return ResponseEntity.ok(currencyMapper.toDto(currency));
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateCurrency");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRFeeTypeDto> updateFeeType(Long id, BnRFeeTypeDto bnRFeeTypeDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Fee type id is required", "Reference", "updateFeeType");
+            } else if (id != bnRFeeTypeDto.getFeeTypeId()) {
+                throw new BadRequestAlertException("Fee type id mismatch", "Reference", "updateFeeType");
+            } else {
+                Optional<BnRFeeType> optFeeType = feeTypeRepository.findById(id);
+                if (!optFeeType.isPresent()) {
+                    throw new BadRequestAlertException("Fee type not found for given id", "Reference", "updateFeeType");
+                } else {
+                    BnRFeeType feeType = optFeeType.get();
+                    feeType.setName(bnRFeeTypeDto.getName());
+                    feeType.setDescription(bnRFeeTypeDto.getDescription());
+                    feeType = feeTypeRepository.save(feeType);
+                    return ResponseEntity.ok(feeTypeMapper.toDto(feeType));
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateFeeType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRIntRateDto> updateIntRate(Long id, BnRIntRateDto bnRIntRateDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Interest rate id is required", "Reference", "updateIntRate");
+            } else if (id != bnRIntRateDto.getIntRateId()) {
+                throw new BadRequestAlertException("Interest rate id mismatch", "Reference", "updateIntRate");
+            } else {
+                Optional<BnRIntRate> optIntRate = intRateRepository.findById(id);
+                if (!optIntRate.isPresent()) {
+                    throw new BadRequestAlertException("Interest rate not found for given id", "Reference", "updateIntRate");
+                } else {
+                    BnRIntRate intRate = optIntRate.get();
+                    intRate.setName(bnRIntRateDto.getName());
+                    intRate.setDescription(bnRIntRateDto.getDescription());
+                    intRate.setRate(bnRIntRateDto.getRate());
+                    intRate = intRateRepository.save(intRate);
+                    return ResponseEntity.ok(intRateMapper.toDto(intRate));
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateIntRate");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRLoanPeriodDto> updateLoanPeriod(Long id, BnRLoanPeriodDto bnRLoanPeriodDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Loan period id is required", "Reference", "updateLoanPeriod");
+            } else if (id != bnRLoanPeriodDto.getPeriodId()) {
+                throw new BadRequestAlertException("Loan period id mismatch", "Reference", "updateLoanPeriod");
+            } else {
+                Optional<BnRLoanPeriod> optLoanPeriod = loanPeriodRepository.findById(id);
+                if (!optLoanPeriod.isPresent()) {
+                    throw new BadRequestAlertException("Loan period not found for given id", "Reference", "updateLoanPeriod");
+                } else {
+                    BnRLoanPeriod loanPeriod = optLoanPeriod.get();
+                    loanPeriod.setName(bnRLoanPeriodDto.getName());
+                    loanPeriod.setDescription(bnRLoanPeriodDto.getDescription());
+                    loanPeriod.setMonth(bnRLoanPeriodDto.getMonth());
+                    loanPeriod = loanPeriodRepository.save(loanPeriod);
+                    return ResponseEntity.ok(loanPeriodMapper.toDto(loanPeriod));
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateLoanPeriod");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRLoanProductDto> updateLoanProduct(Long id, BnRLoanProductDto bnRLoanProductDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Loan product id is required", "Reference", "updateLoanProduct");
+            } else if (id != bnRLoanProductDto.getProductId()) {
+                throw new BadRequestAlertException("Loan product id mismatch", "Reference", "updateLoanProduct");
+            } else {
+                Optional<BnRLoanProduct> optLoanProduct = loanProductRepository.findById(id);
+                if (!optLoanProduct.isPresent()) {
+                    throw new BadRequestAlertException("Loan product not found for given id", "Reference", "updateLoanProduct");
+                } else {
+                    Optional<BnRLoanType> optLoanType = loanTypeRepository.findById(bnRLoanProductDto.getLoanTypeId());
+                    Optional<BnRIntRate> optIntRate = intRateRepository.findById(bnRLoanProductDto.getIntRateId());
+                    Optional<BnRLoanPeriod> optLoanPeriod = loanPeriodRepository.findById(bnRLoanProductDto.getPeriodId());
+                    if (!optLoanType.isPresent()) {
+                        throw new BadRequestAlertException("Loan type not found for given id", "Reference", "updateLoanProduct");
+                    } else if (!optIntRate.isPresent()) {
+                        throw new BadRequestAlertException("Interest rate not found for given id", "Reference", "updateLoanProduct");
+                    } else if (!optLoanPeriod.isPresent()) {
+                        throw new BadRequestAlertException("Loan period not found for given id", "Reference", "updateLoanProduct");
+                    } else {
+                        BnRLoanProduct loanProduct = optLoanProduct.get();
+                        loanProduct.setBnRLoanType(optLoanType.get());
+                        loanProduct.setBnRIntRate(optIntRate.get());
+                        loanProduct.setBnRLoanPeriod(optLoanPeriod.get());
+                        loanProduct = loanProductRepository.save(loanProduct);
+                        return ResponseEntity.ok(loanProductMapper.toDto(loanProduct));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateLoanProduct");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRLoanTypeDto> updateLoanType(Long id, BnRLoanTypeDto bnRLoanTypeDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Loan type id is required", "Reference", "updateLoanType");
+            } else if (id != bnRLoanTypeDto.getLoanTypeId()) {
+                throw new BadRequestAlertException("Loan type id mismatch", "Reference", "updateLoanType");
+            } else {
+                Optional<BnRLoanType> optLoanType = loanTypeRepository.findById(id);
+                if (!optLoanType.isPresent()) {
+                    throw new BadRequestAlertException("Loan type not found for given id", "Reference", "updateLoanType");
+                } else {
+                    BnRLoanType loanType = optLoanType.get();
+                    loanType.setName(bnRLoanTypeDto.getName());
+                    loanType.setCode(bnRLoanTypeDto.getCode());
+                    loanType.setDescription(bnRLoanTypeDto.getDescription());
+                    loanType = loanTypeRepository.save(loanType);
+                    return ResponseEntity.ok(loanTypeMapper.toDto(loanType));
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateLoanType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRStatusDto> updateStatus(Long id, BnRStatusDto bnRStatusDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Status id is required", "Reference", "updateStatus");
+            } else if (id != bnRStatusDto.getStatusId()) {
+                throw new BadRequestAlertException("Status id mismatch", "Reference", "updateStatus");
+            } else {
+                Optional<BnRStatus> optStatus = statusRepository.findById(id);
+                if (!optStatus.isPresent()) {
+                    throw new BadRequestAlertException("Status not found for given id", "Reference", "updateStatus");
+                } else {
+                    BnRStatus status = optStatus.get();
+                    status.setName(bnRStatusDto.getName());
+                    status.setCode(bnRStatusDto.getCode());
+                    status.setType(bnRStatusDto.getType());
+                    status = statusRepository.save(status);
+                    return ResponseEntity.ok(statusMapper.toDto(status));
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateStatus");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRTranTypeDto> updateTranType(Long id, BnRTranTypeDto bnRTranTypeDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Transaction type id is required", "Reference", "updateTranType");
+            } else if (id != bnRTranTypeDto.getTranTypeId()) {
+                throw new BadRequestAlertException("Transaction type id mismatch", "Reference", "updateTranType");
+            } else {
+                Optional<BnRTranType> optTranType = tranTypeRepository.findById(id);
+                if (!optTranType.isPresent()) {
+                    throw new BadRequestAlertException("Transaction type not found for given id", "Reference", "updateTranType");
+                } else {
+                    BnRTranType tranType = optTranType.get();
+                    tranType.setName(bnRTranTypeDto.getName());
+                    tranType.setCode(bnRTranTypeDto.getCode());
+                    tranType = tranTypeRepository.save(tranType);
+                    return ResponseEntity.ok(tranTypeMapper.toDto(tranType));
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateTranType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRRoleDto> updateRole(Long id, BnRRoleDto bnRRoleDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Role id is required", "Reference", "updateRole");
+            } else if (id != bnRRoleDto.getRoleId()) {
+                throw new BadRequestAlertException("Role id mismatch", "Reference", "updateRole");
+            } else {
+                Optional<BnRRole> optRole = roleRepository.findById(id);
+                if (!optRole.isPresent()) {
+                    throw new BadRequestAlertException("Role not found for given id", "Reference", "updateRole");
+                } else {
+                    BnRRole role = optRole.get();
+                    role.setRoleName(bnRRoleDto.getRoleName());
+                    role.setDescription(bnRRoleDto.getDescription());
+                    role.setIsActive(bnRRoleDto.getIsActive());
+                    role = roleRepository.save(role);
+                    return ResponseEntity.ok(roleMapper.toDto(role));
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateRole");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteAccountType(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Account type id is required", "Reference", "deleteAccountType");
+            } else {
+                Optional<BnRAccountType> optAccountType = accountTypeRepository.findById(id);
+                if (!optAccountType.isPresent()) {
+                    throw new BadRequestAlertException("Account type not found for given id", "Reference", "deleteAccountType");
+                } else {
+                    accountTypeRepository.deleteById(id);
+                    if (accountTypeRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Account type delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Account type deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteAccountType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteBank(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Bank id is required", "Reference", "deleteBank");
+            } else {
+                Optional<BnRBank> optBank = bankRepository.findById(id);
+                if (!optBank.isPresent()) {
+                    throw new BadRequestAlertException("Bank not found for given id", "Reference", "deleteBank");
+                } else {
+                    bankRepository.deleteById(id);
+                    if (bankRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Bank delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Bank deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteBank");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteBranch(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Branch id is required", "Reference", "deleteBranch");
+            } else {
+                Optional<BnRBranch> optBranch = branchRepository.findById(id);
+                if (!optBranch.isPresent()) {
+                    throw new BadRequestAlertException("Branch not found for given id", "Reference", "deleteBranch");
+                } else {
+                    branchRepository.deleteById(id);
+                    if (branchRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Branch delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Branch deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteBranch");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteCharge(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Charge id is required", "Reference", "deleteCharge");
+            } else {
+                Optional<BnRCharge> optCharge = chargeRepository.findById(id);
+                if (!optCharge.isPresent()) {
+                    throw new BadRequestAlertException("Charge not found for given id", "Reference", "deleteCharge");
+                } else {
+                    chargeRepository.deleteById(id);
+                    if (chargeRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Charge delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Charge deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteCharge");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteCurrency(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Currency id is required", "Reference", "deleteCurrency");
+            } else {
+                Optional<BnRCurrency> optCurrency = currencyRepository.findById(id);
+                if (!optCurrency.isPresent()) {
+                    throw new BadRequestAlertException("Currency not found for given id", "Reference", "deleteCurrency");
+                } else {
+                    currencyRepository.deleteById(id);
+                    if (currencyRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Currency delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Currency deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteCurrency");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteFeeType(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Fee type id is required", "Reference", "deleteFeeType");
+            } else {
+                Optional<BnRFeeType> optFeeType = feeTypeRepository.findById(id);
+                if (!optFeeType.isPresent()) {
+                    throw new BadRequestAlertException("Fee type not found for given id", "Reference", "deleteFeeType");
+                } else {
+                    feeTypeRepository.deleteById(id);
+                    if (feeTypeRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Fee type delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Fee type deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteFeeType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteIntRate(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Interest rate id is required", "Reference", "deleteIntRate");
+            } else {
+                Optional<BnRIntRate> optIntRate = intRateRepository.findById(id);
+                if (!optIntRate.isPresent()) {
+                    throw new BadRequestAlertException("Interest rate not found for given id", "Reference", "deleteIntRate");
+                } else {
+                    intRateRepository.deleteById(id);
+                    if (intRateRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Interest rate delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Interest rate deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteIntRate");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteLoanPeriod(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Loan period id is required", "Reference", "deleteLoanPeriod");
+            } else {
+                Optional<BnRLoanPeriod> optLoanPeriod = loanPeriodRepository.findById(id);
+                if (!optLoanPeriod.isPresent()) {
+                    throw new BadRequestAlertException("Loan period not found for given id", "Reference", "deleteLoanPeriod");
+                } else {
+                    loanPeriodRepository.deleteById(id);
+                    if (loanPeriodRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Loan period delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Loan period deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteLoanPeriod");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteLoanProduct(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Loan product id is required", "Reference", "deleteLoanProduct");
+            } else {
+                Optional<BnRLoanProduct> optLoanProduct = loanProductRepository.findById(id);
+                if (!optLoanProduct.isPresent()) {
+                    throw new BadRequestAlertException("Loan product not found for given id", "Reference", "deleteLoanProduct");
+                } else {
+                    loanProductRepository.deleteById(id);
+                    if (loanProductRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Loan product delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Loan product deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteLoanProduct");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteLoanType(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Loan type id is required", "Reference", "deleteLoanType");
+            } else {
+                Optional<BnRLoanType> optLoanType = loanTypeRepository.findById(id);
+                if (!optLoanType.isPresent()) {
+                    throw new BadRequestAlertException("Loan type not found for given id", "Reference", "deleteLoanType");
+                } else {
+                    loanTypeRepository.deleteById(id);
+                    if (loanTypeRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Loan type delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Loan type deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteLoanType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteStatus(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Status id is required", "Reference", "deleteStatus");
+            } else {
+                Optional<BnRStatus> optStatus = statusRepository.findById(id);
+                if (!optStatus.isPresent()) {
+                    throw new BadRequestAlertException("Status not found for given id", "Reference", "deleteStatus");
+                } else {
+                    statusRepository.deleteById(id);
+                    if (statusRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Status delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Status deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteStatus");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteTranType(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Transaction type id is required", "Reference", "deleteTranType");
+            } else {
+                Optional<BnRTranType> optTranType = tranTypeRepository.findById(id);
+                if (!optTranType.isPresent()) {
+                    throw new BadRequestAlertException("Transaction type not found for given id", "Reference", "deleteTranType");
+                } else {
+                    tranTypeRepository.deleteById(id);
+                    if (tranTypeRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Transaction type delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Transaction type deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteTranType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteRole(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Role id is required", "Reference", "deleteRole");
+            } else {
+                Optional<BnRRole> optRole = roleRepository.findById(id);
+                if (!optRole.isPresent()) {
+                    throw new BadRequestAlertException("Role not found for given id", "Reference", "deleteRole");
+                } else {
+                    roleRepository.deleteById(id);
+                    if (roleRepository.findById(id).isPresent()) {
+                        return ResponseEntity.ok("Role delete request failed");
+                    } else {
+                        return ResponseEntity.ok("Role deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteRole");
+        }
+    }
 }

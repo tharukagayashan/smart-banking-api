@@ -3,6 +3,7 @@ package com.projects.smartbankingapi.rest.transaction;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.other.BankDepositTranCreateReqDto;
 import com.projects.smartbankingapi.dto.other.DebitTranCreateReqDto;
+import com.projects.smartbankingapi.dto.other.TransactionReceiptDto;
 import com.projects.smartbankingapi.dto.transaction.BnTTranDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.service.transaction.TransactionService;
@@ -65,6 +66,12 @@ public class TransactionController {
             throw new BadRequestAlertException("PLEASE SELECT FROM DATE", ENTITY_NAME, "FILTER_DATES");
         }
         ResponseEntity<ApiResponseDto<List<BnTTranDto>>> response = transactionService.getTransactionsForTable(page, perPage, direction, sort, search, fromAccountNo, toAccountNo, fromDate, toDate);
+        return response;
+    }
+
+    @GetMapping("/generate-statement/{tranId}")
+    public ResponseEntity<TransactionReceiptDto> getTranStatement(@PathVariable Long tranId) {
+        ResponseEntity<TransactionReceiptDto> response = transactionService.getTranStatement(tranId);
         return response;
     }
 
