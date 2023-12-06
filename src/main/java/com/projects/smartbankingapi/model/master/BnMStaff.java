@@ -1,7 +1,6 @@
 package com.projects.smartbankingapi.model.master;
 
 import com.projects.smartbankingapi.audit.AuditModel;
-import com.projects.smartbankingapi.model.reference.BnRBank;
 import com.projects.smartbankingapi.model.reference.BnRBranch;
 import com.projects.smartbankingapi.model.reference.BnRRole;
 import lombok.AllArgsConstructor;

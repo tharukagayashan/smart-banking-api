@@ -64,7 +64,7 @@ public class CustomerController {
             @RequestParam(required = false, defaultValue = "customerId") String sort,
             @RequestParam(required = false, defaultValue = "asc") String direction,
             @RequestParam(required = false, defaultValue = "") String search
-    ){
+    ) {
         ResponseEntity<ApiResponseDto<List<BnMCustomerDto>>> response = customerService.getCustomersForTable(page, perPage, sort, direction, search);
         return response;
     }

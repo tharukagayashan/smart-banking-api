@@ -1,9 +1,5 @@
 package com.projects.smartbankingapi.dto.master;
 
-import com.projects.smartbankingapi.dto.reference.BnRAccountTypeDto;
-import com.projects.smartbankingapi.dto.reference.BnRBranchDto;
-import com.projects.smartbankingapi.dto.reference.BnRCurrencyDto;
-import com.projects.smartbankingapi.dto.reference.BnRStatusDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
