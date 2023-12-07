@@ -25,4 +25,5 @@ public class TranCreateReqDto {
     @NotNull
     private Long tranTypeId;
     private Long statusId;
+    private Long branchId;
 }

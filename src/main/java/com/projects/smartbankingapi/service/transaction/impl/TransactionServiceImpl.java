@@ -1,6 +1,9 @@
 package com.projects.smartbankingapi.service.transaction.impl;
 
 import com.projects.smartbankingapi.dao.master.BnMAccountRepository;
+import com.projects.smartbankingapi.dao.reference.BnRBranchRepository;
+import com.projects.smartbankingapi.dao.reference.BnRStatusRepository;
+import com.projects.smartbankingapi.dao.reference.BnRTranTypeRepository;
 import com.projects.smartbankingapi.dao.transaction.BnTTranRepository;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.miscellaneous.PaginationDto;
@@ -28,23 +31,29 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class TransactionServiceImpl implements TransactionService {
-
+    private final BnRStatusRepository statusRepo;
+    private final BnRTranTypeRepository tranTypeRepo;
     private final CustomMethods customMethods;
     private final BnTTranRepository tranRepo;
     private final BnTTranMapper tranMapper;
-    private final BnMAccountRepository accountRepository;
+    private final BnMAccountRepository accountRepo;
+    private final BnRBranchRepository branchRepo;
 
-    public TransactionServiceImpl(CustomMethods customMethods, BnTTranRepository tranRepo, BnTTranMapper tranMapper, BnMAccountRepository accountRepository) {
+    public TransactionServiceImpl(BnRStatusRepository statusRepo, BnRTranTypeRepository tranTypeRepo, CustomMethods customMethods, BnTTranRepository tranRepo, BnTTranMapper tranMapper, BnMAccountRepository accountRepo, BnRBranchRepository branchRepo) {
+        this.statusRepo = statusRepo;
+        this.tranTypeRepo = tranTypeRepo;
         this.customMethods = customMethods;
         this.tranRepo = tranRepo;
         this.tranMapper = tranMapper;
-        this.accountRepository = accountRepository;
+        this.accountRepo = accountRepo;
+        this.branchRepo = branchRepo;
     }
+
 
     @Override
     public ResponseEntity<BnTTranDto> createBankDepositTransaction(BankDepositTranCreateReqDto bankDepositTranCreateReqDto) {
         try {
-            BnTTran createdTran = customMethods.createBankDepositTransaction(bankDepositTranCreateReqDto);
+            BnTTran createdTran = customMethods.createBankDepositTransaction(bankDepositTranCreateReqDto, accountRepo, tranTypeRepo, statusRepo, tranRepo, branchRepo);
             if (createdTran == null) {
                 throw new BadRequestAlertException("Error occurred while creating bank deposit transaction", "Transaction", "bank-deposit-transaction-error");
             } else {
@@ -60,7 +69,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public ResponseEntity<BnTTranDto> createDebitTransaction(DebitTranCreateReqDto debitTranCreateReqDto) {
         try {
-            BnTTran createdTran = customMethods.createDebitFundTransaction(debitTranCreateReqDto);
+            BnTTran createdTran = customMethods.createDebitFundTransaction(debitTranCreateReqDto, accountRepo, tranTypeRepo, statusRepo, tranRepo, branchRepo);
             if (createdTran == null) {
                 throw new BadRequestAlertException("Error occurred while creating debit transaction", "Transaction", "debit-transaction-error");
             } else {
@@ -141,8 +150,8 @@ public class TransactionServiceImpl implements TransactionService {
                     BnMAccount fromAccount;
                     BnMAccount toAccount;
                     BnTTran tran = optTran.get();
-                    Optional<BnMAccount> optFromAccount = accountRepository.findByAccountNo(tran.getFromAccountNo());
-                    Optional<BnMAccount> optToAccount = accountRepository.findByAccountNo(tran.getToAccountNo());
+                    Optional<BnMAccount> optFromAccount = accountRepo.findByAccountNo(tran.getFromAccountNo());
+                    Optional<BnMAccount> optToAccount = accountRepo.findByAccountNo(tran.getToAccountNo());
                     if (!optFromAccount.isPresent()) {
                         throw new BadRequestAlertException("From Account not found", "Transaction", "ERROR");
                     } else if (!optToAccount.isPresent()) {

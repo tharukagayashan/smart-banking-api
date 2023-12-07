@@ -2,6 +2,7 @@ package com.projects.smartbankingapi.other;
 
 import com.projects.smartbankingapi.constant.HardCodeConstant;
 import com.projects.smartbankingapi.dao.master.BnMAccountRepository;
+import com.projects.smartbankingapi.dao.reference.BnRBranchRepository;
 import com.projects.smartbankingapi.dao.reference.BnRStatusRepository;
 import com.projects.smartbankingapi.dao.reference.BnRTranTypeRepository;
 import com.projects.smartbankingapi.dao.transaction.BnTTranRepository;
@@ -10,6 +11,7 @@ import com.projects.smartbankingapi.dto.other.DebitTranCreateReqDto;
 import com.projects.smartbankingapi.dto.other.TranCreateReqDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.model.master.BnMAccount;
+import com.projects.smartbankingapi.model.reference.BnRBranch;
 import com.projects.smartbankingapi.model.reference.BnRStatus;
 import com.projects.smartbankingapi.model.reference.BnRTranType;
 import com.projects.smartbankingapi.model.transaction.BnTTran;
@@ -24,18 +26,6 @@ import java.util.UUID;
 @Slf4j
 @Configuration
 public class CustomMethods {
-
-    private final BnMAccountRepository accountRepo;
-    private final BnTTranRepository tranRepo;
-    private final BnRStatusRepository statusRepo;
-    private final BnRTranTypeRepository tranTypeRepo;
-
-    public CustomMethods(BnMAccountRepository accountRepo, BnTTranRepository tranRepo, BnRStatusRepository statusRepo, BnRTranTypeRepository tranTypeRepo) {
-        this.accountRepo = accountRepo;
-        this.tranRepo = tranRepo;
-        this.statusRepo = statusRepo;
-        this.tranTypeRepo = tranTypeRepo;
-    }
 
     public String validateNIC(String nic) {
         String msg;
@@ -63,7 +53,7 @@ public class CustomMethods {
         return accountNumber;
     }
 
-    public BnTTran createDebitFundTransaction(DebitTranCreateReqDto debitTranCreateReqDto) {
+    public BnTTran createDebitFundTransaction(DebitTranCreateReqDto debitTranCreateReqDto, BnMAccountRepository accountRepo, BnRTranTypeRepository bnRTranTypeRepository, BnRStatusRepository bnRStatusRepository, BnTTranRepository bnTTranRepository, BnRBranchRepository bnRBranchRepository) {
         try {
             Optional<BnMAccount> optFromAccount = accountRepo.findByAccountNo(debitTranCreateReqDto.getFromAccountNo());
             Optional<BnMAccount> optToAccount = accountRepo.findByAccountNo(debitTranCreateReqDto.getToAccountNo());
@@ -93,11 +83,12 @@ public class CustomMethods {
                             debitTranCreateReqDto.getFromAccountNo(),
                             debitTranCreateReqDto.getToAccountNo(),
                             HardCodeConstant.TRAN_TYPE_DEBIT_ID.longValue(), // debit transaction type hard coded
-                            HardCodeConstant.STATUS_PENDING_ID.longValue() // debit transaction status hard coded
-                    ));
+                            HardCodeConstant.STATUS_PENDING_ID.longValue(), // debit transaction status hard coded
+                            fromAccount.getBnRBranch().getBranchId()
+                    ), bnRTranTypeRepository, bnRStatusRepository, bnTTranRepository, bnRBranchRepository);
                     log.info("Debit transaction created successfully");
 
-                    savedTran = approveDebitFundTransaction(savedTran.getTranId());
+                    savedTran = approveDebitFundTransaction(savedTran.getTranId(), bnTTranRepository, bnRStatusRepository, accountRepo);
                     log.info("Debit transaction auto approved successfully");
 
                     return savedTran;
@@ -109,7 +100,7 @@ public class CustomMethods {
         }
     }
 
-    public BnTTran approveDebitFundTransaction(Long tranId) {
+    public BnTTran approveDebitFundTransaction(Long tranId, BnTTranRepository tranRepo, BnRStatusRepository statusRepo, BnMAccountRepository accountRepo) {
         try {
             Optional<BnTTran> optTran = tranRepo.findById(tranId);
             if (!optTran.isPresent()) {
@@ -161,7 +152,7 @@ public class CustomMethods {
         }
     }
 
-    public BnTTran createTranRecord(TranCreateReqDto tranCreateReqDto) {
+    public BnTTran createTranRecord(TranCreateReqDto tranCreateReqDto, BnRTranTypeRepository tranTypeRepo, BnRStatusRepository statusRepo, BnTTranRepository tranRepo, BnRBranchRepository branchRepo) {
         try {
 
             Optional<BnRTranType> optTranType = tranTypeRepo.findById(tranCreateReqDto.getTranTypeId());
@@ -174,6 +165,11 @@ public class CustomMethods {
                 throw new BadRequestAlertException("Status not found", "Transaction", "status_not_found");
             }
 
+            Optional<BnRBranch> optBranch = branchRepo.findById(tranCreateReqDto.getBranchId());
+            if (!optBranch.isPresent()) {
+                throw new BadRequestAlertException("Branch not found", "Transaction", "branch_not_found");
+            }
+
             BnTTran tran = new BnTTran();
             tran.setAmount(tranCreateReqDto.getAmount());
             tran.setTranDate(LocalDate.now());
@@ -184,6 +180,7 @@ public class CustomMethods {
             tran.setToAccountNo(tranCreateReqDto.getToAccountNo());
             tran.setBnRStatus(optStatus.get());
             tran.setTranReference(UUID.randomUUID().toString());
+            tran.setBnRBranch(optBranch.get());
             tran = tranRepo.save(tran);
             if (tran.getTranId() != null) {
                 log.info("Pending transaction record created successfully");
@@ -198,7 +195,7 @@ public class CustomMethods {
         }
     }
 
-    public BnTTran createBankDepositTransaction(BankDepositTranCreateReqDto bankDepositTranCreateReqDto) {
+    public BnTTran createBankDepositTransaction(BankDepositTranCreateReqDto bankDepositTranCreateReqDto, BnMAccountRepository accountRepo, BnRTranTypeRepository bnRTranTypeRepository, BnRStatusRepository bnRStatusRepository, BnTTranRepository bnTTranRepository, BnRBranchRepository bnRBranchRepository) {
         try {
             Optional<BnMAccount> optAccount = accountRepo.findByAccountNo(bankDepositTranCreateReqDto.getToAccountNo());
             if (!optAccount.isPresent()) {
@@ -208,27 +205,40 @@ public class CustomMethods {
                 boolean flag = false;
                 if (!account.getIsFirstDepositDone()) {
                     if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.SAVING_ACCOUNT_TYPE_ID.longValue()) {
-                        if (bankDepositTranCreateReqDto.getAmount() < HardCodeConstant.SAVING_MIN_BALANCE) {
+                        if ((bankDepositTranCreateReqDto.getAmount() + account.getAvailableBalance()) < HardCodeConstant.SAVING_MIN_BALANCE) {
                             log.info("Minimum first deposit amount for saving account is {}", HardCodeConstant.SAVING_MIN_BALANCE);
                         } else {
-                            flag = true;
+                            if ((account.getAvailableBalance() + bankDepositTranCreateReqDto.getAmount()) >= HardCodeConstant.SAVING_MIN_BALANCE) {
+                                log.info("Minimum first deposit amount for saving account is {}", HardCodeConstant.SAVING_MIN_BALANCE);
+                                log.info("Account balance will be greater than or equal to minimum balance");
+                                flag = true;
+                            }
                         }
                     } else if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.CHECK_ACCOUNT_TYPE_ID.longValue()) {
-                        if (bankDepositTranCreateReqDto.getAmount() < HardCodeConstant.CHECK_MIN_BALANCE) {
+                        if ((bankDepositTranCreateReqDto.getAmount() + account.getAvailableBalance()) < HardCodeConstant.CHECK_MIN_BALANCE) {
                             log.info("Minimum first deposit amount for check account is {}", HardCodeConstant.CHECK_MIN_BALANCE);
                         } else {
-                            flag = true;
+                            if ((account.getAvailableBalance() + bankDepositTranCreateReqDto.getAmount()) >= HardCodeConstant.CHECK_MIN_BALANCE) {
+                                log.info("Minimum first deposit amount for check account is {}", HardCodeConstant.CHECK_MIN_BALANCE);
+                                log.info("Account balance will be greater than or equal to minimum balance");
+                                flag = true;
+                            }
                         }
                     } else if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.FIXED_MIN_BALANCE) {
-                        if (bankDepositTranCreateReqDto.getAmount() < HardCodeConstant.FIXED_MIN_BALANCE) {
+                        if ((bankDepositTranCreateReqDto.getAmount() + account.getAvailableBalance()) < HardCodeConstant.FIXED_MIN_BALANCE) {
                             log.info("Minimum first deposit amount for fixed deposit account is {}", HardCodeConstant.FIXED_MIN_BALANCE);
                         } else {
-                            flag = true;
+                            if ((account.getAvailableBalance() + bankDepositTranCreateReqDto.getAmount()) >= HardCodeConstant.FIXED_MIN_BALANCE) {
+                                log.info("Minimum first deposit amount for fixed deposit account is {}", HardCodeConstant.FIXED_MIN_BALANCE);
+                                log.info("Account balance will be greater than or equal to minimum balance");
+                                flag = true;
+                            }
                         }
                     } else {
                         throw new BadRequestAlertException("Account type not found", "Transaction", "account_type_not_found");
                     }
                 }
+                log.info("Account found");
 
                 if (!flag) {
                     log.info("Minimum first deposit amount not satisfied");
@@ -238,7 +248,6 @@ public class CustomMethods {
                     account.setIsActive(true);
                 }
 
-                log.info("Account found");
                 log.info("Deposit amount: " + bankDepositTranCreateReqDto.getAmount());
                 log.info("Available balance: " + account.getAvailableBalance());
                 log.info("Current balance: " + account.getCurrentBalance());
@@ -257,8 +266,9 @@ public class CustomMethods {
                         "",
                         bankDepositTranCreateReqDto.getToAccountNo(),
                         HardCodeConstant.TRAN_TYPE_CREDIT_ID.longValue(), // bank deposit transaction type hard coded
-                        HardCodeConstant.STATUS_APPROVED_ID.longValue() // bank deposit transaction status hard coded
-                ));
+                        HardCodeConstant.STATUS_APPROVED_ID.longValue(), // bank deposit transaction status hard coded
+                        account.getBnRBranch().getBranchId()
+                ), bnRTranTypeRepository, bnRStatusRepository, bnTTranRepository, bnRBranchRepository);
                 log.info("Bank deposit transaction created successfully");
                 return savedTran;
 

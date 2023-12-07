@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface BnMAccountRepository extends JpaRepository<BnMAccount, Long> {
 
-    Optional<BnMAccount> findByBnMCustomerNic(String nic);
+    Optional<BnMAccount> findByBnMCustomerNicAndBnRAccountTypeAccountTypeId(String nic, Long accountTypeId);
 
     List<BnMAccount> findAllByIsActive(Boolean isActive);
 
