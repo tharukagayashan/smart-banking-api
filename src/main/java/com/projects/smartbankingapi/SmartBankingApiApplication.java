@@ -9,6 +9,7 @@ import com.projects.smartbankingapi.model.master.BnMAccount;
 import com.projects.smartbankingapi.model.master.BnMCustomer;
 import com.projects.smartbankingapi.model.master.BnMStaff;
 import com.projects.smartbankingapi.model.reference.*;
+import com.projects.smartbankingapi.other.CustomMethods;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -31,6 +32,7 @@ public class SmartBankingApiApplication {
     private static BnRBankRepository bnRBankRepository = null;
     private static BnRRoleRepository bnRRoleRepository = null;
     private static BnMStaffRepository bnMStaffRepository = null;
+    private static BnRTranTypeRepository bnRTranTypeRepository = null;
 
     public SmartBankingApiApplication(BnMCustomerRepository bnMCustomerRepository, BnMAccountRepository bnMAccountRepository,
                                       BnRAccountTypeRepository bnRAccountTypeRepository,
@@ -38,7 +40,7 @@ public class SmartBankingApiApplication {
                                       BnRCurrencyRepository bnRCurrencyRepository,
                                       BnRStatusRepository bnRStatusRepository,
                                       BnRBankRepository bnRBankRepository,
-                                      BnRRoleRepository bnRRoleRepository, BnMStaffRepository bnMStaffRepository) {
+                                      BnRRoleRepository bnRRoleRepository, BnMStaffRepository bnMStaffRepository, BnRTranTypeRepository bnRTranTypeRepository) {
         this.bnMCustomerRepository = bnMCustomerRepository;
         this.bnMAccountRepository = bnMAccountRepository;
         this.bnRAccountTypeRepository = bnRAccountTypeRepository;
@@ -48,6 +50,7 @@ public class SmartBankingApiApplication {
         this.bnRBankRepository = bnRBankRepository;
         this.bnRRoleRepository = bnRRoleRepository;
         this.bnMStaffRepository = bnMStaffRepository;
+        this.bnRTranTypeRepository = bnRTranTypeRepository;
     }
 
     public static void main(String[] args) {
@@ -58,6 +61,34 @@ public class SmartBankingApiApplication {
     }
 
     public static void insertRecordsFromCommandLine() {
+
+        Optional<BnRTranType> optTranType1 = bnRTranTypeRepository.findById(new Long(1));
+        if (optTranType1.isPresent()) {
+            log.info("Debit Tran Type is present");
+        } else {
+            BnRTranType tranType;
+            tranType = BnRTranType.builder()
+                    .name("Debit")
+                    .code("DEB")
+                    .build();
+
+            bnRTranTypeRepository.save(tranType);
+            log.info("Debit Tran Type is saved");
+        }
+
+        Optional<BnRTranType> optTranType2 = bnRTranTypeRepository.findById(new Long(2));
+        if (optTranType2.isPresent()) {
+            log.info("Credit Tran Type is present");
+        } else {
+            BnRTranType tranType;
+            tranType = BnRTranType.builder()
+                    .name("Credit")
+                    .code("CRE")
+                    .build();
+
+            bnRTranTypeRepository.save(tranType);
+            log.info("Credit Tran Type is saved");
+        }
 
         Optional<BnRCurrency> optCurrency = bnRCurrencyRepository.findById(new Long(1));
         if (optCurrency.isPresent()) {
@@ -88,24 +119,55 @@ public class SmartBankingApiApplication {
             log.info("Role is saved");
         }
 
-        Optional<BnRStatus> optStatus = bnRStatusRepository.findById(new Long(1));
-        if (optStatus.isPresent()) {
-            log.info("Status is present");
+        Optional<BnRStatus> optStatus1 = bnRStatusRepository.findById(new Long(1));
+        if (optStatus1.isPresent()) {
+            log.info("New Status is present");
         } else {
             BnRStatus status;
             status = BnRStatus.builder()
-                    .name("Active")
-                    .code("ACT")
+                    .name("New")
+                    .code("NEW")
                     .type("A")
                     .build();
 
             bnRStatusRepository.save(status);
-            log.info("Status is saved");
+            log.info("New Status is saved");
         }
 
-        Optional<BnRAccountType> optAccountType = bnRAccountTypeRepository.findById(new Long(1));
-        if (optAccountType.isPresent()) {
-            log.info("Account Type is present");
+        Optional<BnRStatus> optStatus2 = bnRStatusRepository.findById(new Long(2));
+        if (optStatus2.isPresent()) {
+            log.info("Pending Status is present");
+        } else {
+            BnRStatus status;
+            status = BnRStatus.builder()
+                    .name("Pending")
+                    .code("PND")
+                    .type("A")
+                    .build();
+
+            bnRStatusRepository.save(status);
+            log.info("Pending Status is saved");
+        }
+
+        Optional<BnRStatus> optStatus3 = bnRStatusRepository.findById(new Long(3));
+        if (optStatus3.isPresent()) {
+            log.info("Approve Status is present");
+        } else {
+            BnRStatus status;
+            status = BnRStatus.builder()
+                    .name("Approve")
+                    .code("APR")
+                    .type("A")
+                    .build();
+
+            bnRStatusRepository.save(status);
+            log.info("Approve Status is saved");
+        }
+
+        String accountTypeCode = "";
+        Optional<BnRAccountType> optAccountType1 = bnRAccountTypeRepository.findById(new Long(1));
+        if (optAccountType1.isPresent()) {
+            log.info("Saving Account Type is present");
         } else {
             BnRAccountType accountType;
             accountType = BnRAccountType.builder()
@@ -114,8 +176,37 @@ public class SmartBankingApiApplication {
                     .build();
 
             bnRAccountTypeRepository.save(accountType);
-            log.info("Account Type is saved");
+            log.info("Saving Account Type is saved");
         }
+
+        Optional<BnRAccountType> optAccountType2 = bnRAccountTypeRepository.findById(new Long(2));
+        if (optAccountType2.isPresent()) {
+            log.info("Check Account Type is present");
+        } else {
+            BnRAccountType accountType;
+            accountType = BnRAccountType.builder()
+                    .name("Check")
+                    .code("CHK")
+                    .build();
+
+            bnRAccountTypeRepository.save(accountType);
+            log.info("Check account Type is saved");
+        }
+
+        Optional<BnRAccountType> optAccountType3 = bnRAccountTypeRepository.findById(new Long(3));
+        if (optAccountType3.isPresent()) {
+            log.info("Fixed Deposit Account Type is present");
+        } else {
+            BnRAccountType accountType;
+            accountType = BnRAccountType.builder()
+                    .name("Fixed Deposit")
+                    .code("FIX")
+                    .build();
+
+            bnRAccountTypeRepository.save(accountType);
+            log.info("Fixed Deposit Account Type is saved");
+        }
+
 
         Optional<BnRBank> optBank = bnRBankRepository.findById(new Long(1));
         if (optBank.isPresent()) {
@@ -132,12 +223,11 @@ public class SmartBankingApiApplication {
             log.info("Bank is saved");
         }
 
-
+        String branchCode = "";
         Optional<BnRBranch> optBranch = bnRBranchRepository.findById(new Long(1));
         if (optBranch.isPresent()) {
             log.info("Branch is present");
         } else {
-
             Optional<BnRBank> optionalBank = bnRBankRepository.findById(new Long(1));
             if (optionalBank.isPresent()) {
                 BnRBranch branch;
@@ -190,9 +280,15 @@ public class SmartBankingApiApplication {
                     .bnRBranch(bnRBranchRepository.findById(new Long(1)).get())
                     .bnRCurrency(bnRCurrencyRepository.findById(new Long(1)).get())
                     .bnRStatus(bnRStatusRepository.findById(new Long(1)).get())
+                    .isFirstDepositDone(true)
                     .build();
+            account = bnMAccountRepository.save(account);
+            CustomMethods customMethods = new CustomMethods();
+            String accountNo = "HDOSAV23120001";
+            account.setAccountNo(accountNo);
             bnMAccountRepository.save(account);
-            log.info("Account is saved");
+
+            log.info("Account is saved. Account No : " + accountNo);
         }
 
         Optional<BnMStaff> optStaff = bnMStaffRepository.findById(new Long(1));

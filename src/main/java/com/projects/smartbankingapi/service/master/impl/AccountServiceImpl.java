@@ -61,9 +61,9 @@ public class AccountServiceImpl implements AccountService {
     public ResponseEntity<ResponseDto> createAccount(AccountCreateReqDto accountCreateReqDto) {
         try {
             BnMAccount account = getBnMAccount(accountCreateReqDto);
-            Optional<BnMAccount> optAccount = accountRepository.findByBnMCustomerNic(account.getBnMCustomer().getNic());
+            Optional<BnMAccount> optAccount = accountRepository.findByBnMCustomerNicAndBnRAccountTypeAccountTypeId(account.getBnMCustomer().getNic(), account.getBnRAccountType().getAccountTypeId());
             if (optAccount.isPresent()) {
-                throw new BadRequestAlertException("Account already exists for given customer", "BnMAccount", "ALREADY_EXISTS");
+                throw new BadRequestAlertException("Account already exists for given customer nic and account type", "BnMAccount", "ALREADY_EXISTS");
             }
 
             account = accountRepository.save(account);
@@ -84,7 +84,7 @@ public class AccountServiceImpl implements AccountService {
                     minimumBalance = HardCodeConstant.CHECK_MIN_BALANCE;
                 } else if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.FIXED_ACCOUNT_TYPE_ID.longValue()) {
                     minimumBalance = HardCodeConstant.FIXED_MIN_BALANCE;
-                }else {
+                } else {
                     throw new BadRequestAlertException("Account type not found", "BnRAccountType", "NOT_FOUND");
                 }
 
@@ -295,6 +295,7 @@ public class AccountServiceImpl implements AccountService {
         account.setBnRStatus(optStatus.get());
         account.setBnRCurrency(optCurrency.get());
         account.setBnRBranch(optBranch.get());
+        account.setIsFirstDepositDone(bnMAccountDto.getIsFirstDepositDone());
         return account;
     }
 
