@@ -16,7 +16,7 @@ public class JWTUtils {
 
     private static final String JWT_ISSUER = "smart-bank";
     private static final String JWT_SECRET = "OJDW93R02C289M39920XM";
-    private static final Long JWT_EXPIRATION = 500000000000L;
+    private static final Long JWT_EXPIRATION = 86400000L;
 
     public static String generateJWTToken(TokenDto tokenDto) {
         try {
@@ -48,7 +48,6 @@ public class JWTUtils {
 
     public static Boolean validateJWTToken(String token) {
         try {
-            DecodedJWT isValid = null;
             Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET);
 
             JWT.require(algorithm)

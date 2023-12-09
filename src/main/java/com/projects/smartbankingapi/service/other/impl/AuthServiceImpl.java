@@ -88,7 +88,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<LoginResponseDto> loginStaffMember(LoginReqDto loginReqDto) {
         try {
-
             Optional<BnMStaff> optStaff = staffRepository.findByUsername(loginReqDto.getUsername());
             if (!optStaff.isPresent()) {
                 throw new BadRequestAlertException("Invalid username or password", "staff", "staff");

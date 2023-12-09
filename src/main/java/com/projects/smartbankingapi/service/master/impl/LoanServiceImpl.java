@@ -9,6 +9,7 @@ import com.projects.smartbankingapi.dto.master.BnMLoanDto;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.miscellaneous.PaginationDto;
 import com.projects.smartbankingapi.dto.other.LoanCreateReqDto;
+import com.projects.smartbankingapi.dto.other.LoanDisburseReqDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.mapper.master.BnMLoanMapper;
 import com.projects.smartbankingapi.model.master.BnMAccount;
@@ -110,14 +111,12 @@ public class LoanServiceImpl implements LoanService {
                 } else {
                     BnMLoan loan = optLoan.get();
                     Optional<BnRStatus> optStatus = statusRepository.findById(HardCodeConstant.STATUS_APPROVED_ID.longValue());
-
-                    float nextInstallmentAmt = customMethods.calculateNextInstallmentAmt(loan.getAmount(), loan.getInterest(), loan.getTotInstallments(), loan.getRemInstallments(), loan.getBnRLoanProduct().getBnRLoanType().getLoanTypeId());
-
-                    loan.setBnRStatus(optStatus.get());
-                    loan.setNextInstallmentDate(LocalDate.now().plusMonths(1));
-                    loan.setNextInstallmentAmt(nextInstallmentAmt);
-                    loan.setDistributedAmt(loan.getAmount());
-                    loan = loanRepository.save(loan);
+                    if (!optStatus.isPresent()) {
+                        throw new BadRequestAlertException("Status not found", "Loan", "approveLoan");
+                    } else {
+                        loan.setBnRStatus(optStatus.get());
+                        loan = loanRepository.save(loan);
+                    }
                     log.info("Loan approved successfully");
                     return ResponseEntity.ok(loanMapper.toDto(loan));
                 }
@@ -170,6 +169,36 @@ public class LoanServiceImpl implements LoanService {
         } catch (Exception e) {
             log.error("Error while getting loan for table", e);
             throw new BadRequestAlertException(e.getMessage(), "Loan", "getLoanForTable");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnMLoanDto> disburseLoan(Long loanId, LoanDisburseReqDto loanDisburseReqDto) {
+        try {
+            if (loanId == null) {
+                throw new BadRequestAlertException("Loan Id is required", "Loan", "disburseLoan");
+            } else if (!loanId.equals(loanDisburseReqDto.getLoanId())) {
+                throw new BadRequestAlertException("Loan Id is not match", "Loan", "disburseLoan");
+            } else {
+                Optional<BnMLoan> optLoan = loanRepository.findById(loanId);
+                if (!optLoan.isPresent()) {
+                    throw new BadRequestAlertException("Loan not found", "Loan", "disburseLoan");
+                } else {
+                    BnMLoan loan = optLoan.get();
+
+                    float nextInstallmentAmt = customMethods.calculateNextInstallmentAmt(loanDisburseReqDto.getDisburseAmt(), loan.getInterest(), loan.getTotInstallments(), loan.getRemInstallments(), loan.getBnRLoanProduct().getBnRLoanType().getLoanTypeId());
+
+                    loan.setNextInstallmentDate(LocalDate.now().plusMonths(1));
+                    loan.setNextInstallmentAmt(nextInstallmentAmt);
+                    loan.setDistributedAmt(loanDisburseReqDto.getDisburseAmt());
+
+                    loan = loanRepository.save(loan);
+                    return ResponseEntity.ok(loanMapper.toDto(loan));
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while disbursing loan", e);
+            throw new BadRequestAlertException(e.getMessage(), "Loan", "disburseLoan");
         }
     }
 }
