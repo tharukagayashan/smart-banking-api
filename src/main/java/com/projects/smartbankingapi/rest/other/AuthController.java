@@ -3,6 +3,7 @@ package com.projects.smartbankingapi.rest.other;
 import com.projects.smartbankingapi.dto.auth.LoginReqDto;
 import com.projects.smartbankingapi.dto.auth.LoginResponseDto;
 import com.projects.smartbankingapi.dto.auth.StaffRegisterReqDto;
+import com.projects.smartbankingapi.dto.auth.TokenDto;
 import com.projects.smartbankingapi.dto.master.BnMStaffDto;
 import com.projects.smartbankingapi.service.other.AuthService;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,11 @@ public class AuthController {
     public ResponseEntity<BnMStaffDto> getLoginUserDetails(@RequestHeader("Authorization") String token) {
         ResponseEntity<BnMStaffDto> response = authService.getLoginUserDetails(token);
         return response;
+    }
+
+    @GetMapping("/login-user-by-token")
+    public ResponseEntity<TokenDto> getLoginUserByToken(@RequestParam("token") String token) {
+        return authService.getLoginUserByToken(token);
     }
 
 }

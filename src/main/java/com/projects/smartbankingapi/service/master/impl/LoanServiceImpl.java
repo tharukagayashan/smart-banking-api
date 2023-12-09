@@ -18,6 +18,7 @@ import com.projects.smartbankingapi.model.reference.*;
 import com.projects.smartbankingapi.other.CustomMethods;
 import com.projects.smartbankingapi.service.master.LoanService;
 import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

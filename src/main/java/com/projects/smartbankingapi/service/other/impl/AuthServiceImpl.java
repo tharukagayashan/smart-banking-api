@@ -158,4 +158,19 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestAlertException(e.getMessage(), "staff", "staff");
         }
     }
+
+    @Override
+    public ResponseEntity<TokenDto> getLoginUserByToken(String token) {
+        try {
+            if (JWTUtils.isTokenExpired(token) && JWTUtils.validateJWTToken(token)) {
+                TokenDto tokenDto = JWTUtils.getTokenDetails(token);
+                return ResponseEntity.ok(tokenDto);
+            } else {
+                throw new BadRequestAlertException("Invalid token", "ERROR", "ERROR");
+            }
+        } catch (Exception e) {
+            log.error("Error while getting login user details: {}", e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "ERROR", "ERROR");
+        }
+    }
 }
