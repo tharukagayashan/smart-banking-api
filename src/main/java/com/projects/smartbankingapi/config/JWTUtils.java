@@ -23,7 +23,7 @@ public class JWTUtils {
             Date expiration = new Date(System.currentTimeMillis() + JWT_EXPIRATION);
             Algorithm algorithm = Algorithm.HMAC256(JWT_SECRET);
 
-            String token = JWT.create()
+            return JWT.create()
                     .withIssuer(JWT_ISSUER)
                     .withIssuedAt(new Date())
                     .withExpiresAt(expiration)
@@ -39,8 +39,6 @@ public class JWTUtils {
                     .withClaim("roleId", tokenDto.getRoleId())
                     .withClaim("username", tokenDto.getUsername())
                     .sign(algorithm);
-
-            return token;
         } catch (Exception e) {
             throw new BadRequestAlertException(e.getMessage(), "JWTUtils", "generateJWTToken");
         }
@@ -84,8 +82,7 @@ public class JWTUtils {
             String details = decodedJWT.getClaim("details").asString();
 
             ObjectMapper objectMapper = new ObjectMapper();
-            TokenDto tokenDto = objectMapper.readValue(details, TokenDto.class);
-            return tokenDto;
+            return objectMapper.readValue(details, TokenDto.class);
 
         } catch (Exception e) {
             throw new BadRequestAlertException("Invalided token", "JWTUtils", "generateJWTToken");

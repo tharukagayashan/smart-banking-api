@@ -56,7 +56,9 @@ public class LoanServiceImpl implements LoanService {
             } else {
 
                 Optional<BnRStatus> optStatus = statusRepository.findById(HardCodeConstant.STATUS_PENDING_ID.longValue());
-
+                if (!optStatus.isPresent()){
+                    throw new BadRequestAlertException("Status not found", "Loan", "createLoan");
+                }
                 BnMAccount account = optAccount.get();
                 Optional<BnRLoanProduct> optLoanProduct = loanProductRepository.findById(loanCreateReqDto.getLoanProductId());
                 if (!optLoanProduct.isPresent()) {
@@ -150,7 +152,7 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public ResponseEntity<ApiResponseDto<List<BnMLoanDto>>> getLoanForTable(Integer page, Integer perPage, String sort, String direction, String search) {
         try {
-            Page<BnMLoan> dbData = null;
+            Page<BnMLoan> dbData;
             if (direction.equalsIgnoreCase("asc")) {
                 dbData = loanRepository.getLoanForTable(search, PageRequest.of(page, perPage, Sort.by(Sort.Direction.ASC, sort)));
             } else {
