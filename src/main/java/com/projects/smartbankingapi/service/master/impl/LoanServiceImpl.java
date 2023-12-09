@@ -73,19 +73,19 @@ public class LoanServiceImpl implements LoanService {
                     loan.setInterest(interest);
                     loan.setTotInstallments(loanPeriod.getMonth());
                     loan.setNextInstallmentDate(null);
-                    loan.setTotArrearsAmt(new Float(0));
+                    loan.setTotArrearsAmt((float) 0);
                     loan.setRemInstallments(loanPeriod.getMonth());
-                    loan.setNextInstallmentAmt(new Float(0));
-                    loan.setDistributedAmt(new Float(0));
-                    loan.setTotSettledAmt(new Float(0));
-                    loan.setTotInterestPaid(new Float(0));
-                    loan.setTotPaid(new Float(0));
+                    loan.setNextInstallmentAmt((float) 0);
+                    loan.setDistributedAmt((float) 0);
+                    loan.setTotSettledAmt((float) 0);
+                    loan.setTotInterestPaid((float) 0);
+                    loan.setTotPaid((float) 0);
                     loan.setBnRStatus(optStatus.get());
-                    loan.setBnMAccount(optAccount.get());
-                    loan.setBnRLoanProduct(optLoanProduct.get());
+                    loan.setBnMAccount(account);
+                    loan.setBnRLoanProduct(loanProduct);
 
                     loan = loanRepository.save(loan);
-                    if (loan != null) {
+                    if (loan.getLoanId() != null) {
                         return ResponseEntity.ok(loanMapper.toDto(loan));
                     } else {
                         throw new BadRequestAlertException("Error while creating loan", "Loan", "createLoan");

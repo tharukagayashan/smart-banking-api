@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.Objects;
 
 import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
 
+@Transactional
 @Validated
 @RestController
 @RequestMapping("/transaction")
@@ -32,20 +34,17 @@ public class TransactionController {
 
     @PostMapping("/bank-deposit-transaction")
     public ResponseEntity<BnTTranDto> createBankDepositTransaction(@Valid @RequestBody BankDepositTranCreateReqDto bankDepositTranCreateReqDto) {
-        ResponseEntity<BnTTranDto> response = transactionService.createBankDepositTransaction(bankDepositTranCreateReqDto);
-        return response;
+        return transactionService.createBankDepositTransaction(bankDepositTranCreateReqDto);
     }
 
     @PostMapping("/debit-transaction")
     public ResponseEntity<BnTTranDto> createDebitTransaction(@Valid @RequestBody DebitTranCreateReqDto debitTranCreateReqDto) {
-        ResponseEntity<BnTTranDto> response = transactionService.createDebitTransaction(debitTranCreateReqDto);
-        return response;
+        return transactionService.createDebitTransaction(debitTranCreateReqDto);
     }
 
     @GetMapping("/{tranId}")
     public ResponseEntity<BnTTranDto> getTransaction(@PathVariable Long tranId) {
-        ResponseEntity<BnTTranDto> response = transactionService.getTransaction(tranId);
-        return response;
+        return transactionService.getTransaction(tranId);
     }
 
     @GetMapping("/table")
@@ -65,14 +64,12 @@ public class TransactionController {
         } else if (!Objects.isNull(toDate) && Objects.isNull(fromDate)) {
             throw new BadRequestAlertException("PLEASE SELECT FROM DATE", ENTITY_NAME, "FILTER_DATES");
         }
-        ResponseEntity<ApiResponseDto<List<BnTTranDto>>> response = transactionService.getTransactionsForTable(page, perPage, direction, sort, search, fromAccountNo, toAccountNo, fromDate, toDate);
-        return response;
+        return transactionService.getTransactionsForTable(page, perPage, direction, sort, search, fromAccountNo, toAccountNo, fromDate, toDate);
     }
 
     @GetMapping("/generate-statement/{tranId}")
     public ResponseEntity<TransactionReceiptDto> getTranStatement(@PathVariable Long tranId) {
-        ResponseEntity<TransactionReceiptDto> response = transactionService.getTranStatement(tranId);
-        return response;
+        return transactionService.getTranStatement(tranId);
     }
 
 }
