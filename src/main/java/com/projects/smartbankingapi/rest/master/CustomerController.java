@@ -23,38 +23,32 @@ public class CustomerController {
 
     @PostMapping
     public ResponseEntity<BnMCustomerDto> createCustomer(@Valid @RequestBody CustomerCreateReqDto customerCreateReqDto) {
-        ResponseEntity<BnMCustomerDto> response = customerService.createCustomer(customerCreateReqDto);
-        return response;
+        return customerService.createCustomer(customerCreateReqDto);
     }
 
     @GetMapping("/{customerId}")
     public ResponseEntity<BnMCustomerDto> getCustomer(@RequestParam Long customerId) {
-        ResponseEntity<BnMCustomerDto> response = customerService.getCustomer(customerId);
-        return response;
+        return customerService.getCustomer(customerId);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<BnMCustomerDto>> getAllCustomers() {
-        ResponseEntity<List<BnMCustomerDto>> response = customerService.getAllCustomers();
-        return response;
+        return customerService.getAllCustomers();
     }
 
     @PutMapping("/{customerId}")
     public ResponseEntity<BnMCustomerDto> updateCustomer(@RequestParam Long customerId, @Valid @RequestBody BnMCustomerDto bnMCustomerDto) {
-        ResponseEntity<BnMCustomerDto> response = customerService.updateCustomer(customerId, bnMCustomerDto);
-        return response;
+        return customerService.updateCustomer(customerId, bnMCustomerDto);
     }
 
     @DeleteMapping("/{customerId}")
     public ResponseEntity<BnMCustomerDto> deleteCustomer(@RequestParam Long customerId) {
-        ResponseEntity<BnMCustomerDto> response = customerService.deleteCustomer(customerId);
-        return response;
+        return customerService.deleteCustomer(customerId);
     }
 
     @GetMapping("/all/isActive/{isActive}")
     public ResponseEntity<List<BnMCustomerDto>> getAllCustomersByIsActive(@PathVariable String isActive) {
-        ResponseEntity<List<BnMCustomerDto>> response = customerService.getAllCustomersByIsActive(isActive);
-        return response;
+        return customerService.getAllCustomersByIsActive(isActive);
     }
 
     @GetMapping("/table")
@@ -65,8 +59,7 @@ public class CustomerController {
             @RequestParam(required = false, defaultValue = "asc") String direction,
             @RequestParam(required = false, defaultValue = "") String search
     ) {
-        ResponseEntity<ApiResponseDto<List<BnMCustomerDto>>> response = customerService.getCustomersForTable(page, perPage, sort, direction, search);
-        return response;
+        return customerService.getCustomersForTable(page, perPage, sort, direction, search);
     }
 
 }

@@ -22,4 +22,6 @@ public interface LoanService {
     ResponseEntity<BnMLoanDto> disburseLoan(Long loanId, LoanDisburseReqDto loanDisburseReqDto);
 
     ResponseEntity<CalculatorResponseDto> calculator(CalculatorReqDto calculatorReqDto);
+
+    ResponseEntity<String> deleteLoan(Long loanId);
 }

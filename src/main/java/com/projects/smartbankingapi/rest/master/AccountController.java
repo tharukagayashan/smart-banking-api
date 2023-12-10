@@ -25,38 +25,32 @@ public class AccountController {
 
     @PostMapping
     public ResponseEntity<ResponseDto> createAccount(@Valid @RequestBody AccountCreateReqDto accountCreateReqDto) {
-        ResponseEntity<ResponseDto> response = accountService.createAccount(accountCreateReqDto);
-        return response;
+        return accountService.createAccount(accountCreateReqDto);
     }
 
     @GetMapping("/{accountId}")
     public ResponseEntity<BnMAccountDto> getAccount(@PathVariable Long accountId) {
-        ResponseEntity<BnMAccountDto> response = accountService.getAccount(accountId);
-        return response;
+        return accountService.getAccount(accountId);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<BnMAccountDto>> getAllAccounts() {
-        ResponseEntity<List<BnMAccountDto>> response = accountService.getAllAccounts();
-        return response;
+        return accountService.getAllAccounts();
     }
 
     @PutMapping("/{accountId}")
     public ResponseEntity<BnMAccountDto> updateAccount(@PathVariable Long accountId, @Valid @RequestBody BnMAccountDto bnMAccountDto) {
-        ResponseEntity<BnMAccountDto> response = accountService.updateAccount(accountId, bnMAccountDto);
-        return response;
+        return accountService.updateAccount(accountId, bnMAccountDto);
     }
 
     @DeleteMapping("/{accountId}")
     public ResponseEntity<BnMAccountDto> deleteAccount(@PathVariable Long accountId) {
-        ResponseEntity<BnMAccountDto> response = accountService.deleteAccount(accountId);
-        return response;
+        return accountService.deleteAccount(accountId);
     }
 
     @GetMapping("/all/isActive/{isActive}")
     public ResponseEntity<List<BnMAccountDto>> getAllAccountsByIsActive(@PathVariable String isActive) {
-        ResponseEntity<List<BnMAccountDto>> response = accountService.getAllAccountsByIsActive(isActive);
-        return response;
+        return accountService.getAllAccountsByIsActive(isActive);
     }
 
     @GetMapping("/table")
@@ -67,14 +61,12 @@ public class AccountController {
             @RequestParam(required = false, defaultValue = "asc") String direction,
             @RequestParam(required = false, defaultValue = "") String search
     ) {
-        ResponseEntity<ApiResponseDto<List<BnMAccountDto>>> response = accountService.getAccountsForTable(page, perPage, sort, direction, search);
-        return response;
+        return accountService.getAccountsForTable(page, perPage, sort, direction, search);
     }
 
     @GetMapping("/accountNo/{accountNo}")
     public ResponseEntity<BnMAccountDto> getAccountByAccountNo(@PathVariable String accountNo) {
-        ResponseEntity<BnMAccountDto> response = accountService.getAccountByAccountNo(accountNo);
-        return response;
+        return accountService.getAccountByAccountNo(accountNo);
     }
 
 }

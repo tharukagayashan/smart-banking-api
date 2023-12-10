@@ -923,7 +923,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Account type id is required", "Reference", "updateAccountType");
-            } else if (id != bnRAccountTypeDto.getAccountTypeId()) {
+            } else if (!id.equals(bnRAccountTypeDto.getAccountTypeId())) {
                 throw new BadRequestAlertException("Account type id mismatch", "Reference", "updateAccountType");
             } else {
                 Optional<BnRAccountType> optAccountType = accountTypeRepository.findById(id);
@@ -947,7 +947,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Bank id is required", "Reference", "updateBank");
-            } else if (id != bnRBankDto.getBankId()) {
+            } else if (!id.equals(bnRBankDto.getBankId())) {
                 throw new BadRequestAlertException("Bank id mismatch", "Reference", "updateBank");
             } else {
                 Optional<BnRBank> optBank = bankRepository.findById(id);
@@ -972,7 +972,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Branch id is required", "Reference", "updateBranch");
-            } else if (id != bnRBranchDto.getBranchId()) {
+            } else if (!id.equals(bnRBranchDto.getBranchId())) {
                 throw new BadRequestAlertException("Branch id mismatch", "Reference", "updateBranch");
             } else {
                 Optional<BnRBranch> optBranch = branchRepository.findById(id);
@@ -1003,7 +1003,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Charge id is required", "Reference", "updateCharge");
-            } else if (id != bnRChargeDto.getChargeId()) {
+            } else if (!id.equals(bnRChargeDto.getChargeId())) {
                 throw new BadRequestAlertException("Charge id mismatch", "Reference", "updateCharge");
             } else {
                 Optional<BnRCharge> optCharge = chargeRepository.findById(id);
@@ -1039,7 +1039,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Currency id is required", "Reference", "updateCurrency");
-            } else if (id != bnRCurrencyDto.getCurrencyId()) {
+            } else if (!id.equals(bnRCurrencyDto.getCurrencyId())) {
                 throw new BadRequestAlertException("Currency id mismatch", "Reference", "updateCurrency");
             } else {
                 Optional<BnRCurrency> optCurrency = currencyRepository.findById(id);
@@ -1063,7 +1063,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Fee type id is required", "Reference", "updateFeeType");
-            } else if (id != bnRFeeTypeDto.getFeeTypeId()) {
+            } else if (!id.equals(bnRFeeTypeDto.getFeeTypeId())) {
                 throw new BadRequestAlertException("Fee type id mismatch", "Reference", "updateFeeType");
             } else {
                 Optional<BnRFeeType> optFeeType = feeTypeRepository.findById(id);
@@ -1087,7 +1087,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Interest rate id is required", "Reference", "updateIntRate");
-            } else if (id != bnRIntRateDto.getIntRateId()) {
+            } else if (!id.equals(bnRIntRateDto.getIntRateId())) {
                 throw new BadRequestAlertException("Interest rate id mismatch", "Reference", "updateIntRate");
             } else {
                 Optional<BnRIntRate> optIntRate = intRateRepository.findById(id);
@@ -1112,7 +1112,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Loan period id is required", "Reference", "updateLoanPeriod");
-            } else if (id != bnRLoanPeriodDto.getPeriodId()) {
+            } else if (!id.equals(bnRLoanPeriodDto.getPeriodId())) {
                 throw new BadRequestAlertException("Loan period id mismatch", "Reference", "updateLoanPeriod");
             } else {
                 Optional<BnRLoanPeriod> optLoanPeriod = loanPeriodRepository.findById(id);
@@ -1137,7 +1137,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Loan product id is required", "Reference", "updateLoanProduct");
-            } else if (id != bnRLoanProductDto.getProductId()) {
+            } else if (!id.equals(bnRLoanProductDto.getProductId())) {
                 throw new BadRequestAlertException("Loan product id mismatch", "Reference", "updateLoanProduct");
             } else {
                 Optional<BnRLoanProduct> optLoanProduct = loanProductRepository.findById(id);
@@ -1173,7 +1173,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Loan type id is required", "Reference", "updateLoanType");
-            } else if (id != bnRLoanTypeDto.getLoanTypeId()) {
+            } else if (!id.equals(bnRLoanTypeDto.getLoanTypeId())) {
                 throw new BadRequestAlertException("Loan type id mismatch", "Reference", "updateLoanType");
             } else {
                 Optional<BnRLoanType> optLoanType = loanTypeRepository.findById(id);
@@ -1198,7 +1198,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Status id is required", "Reference", "updateStatus");
-            } else if (id != bnRStatusDto.getStatusId()) {
+            } else if (!id.equals(bnRStatusDto.getStatusId())) {
                 throw new BadRequestAlertException("Status id mismatch", "Reference", "updateStatus");
             } else {
                 Optional<BnRStatus> optStatus = statusRepository.findById(id);
@@ -1223,7 +1223,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Transaction type id is required", "Reference", "updateTranType");
-            } else if (id != bnRTranTypeDto.getTranTypeId()) {
+            } else if (!id.equals(bnRTranTypeDto.getTranTypeId())) {
                 throw new BadRequestAlertException("Transaction type id mismatch", "Reference", "updateTranType");
             } else {
                 Optional<BnRTranType> optTranType = tranTypeRepository.findById(id);
@@ -1247,7 +1247,7 @@ public class ReferenceServiceImpl implements ReferenceService {
         try {
             if (id == null) {
                 throw new BadRequestAlertException("Role id is required", "Reference", "updateRole");
-            } else if (id != bnRRoleDto.getRoleId()) {
+            } else if (!id.equals(bnRRoleDto.getRoleId())) {
                 throw new BadRequestAlertException("Role id mismatch", "Reference", "updateRole");
             } else {
                 Optional<BnRRole> optRole = roleRepository.findById(id);

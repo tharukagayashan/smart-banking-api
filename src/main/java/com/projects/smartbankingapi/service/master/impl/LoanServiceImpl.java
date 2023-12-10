@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -232,7 +233,7 @@ public class LoanServiceImpl implements LoanService {
                 calculatorResponseDto.setTotalPayable(totalPayable);
                 return ResponseEntity.ok(calculatorResponseDto);
 
-            } else if (calculatorReqDto.getLoanTypeId() == HardCodeConstant.LOAN_TYPE_REDUCING_ID) {
+            } else if (Objects.equals(calculatorReqDto.getLoanTypeId(), HardCodeConstant.LOAN_TYPE_REDUCING_ID)) {
 
                 i = (calculatorReqDto.getInterestRate() / 100) / 12;
                 p = calculatorReqDto.getLoanAmount();
@@ -258,5 +259,33 @@ public class LoanServiceImpl implements LoanService {
             log.error(e.getMessage());
             throw new BadRequestAlertException(e.getMessage(), "ERROR", "ERROR");
         }
-     }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteLoan(Long loanId) {
+        try {
+            if (loanId == null) {
+                throw new BadRequestAlertException("Loan Id is required", "Loan", "deleteLoan");
+            } else {
+                Optional<BnMLoan> optLoan = loanRepository.findById(loanId);
+                if (!optLoan.isPresent()) {
+                    throw new BadRequestAlertException("Loan not found", "Loan", "deleteLoan");
+                } else {
+                    if (optLoan.get().getBnRStatus().getStatusId() != HardCodeConstant.STATUS_PENDING_ID.longValue()) {
+                        throw new BadRequestAlertException("Loan can not be deleted", "Loan", "deleteLoan");
+                    } else {
+                        loanRepository.deleteById(loanId);
+                        Optional<BnMLoan> checkLoan = loanRepository.findById(loanId);
+                        if (checkLoan.isPresent()){
+                            throw new BadRequestAlertException("Error while deleting loan", "Loan", "deleteLoan");
+                        }
+                        return ResponseEntity.ok("Loan deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while deleting loan", e);
+            throw new BadRequestAlertException(e.getMessage(), "Loan", "deleteLoan");
+        }
+    }
 }

@@ -57,4 +57,9 @@ public class LoanController {
         return loanService.calculator(calculatorReqDto);
     }
 
+    @DeleteMapping("/{loanId}")
+    public ResponseEntity<String> deleteLoan(@PathVariable Long loanId) {
+        return loanService.deleteLoan(loanId);
+    }
+
 }
