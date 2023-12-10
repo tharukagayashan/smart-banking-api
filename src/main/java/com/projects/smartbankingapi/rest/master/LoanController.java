@@ -2,6 +2,8 @@ package com.projects.smartbankingapi.rest.master;
 
 import com.projects.smartbankingapi.dto.master.BnMLoanDto;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
+import com.projects.smartbankingapi.dto.other.CalculatorReqDto;
+import com.projects.smartbankingapi.dto.other.CalculatorResponseDto;
 import com.projects.smartbankingapi.dto.other.LoanCreateReqDto;
 import com.projects.smartbankingapi.dto.other.LoanDisburseReqDto;
 import com.projects.smartbankingapi.service.master.LoanService;
@@ -48,6 +50,11 @@ public class LoanController {
     @PutMapping("/disburse/{loanId}")
     public ResponseEntity<BnMLoanDto> disburseLoan(@PathVariable Long loanId, @RequestBody LoanDisburseReqDto loanDisburseReqDto) {
         return loanService.disburseLoan(loanId, loanDisburseReqDto);
+    }
+
+    @PostMapping("/calculator")
+    public ResponseEntity<CalculatorResponseDto> calculator(@RequestBody CalculatorReqDto calculatorReqDto){
+        return loanService.calculator(calculatorReqDto);
     }
 
 }

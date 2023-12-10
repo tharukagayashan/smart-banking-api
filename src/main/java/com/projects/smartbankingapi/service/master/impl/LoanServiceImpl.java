@@ -8,6 +8,8 @@ import com.projects.smartbankingapi.dao.reference.BnRStatusRepository;
 import com.projects.smartbankingapi.dto.master.BnMLoanDto;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.miscellaneous.PaginationDto;
+import com.projects.smartbankingapi.dto.other.CalculatorReqDto;
+import com.projects.smartbankingapi.dto.other.CalculatorResponseDto;
 import com.projects.smartbankingapi.dto.other.LoanCreateReqDto;
 import com.projects.smartbankingapi.dto.other.LoanDisburseReqDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
@@ -18,7 +20,6 @@ import com.projects.smartbankingapi.model.reference.*;
 import com.projects.smartbankingapi.other.CustomMethods;
 import com.projects.smartbankingapi.service.master.LoanService;
 import lombok.extern.slf4j.Slf4j;
-import lombok.extern.slf4j.XSlf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -57,7 +58,7 @@ public class LoanServiceImpl implements LoanService {
             } else {
 
                 Optional<BnRStatus> optStatus = statusRepository.findById(HardCodeConstant.STATUS_PENDING_ID.longValue());
-                if (!optStatus.isPresent()){
+                if (!optStatus.isPresent()) {
                     throw new BadRequestAlertException("Status not found", "Loan", "createLoan");
                 }
                 BnMAccount account = optAccount.get();
@@ -204,4 +205,58 @@ public class LoanServiceImpl implements LoanService {
             throw new BadRequestAlertException(e.getMessage(), "Loan", "disburseLoan");
         }
     }
+
+    @Override
+    public ResponseEntity<CalculatorResponseDto> calculator(CalculatorReqDto calculatorReqDto) {
+        try {
+            float interest = 0;
+            float i = 0;
+            float p = 0;
+            int t = 0;
+            float totalPayable = 0;
+            float emi = 0;
+            CalculatorResponseDto calculatorResponseDto = new CalculatorResponseDto();
+            if (calculatorReqDto.getLoanTypeId() == HardCodeConstant.LOAN_TYPE_FLAT_ID) {
+
+                i = calculatorReqDto.getInterestRate();
+                p = calculatorReqDto.getLoanAmount();
+                t = calculatorReqDto.getMonths() / 12;
+
+                interest = (p * i * t) / 100;
+                totalPayable = p + interest;
+
+                calculatorResponseDto.setLoanAmount(calculatorReqDto.getLoanAmount());
+                calculatorResponseDto.setIntRate(calculatorReqDto.getInterestRate());
+                calculatorResponseDto.setMonths(calculatorReqDto.getMonths());
+                calculatorResponseDto.setTotalInterest(interest);
+                calculatorResponseDto.setTotalPayable(totalPayable);
+                return ResponseEntity.ok(calculatorResponseDto);
+
+            } else if (calculatorReqDto.getLoanTypeId() == HardCodeConstant.LOAN_TYPE_REDUCING_ID) {
+
+                i = (calculatorReqDto.getInterestRate() / 100) / 12;
+                p = calculatorReqDto.getLoanAmount();
+                t = calculatorReqDto.getMonths();
+
+                emi = (p * i * (float) Math.pow(1 + i, t)) / ((float) Math.pow(1 + i, t) - 1);
+
+                interest = emi * t - p;
+                totalPayable = emi * t;
+
+                calculatorResponseDto.setLoanAmount(calculatorReqDto.getLoanAmount());
+                calculatorResponseDto.setIntRate(calculatorReqDto.getInterestRate());
+                calculatorResponseDto.setMonths(calculatorReqDto.getMonths());
+                calculatorResponseDto.setTotalInterest(interest);
+                calculatorResponseDto.setTotalPayable(totalPayable);
+                return ResponseEntity.ok(calculatorResponseDto);
+
+            } else {
+                log.error("Invalid loan type");
+                throw new BadRequestAlertException("Invalid loan type", "ERROR", "ERROR");
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "ERROR", "ERROR");
+        }
+     }
 }
