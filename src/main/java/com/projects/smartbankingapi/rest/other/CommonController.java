@@ -24,8 +24,7 @@ public class CommonController {
 
     @PostMapping("/validate-nic")
     public ResponseEntity<ValidateNICResDto> validateNic(@Valid @RequestBody ValidateNICReqDto validateNICReqDto) {
-        ResponseEntity<ValidateNICResDto> response = commonService.validateNic(validateNICReqDto);
-        return response;
+        return commonService.validateNic(validateNICReqDto);
     }
 
 }

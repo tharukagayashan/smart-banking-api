@@ -8,7 +8,10 @@ import com.projects.smartbankingapi.dao.reference.BnRStatusRepository;
 import com.projects.smartbankingapi.dto.master.BnMLoanDto;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.miscellaneous.PaginationDto;
+import com.projects.smartbankingapi.dto.other.CalculatorReqDto;
+import com.projects.smartbankingapi.dto.other.CalculatorResponseDto;
 import com.projects.smartbankingapi.dto.other.LoanCreateReqDto;
+import com.projects.smartbankingapi.dto.other.LoanDisburseReqDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.mapper.master.BnMLoanMapper;
 import com.projects.smartbankingapi.model.master.BnMAccount;
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -55,7 +59,9 @@ public class LoanServiceImpl implements LoanService {
             } else {
 
                 Optional<BnRStatus> optStatus = statusRepository.findById(HardCodeConstant.STATUS_PENDING_ID.longValue());
-
+                if (!optStatus.isPresent()) {
+                    throw new BadRequestAlertException("Status not found", "Loan", "createLoan");
+                }
                 BnMAccount account = optAccount.get();
                 Optional<BnRLoanProduct> optLoanProduct = loanProductRepository.findById(loanCreateReqDto.getLoanProductId());
                 if (!optLoanProduct.isPresent()) {
@@ -73,19 +79,19 @@ public class LoanServiceImpl implements LoanService {
                     loan.setInterest(interest);
                     loan.setTotInstallments(loanPeriod.getMonth());
                     loan.setNextInstallmentDate(null);
-                    loan.setTotArrearsAmt(new Float(0));
+                    loan.setTotArrearsAmt((float) 0);
                     loan.setRemInstallments(loanPeriod.getMonth());
-                    loan.setNextInstallmentAmt(new Float(0));
-                    loan.setDistributedAmt(new Float(0));
-                    loan.setTotSettledAmt(new Float(0));
-                    loan.setTotInterestPaid(new Float(0));
-                    loan.setTotPaid(new Float(0));
+                    loan.setNextInstallmentAmt((float) 0);
+                    loan.setDistributedAmt((float) 0);
+                    loan.setTotSettledAmt((float) 0);
+                    loan.setTotInterestPaid((float) 0);
+                    loan.setTotPaid((float) 0);
                     loan.setBnRStatus(optStatus.get());
-                    loan.setBnMAccount(optAccount.get());
-                    loan.setBnRLoanProduct(optLoanProduct.get());
+                    loan.setBnMAccount(account);
+                    loan.setBnRLoanProduct(loanProduct);
 
                     loan = loanRepository.save(loan);
-                    if (loan != null) {
+                    if (loan.getLoanId() != null) {
                         return ResponseEntity.ok(loanMapper.toDto(loan));
                     } else {
                         throw new BadRequestAlertException("Error while creating loan", "Loan", "createLoan");
@@ -110,14 +116,12 @@ public class LoanServiceImpl implements LoanService {
                 } else {
                     BnMLoan loan = optLoan.get();
                     Optional<BnRStatus> optStatus = statusRepository.findById(HardCodeConstant.STATUS_APPROVED_ID.longValue());
-
-                    float nextInstallmentAmt = customMethods.calculateNextInstallmentAmt(loan.getAmount(), loan.getInterest(), loan.getTotInstallments(), loan.getRemInstallments(), loan.getBnRLoanProduct().getBnRLoanType().getLoanTypeId());
-
-                    loan.setBnRStatus(optStatus.get());
-                    loan.setNextInstallmentDate(LocalDate.now().plusMonths(1));
-                    loan.setNextInstallmentAmt(nextInstallmentAmt);
-                    loan.setDistributedAmt(loan.getAmount());
-                    loan = loanRepository.save(loan);
+                    if (!optStatus.isPresent()) {
+                        throw new BadRequestAlertException("Status not found", "Loan", "approveLoan");
+                    } else {
+                        loan.setBnRStatus(optStatus.get());
+                        loan = loanRepository.save(loan);
+                    }
                     log.info("Loan approved successfully");
                     return ResponseEntity.ok(loanMapper.toDto(loan));
                 }
@@ -151,7 +155,7 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public ResponseEntity<ApiResponseDto<List<BnMLoanDto>>> getLoanForTable(Integer page, Integer perPage, String sort, String direction, String search) {
         try {
-            Page<BnMLoan> dbData = null;
+            Page<BnMLoan> dbData;
             if (direction.equalsIgnoreCase("asc")) {
                 dbData = loanRepository.getLoanForTable(search, PageRequest.of(page, perPage, Sort.by(Sort.Direction.ASC, sort)));
             } else {
@@ -170,6 +174,118 @@ public class LoanServiceImpl implements LoanService {
         } catch (Exception e) {
             log.error("Error while getting loan for table", e);
             throw new BadRequestAlertException(e.getMessage(), "Loan", "getLoanForTable");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnMLoanDto> disburseLoan(Long loanId, LoanDisburseReqDto loanDisburseReqDto) {
+        try {
+            if (loanId == null) {
+                throw new BadRequestAlertException("Loan Id is required", "Loan", "disburseLoan");
+            } else if (!loanId.equals(loanDisburseReqDto.getLoanId())) {
+                throw new BadRequestAlertException("Loan Id is not match", "Loan", "disburseLoan");
+            } else {
+                Optional<BnMLoan> optLoan = loanRepository.findById(loanId);
+                if (!optLoan.isPresent()) {
+                    throw new BadRequestAlertException("Loan not found", "Loan", "disburseLoan");
+                } else {
+                    BnMLoan loan = optLoan.get();
+
+                    float nextInstallmentAmt = customMethods.calculateNextInstallmentAmt(loanDisburseReqDto.getDisburseAmt(), loan.getInterest(), loan.getTotInstallments(), loan.getRemInstallments(), loan.getBnRLoanProduct().getBnRLoanType().getLoanTypeId());
+
+                    loan.setNextInstallmentDate(LocalDate.now().plusMonths(1));
+                    loan.setNextInstallmentAmt(nextInstallmentAmt);
+                    loan.setDistributedAmt(loanDisburseReqDto.getDisburseAmt());
+
+                    loan = loanRepository.save(loan);
+                    return ResponseEntity.ok(loanMapper.toDto(loan));
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while disbursing loan", e);
+            throw new BadRequestAlertException(e.getMessage(), "Loan", "disburseLoan");
+        }
+    }
+
+    @Override
+    public ResponseEntity<CalculatorResponseDto> calculator(CalculatorReqDto calculatorReqDto) {
+        try {
+            float interest = 0;
+            float i = 0;
+            float p = 0;
+            int t = 0;
+            float totalPayable = 0;
+            float emi = 0;
+            CalculatorResponseDto calculatorResponseDto = new CalculatorResponseDto();
+            if (calculatorReqDto.getLoanTypeId() == HardCodeConstant.LOAN_TYPE_FLAT_ID) {
+
+                i = calculatorReqDto.getInterestRate();
+                p = calculatorReqDto.getLoanAmount();
+                t = calculatorReqDto.getMonths() / 12;
+
+                interest = (p * i * t) / 100;
+                totalPayable = p + interest;
+
+                calculatorResponseDto.setLoanAmount(calculatorReqDto.getLoanAmount());
+                calculatorResponseDto.setIntRate(calculatorReqDto.getInterestRate());
+                calculatorResponseDto.setMonths(calculatorReqDto.getMonths());
+                calculatorResponseDto.setTotalInterest(interest);
+                calculatorResponseDto.setTotalPayable(totalPayable);
+                return ResponseEntity.ok(calculatorResponseDto);
+
+            } else if (Objects.equals(calculatorReqDto.getLoanTypeId(), HardCodeConstant.LOAN_TYPE_REDUCING_ID)) {
+
+                i = (calculatorReqDto.getInterestRate() / 100) / 12;
+                p = calculatorReqDto.getLoanAmount();
+                t = calculatorReqDto.getMonths();
+
+                emi = (p * i * (float) Math.pow(1 + i, t)) / ((float) Math.pow(1 + i, t) - 1);
+
+                interest = emi * t - p;
+                totalPayable = emi * t;
+
+                calculatorResponseDto.setLoanAmount(calculatorReqDto.getLoanAmount());
+                calculatorResponseDto.setIntRate(calculatorReqDto.getInterestRate());
+                calculatorResponseDto.setMonths(calculatorReqDto.getMonths());
+                calculatorResponseDto.setTotalInterest(interest);
+                calculatorResponseDto.setTotalPayable(totalPayable);
+                return ResponseEntity.ok(calculatorResponseDto);
+
+            } else {
+                log.error("Invalid loan type");
+                throw new BadRequestAlertException("Invalid loan type", "ERROR", "ERROR");
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "ERROR", "ERROR");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteLoan(Long loanId) {
+        try {
+            if (loanId == null) {
+                throw new BadRequestAlertException("Loan Id is required", "Loan", "deleteLoan");
+            } else {
+                Optional<BnMLoan> optLoan = loanRepository.findById(loanId);
+                if (!optLoan.isPresent()) {
+                    throw new BadRequestAlertException("Loan not found", "Loan", "deleteLoan");
+                } else {
+                    if (optLoan.get().getBnRStatus().getStatusId() != HardCodeConstant.STATUS_PENDING_ID.longValue()) {
+                        throw new BadRequestAlertException("Loan can not be deleted", "Loan", "deleteLoan");
+                    } else {
+                        loanRepository.deleteById(loanId);
+                        Optional<BnMLoan> checkLoan = loanRepository.findById(loanId);
+                        if (checkLoan.isPresent()){
+                            throw new BadRequestAlertException("Error while deleting loan", "Loan", "deleteLoan");
+                        }
+                        return ResponseEntity.ok("Loan deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while deleting loan", e);
+            throw new BadRequestAlertException(e.getMessage(), "Loan", "deleteLoan");
         }
     }
 }

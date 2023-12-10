@@ -33,6 +33,10 @@ public class SmartBankingApiApplication {
     private static BnRRoleRepository bnRRoleRepository = null;
     private static BnMStaffRepository bnMStaffRepository = null;
     private static BnRTranTypeRepository bnRTranTypeRepository = null;
+    private static BnRLoanTypeRepository bnRLoanTypeRepository = null;
+    private static BnRLoanPeriodRepository bnRLoanPeriodRepository = null;
+    private static BnRLoanProductRepository bnRLoanProductRepository = null;
+    private static BnRIntRateRepository bnRIntRateRepository = null;
 
     public SmartBankingApiApplication(BnMCustomerRepository bnMCustomerRepository, BnMAccountRepository bnMAccountRepository,
                                       BnRAccountTypeRepository bnRAccountTypeRepository,
@@ -40,7 +44,13 @@ public class SmartBankingApiApplication {
                                       BnRCurrencyRepository bnRCurrencyRepository,
                                       BnRStatusRepository bnRStatusRepository,
                                       BnRBankRepository bnRBankRepository,
-                                      BnRRoleRepository bnRRoleRepository, BnMStaffRepository bnMStaffRepository, BnRTranTypeRepository bnRTranTypeRepository) {
+                                      BnRRoleRepository bnRRoleRepository,
+                                      BnMStaffRepository bnMStaffRepository,
+                                      BnRTranTypeRepository bnRTranTypeRepository,
+                                      BnRLoanTypeRepository bnRLoanTypeRepository,
+                                      BnRLoanPeriodRepository bnRLoanPeriodRepository,
+                                      BnRLoanProductRepository bnRLoanProductRepository,
+                                      BnRIntRateRepository bnRIntRateRepository) {
         this.bnMCustomerRepository = bnMCustomerRepository;
         this.bnMAccountRepository = bnMAccountRepository;
         this.bnRAccountTypeRepository = bnRAccountTypeRepository;
@@ -51,6 +61,10 @@ public class SmartBankingApiApplication {
         this.bnRRoleRepository = bnRRoleRepository;
         this.bnMStaffRepository = bnMStaffRepository;
         this.bnRTranTypeRepository = bnRTranTypeRepository;
+        this.bnRLoanTypeRepository = bnRLoanTypeRepository;
+        this.bnRLoanPeriodRepository = bnRLoanPeriodRepository;
+        this.bnRLoanProductRepository = bnRLoanProductRepository;
+        this.bnRIntRateRepository = bnRIntRateRepository;
     }
 
     public static void main(String[] args) {
@@ -172,7 +186,7 @@ public class SmartBankingApiApplication {
             BnRAccountType accountType;
             accountType = BnRAccountType.builder()
                     .name("Savings")
-                    .code("SAV")
+                    .code("001")
                     .build();
 
             bnRAccountTypeRepository.save(accountType);
@@ -186,7 +200,7 @@ public class SmartBankingApiApplication {
             BnRAccountType accountType;
             accountType = BnRAccountType.builder()
                     .name("Check")
-                    .code("CHK")
+                    .code("002")
                     .build();
 
             bnRAccountTypeRepository.save(accountType);
@@ -200,7 +214,7 @@ public class SmartBankingApiApplication {
             BnRAccountType accountType;
             accountType = BnRAccountType.builder()
                     .name("Fixed Deposit")
-                    .code("FIX")
+                    .code("003")
                     .build();
 
             bnRAccountTypeRepository.save(accountType);
@@ -215,7 +229,7 @@ public class SmartBankingApiApplication {
             BnRBank bank;
             bank = BnRBank.builder()
                     .name("Bank of Ceylon")
-                    .code("BOC")
+                    .code("001")
                     .isActive(true)
                     .build();
 
@@ -233,7 +247,7 @@ public class SmartBankingApiApplication {
                 BnRBranch branch;
                 branch = BnRBranch.builder()
                         .name("Head Office")
-                        .code("HDO")
+                        .code("001")
                         .isActive(true)
                         .bnRBank(optionalBank.get())
                         .build();
@@ -284,7 +298,7 @@ public class SmartBankingApiApplication {
                     .build();
             account = bnMAccountRepository.save(account);
             CustomMethods customMethods = new CustomMethods();
-            String accountNo = "HDOSAV23120001";
+            String accountNo = customMethods.generateAccountNumber(bnRBranchRepository.findById(1L).get().getCode(), bnRAccountTypeRepository.findById(1L).get().getCode(), account.getAccountId());
             account.setAccountNo(accountNo);
             bnMAccountRepository.save(account);
 
@@ -315,6 +329,396 @@ public class SmartBankingApiApplication {
             bnMStaffRepository.save(staff);
             log.info("Staff is saved : username = sysowner && password = sysowner");
         }
+
+        //Loan Type Create
+        Optional<BnRLoanType> optLoanType1 = bnRLoanTypeRepository.findById(new Long(1));
+        if (optLoanType1.isPresent()) {
+            log.info("Loan Type is present");
+        } else {
+            BnRLoanType loanType;
+            loanType = BnRLoanType.builder()
+                    .name("Flat Rate")
+                    .code("FR")
+                    .description("Flat Rate Loan")
+                    .build();
+            bnRLoanTypeRepository.save(loanType);
+            log.info("Loan Type Flat Rate is saved");
+        }
+
+        Optional<BnRLoanType> optLoanType2 = bnRLoanTypeRepository.findById(new Long(2));
+        if (optLoanType2.isPresent()) {
+            log.info("Loan Type Reducing is present");
+        } else {
+            BnRLoanType loanType;
+            loanType = BnRLoanType.builder()
+                    .name("Reducing Balance")
+                    .code("RB")
+                    .description("Reducing Balance Loan")
+                    .build();
+            bnRLoanTypeRepository.save(loanType);
+            log.info("Loan Type is saved");
+        }
+
+        //Loan Period Create
+        Optional<BnRLoanPeriod> optLoanPeriod1 = bnRLoanPeriodRepository.findById(new Long(1));
+        if (optLoanPeriod1.isPresent()) {
+            log.info("Loan Period 1 year is present");
+        } else {
+            BnRLoanPeriod loanPeriod;
+            loanPeriod = BnRLoanPeriod.builder()
+                    .name("1 Year")
+                    .description("1 Year Loan Period")
+                    .month(12)
+                    .build();
+            bnRLoanPeriodRepository.save(loanPeriod);
+            log.info("Loan Period 1 year is saved");
+        }
+
+        Optional<BnRLoanPeriod> optLoanPeriod2 = bnRLoanPeriodRepository.findById(new Long(2));
+        if (optLoanPeriod2.isPresent()) {
+            log.info("Loan Period 2 year is present");
+        } else {
+            BnRLoanPeriod loanPeriod;
+            loanPeriod = BnRLoanPeriod.builder()
+                    .name("2 Year")
+                    .description("2 Year Loan Period")
+                    .month(24)
+                    .build();
+            bnRLoanPeriodRepository.save(loanPeriod);
+            log.info("Loan Period 2 year is saved");
+        }
+
+        Optional<BnRLoanPeriod> optLoanPeriod3 = bnRLoanPeriodRepository.findById(new Long(3));
+        if (optLoanPeriod3.isPresent()) {
+            log.info("Loan Period 3 year is present");
+        } else {
+            BnRLoanPeriod loanPeriod;
+            loanPeriod = BnRLoanPeriod.builder()
+                    .name("3 Year")
+                    .description("3 Year Loan Period")
+                    .month(36)
+                    .build();
+            bnRLoanPeriodRepository.save(loanPeriod);
+            log.info("Loan Period 3 year is saved");
+        }
+
+        Optional<BnRLoanPeriod> optLoanPeriod4 = bnRLoanPeriodRepository.findById(new Long(4));
+        if (optLoanPeriod4.isPresent()) {
+            log.info("Loan Period 4 year is present");
+        } else {
+            BnRLoanPeriod loanPeriod;
+            loanPeriod = BnRLoanPeriod.builder()
+                    .name("4 Year")
+                    .description("4 Year Loan Period")
+                    .month(48)
+                    .build();
+            bnRLoanPeriodRepository.save(loanPeriod);
+            log.info("Loan Period 4 year is saved");
+        }
+
+        Optional<BnRLoanPeriod> optLoanPeriod5 = bnRLoanPeriodRepository.findById(new Long(5));
+        if (optLoanPeriod5.isPresent()) {
+            log.info("Loan Period 5 year is present");
+        } else {
+            BnRLoanPeriod loanPeriod;
+            loanPeriod = BnRLoanPeriod.builder()
+                    .name("5 Year")
+                    .description("5 Year Loan Period")
+                    .month(60)
+                    .build();
+            bnRLoanPeriodRepository.save(loanPeriod);
+            log.info("Loan Period 5 year is saved");
+        }
+
+        //Interest Rate Create
+        Optional<BnRIntRate> optIntRate1 = bnRIntRateRepository.findById(new Long(1));
+        if (optIntRate1.isPresent()) {
+            log.info("Interest Rate 6% is present");
+        } else {
+            BnRIntRate intRate;
+            intRate = BnRIntRate.builder()
+                    .name("6%")
+                    .description("6% Interest Rate")
+                    .rate(new Float(6))
+                    .build();
+            bnRIntRateRepository.save(intRate);
+            log.info("Interest Rate 6% is saved");
+        }
+
+        Optional<BnRIntRate> optIntRate2 = bnRIntRateRepository.findById(new Long(2));
+        if (optIntRate2.isPresent()) {
+            log.info("Interest Rate 9.5% is present");
+        } else {
+            BnRIntRate intRate;
+            intRate = BnRIntRate.builder()
+                    .name("9.5%")
+                    .description("9.5% Interest Rate")
+                    .rate(new Float(9.5))
+                    .build();
+            bnRIntRateRepository.save(intRate);
+            log.info("Interest Rate 9.5% is saved");
+        }
+
+        Optional<BnRIntRate> optIntRate3 = bnRIntRateRepository.findById(new Long(3));
+        if (optIntRate3.isPresent()) {
+            log.info("Interest Rate 12% is present");
+        } else {
+            BnRIntRate intRate;
+            intRate = BnRIntRate.builder()
+                    .name("12%")
+                    .description("12% Interest Rate")
+                    .rate(new Float(12))
+                    .build();
+            bnRIntRateRepository.save(intRate);
+            log.info("Interest Rate 12% is saved");
+        }
+
+        Optional<BnRIntRate> optIntRate4 = bnRIntRateRepository.findById(new Long(4));
+        if (optIntRate4.isPresent()) {
+            log.info("Interest Rate 15% is present");
+        } else {
+            BnRIntRate intRate;
+            intRate = BnRIntRate.builder()
+                    .name("15%")
+                    .description("15% Interest Rate")
+                    .rate(new Float(15))
+                    .build();
+            bnRIntRateRepository.save(intRate);
+            log.info("Interest Rate 15% is saved");
+        }
+
+        //Loan Product Create
+        Optional<BnRLoanProduct> optLoanProduct1 = bnRLoanProductRepository.findById(new Long(1));
+        if (optLoanProduct1.isPresent()) {
+            log.info("Personal Loan Product is present");
+        } else {
+            Optional<BnRLoanType> optLoanType = bnRLoanTypeRepository.findById(new Long(1));
+            Optional<BnRIntRate> optIntRate = bnRIntRateRepository.findById(new Long(1));
+            Optional<BnRLoanPeriod> optLoanPeriod = bnRLoanPeriodRepository.findById(new Long(1));
+            if (optLoanType.isPresent() && optIntRate.isPresent() && optLoanPeriod.isPresent()) {
+                BnRLoanProduct loanProduct;
+                loanProduct = BnRLoanProduct.builder()
+                        .bnRLoanType(optLoanType.get())
+                        .bnRIntRate(optIntRate.get())
+                        .bnRLoanPeriod(optLoanPeriod.get())
+                        .build();
+                bnRLoanProductRepository.save(loanProduct);
+                log.info("Personal Loan Product is saved");
+            } else {
+                System.out.println("Loan Type or Interest Rate or Loan Period is not present");
+            }
+        }
+
+        Optional<BnRLoanProduct> optLoanProduct2 = bnRLoanProductRepository.findById(new Long(2));
+        if (optLoanProduct2.isPresent()) {
+            log.info("Housing Loan Product is present");
+        } else {
+            Optional<BnRLoanType> optLoanType = bnRLoanTypeRepository.findById(new Long(1));
+            Optional<BnRIntRate> optIntRate = bnRIntRateRepository.findById(new Long(2));
+            Optional<BnRLoanPeriod> optLoanPeriod = bnRLoanPeriodRepository.findById(new Long(2));
+            if (optLoanType.isPresent() && optIntRate.isPresent() && optLoanPeriod.isPresent()) {
+                BnRLoanProduct loanProduct;
+                loanProduct = BnRLoanProduct.builder()
+                        .bnRLoanType(optLoanType.get())
+                        .bnRIntRate(optIntRate.get())
+                        .bnRLoanPeriod(optLoanPeriod.get())
+                        .build();
+                bnRLoanProductRepository.save(loanProduct);
+                log.info("Housing Loan Product is saved");
+            } else {
+                System.out.println("Loan Type or Interest Rate or Loan Period is not present");
+            }
+        }
+
+        Optional<BnRLoanProduct> optLoanProduct3 = bnRLoanProductRepository.findById(new Long(3));
+        if (optLoanProduct3.isPresent()) {
+            log.info("Vehicle Loan Product is present");
+        } else {
+            Optional<BnRLoanType> optLoanType = bnRLoanTypeRepository.findById(new Long(1));
+            Optional<BnRIntRate> optIntRate = bnRIntRateRepository.findById(new Long(3));
+            Optional<BnRLoanPeriod> optLoanPeriod = bnRLoanPeriodRepository.findById(new Long(3));
+            if (optLoanType.isPresent() && optIntRate.isPresent() && optLoanPeriod.isPresent()) {
+                BnRLoanProduct loanProduct;
+                loanProduct = BnRLoanProduct.builder()
+                        .bnRLoanType(optLoanType.get())
+                        .bnRIntRate(optIntRate.get())
+                        .bnRLoanPeriod(optLoanPeriod.get())
+                        .build();
+                bnRLoanProductRepository.save(loanProduct);
+                log.info("Vehicle Loan Product is saved");
+            } else {
+                System.out.println("Loan Type or Interest Rate or Loan Period is not present");
+            }
+        }
+
+        Optional<BnRLoanProduct> optLoanProduct4 = bnRLoanProductRepository.findById(new Long(4));
+        if (optLoanProduct4.isPresent()) {
+            log.info("Business Loan Product is present");
+        } else {
+            Optional<BnRLoanType> optLoanType = bnRLoanTypeRepository.findById(new Long(1));
+            Optional<BnRIntRate> optIntRate = bnRIntRateRepository.findById(new Long(4));
+            Optional<BnRLoanPeriod> optLoanPeriod = bnRLoanPeriodRepository.findById(new Long(4));
+            if (optLoanType.isPresent() && optIntRate.isPresent() && optLoanPeriod.isPresent()) {
+                BnRLoanProduct loanProduct;
+                loanProduct = BnRLoanProduct.builder()
+                        .bnRLoanType(optLoanType.get())
+                        .bnRIntRate(optIntRate.get())
+                        .bnRLoanPeriod(optLoanPeriod.get())
+                        .build();
+                bnRLoanProductRepository.save(loanProduct);
+                log.info("Business Loan Product is saved");
+            } else {
+                System.out.println("Loan Type or Interest Rate or Loan Period is not present");
+            }
+        }
+
+        Optional<BnRLoanProduct> optLoanProduct5 = bnRLoanProductRepository.findById(new Long(5));
+        if (optLoanProduct5.isPresent()) {
+            log.info("Education Loan Product is present");
+        } else {
+            Optional<BnRLoanType> optLoanType = bnRLoanTypeRepository.findById(new Long(1));
+            Optional<BnRIntRate> optIntRate = bnRIntRateRepository.findById(new Long(1));
+            Optional<BnRLoanPeriod> optLoanPeriod = bnRLoanPeriodRepository.findById(new Long(5));
+            if (optLoanType.isPresent() && optIntRate.isPresent() && optLoanPeriod.isPresent()) {
+                BnRLoanProduct loanProduct;
+                loanProduct = BnRLoanProduct.builder()
+                        .bnRLoanType(optLoanType.get())
+                        .bnRIntRate(optIntRate.get())
+                        .bnRLoanPeriod(optLoanPeriod.get())
+                        .build();
+                bnRLoanProductRepository.save(loanProduct);
+                log.info("Education Loan Product is saved");
+            } else {
+                System.out.println("Loan Type or Interest Rate or Loan Period is not present");
+            }
+        }
+
+        Optional<BnRLoanProduct> optLoanProduct6 = bnRLoanProductRepository.findById(new Long(6));
+        if (optLoanProduct6.isPresent()) {
+            log.info("Personal Loan Product is present");
+        } else {
+            Optional<BnRLoanType> optLoanType = bnRLoanTypeRepository.findById(new Long(2));
+            Optional<BnRIntRate> optIntRate = bnRIntRateRepository.findById(new Long(1));
+            Optional<BnRLoanPeriod> optLoanPeriod = bnRLoanPeriodRepository.findById(new Long(1));
+            if (optLoanType.isPresent() && optIntRate.isPresent() && optLoanPeriod.isPresent()) {
+                BnRLoanProduct loanProduct;
+                loanProduct = BnRLoanProduct.builder()
+                        .bnRLoanType(optLoanType.get())
+                        .bnRIntRate(optIntRate.get())
+                        .bnRLoanPeriod(optLoanPeriod.get())
+                        .build();
+                bnRLoanProductRepository.save(loanProduct);
+                log.info("Personal Loan Product is saved");
+            } else {
+                System.out.println("Loan Type or Interest Rate or Loan Period is not present");
+            }
+        }
+
+        Optional<BnRLoanProduct> optLoanProduct7 = bnRLoanProductRepository.findById(new Long(7));
+        if (optLoanProduct7.isPresent()) {
+            log.info("Housing Loan Product is present");
+        } else {
+            Optional<BnRLoanType> optLoanType = bnRLoanTypeRepository.findById(new Long(2));
+            Optional<BnRIntRate> optIntRate = bnRIntRateRepository.findById(new Long(2));
+            Optional<BnRLoanPeriod> optLoanPeriod = bnRLoanPeriodRepository.findById(new Long(2));
+            if (optLoanType.isPresent() && optIntRate.isPresent() && optLoanPeriod.isPresent()) {
+                BnRLoanProduct loanProduct;
+                loanProduct = BnRLoanProduct.builder()
+                        .bnRLoanType(optLoanType.get())
+                        .bnRIntRate(optIntRate.get())
+                        .bnRLoanPeriod(optLoanPeriod.get())
+                        .build();
+                bnRLoanProductRepository.save(loanProduct);
+                log.info("Housing Loan Product is saved");
+            } else {
+                System.out.println("Loan Type or Interest Rate or Loan Period is not present");
+            }
+        }
+
+        Optional<BnRLoanProduct> optLoanProduct8 = bnRLoanProductRepository.findById(new Long(8));
+        if (optLoanProduct8.isPresent()) {
+            log.info("Vehicle Loan Product is present");
+        } else {
+            Optional<BnRLoanType> optLoanType = bnRLoanTypeRepository.findById(new Long(2));
+            Optional<BnRIntRate> optIntRate = bnRIntRateRepository.findById(new Long(3));
+            Optional<BnRLoanPeriod> optLoanPeriod = bnRLoanPeriodRepository.findById(new Long(3));
+            if (optLoanType.isPresent() && optIntRate.isPresent() && optLoanPeriod.isPresent()) {
+                BnRLoanProduct loanProduct;
+                loanProduct = BnRLoanProduct.builder()
+                        .bnRLoanType(optLoanType.get())
+                        .bnRIntRate(optIntRate.get())
+                        .bnRLoanPeriod(optLoanPeriod.get())
+                        .build();
+                bnRLoanProductRepository.save(loanProduct);
+                log.info("Vehicle Loan Product is saved");
+            } else {
+                System.out.println("Loan Type or Interest Rate or Loan Period is not present");
+            }
+        }
+
+        Optional<BnRLoanProduct> optLoanProduct9 = bnRLoanProductRepository.findById(new Long(9));
+        if (optLoanProduct9.isPresent()) {
+            log.info("Business Loan Product is present");
+        } else {
+            Optional<BnRLoanType> optLoanType = bnRLoanTypeRepository.findById(new Long(2));
+            Optional<BnRIntRate> optIntRate = bnRIntRateRepository.findById(new Long(4));
+            Optional<BnRLoanPeriod> optLoanPeriod = bnRLoanPeriodRepository.findById(new Long(4));
+            if (optLoanType.isPresent() && optIntRate.isPresent() && optLoanPeriod.isPresent()) {
+                BnRLoanProduct loanProduct;
+                loanProduct = BnRLoanProduct.builder()
+                        .bnRLoanType(optLoanType.get())
+                        .bnRIntRate(optIntRate.get())
+                        .bnRLoanPeriod(optLoanPeriod.get())
+                        .build();
+                bnRLoanProductRepository.save(loanProduct);
+                log.info("Business Loan Product is saved");
+            } else {
+                System.out.println("Loan Type or Interest Rate or Loan Period is not present");
+            }
+        }
+
+        Optional<BnRLoanProduct> optLoanProduct10 = bnRLoanProductRepository.findById(new Long(10));
+        if (optLoanProduct10.isPresent()) {
+            log.info("Education Loan Product is present");
+        } else {
+            Optional<BnRLoanType> optLoanType = bnRLoanTypeRepository.findById(new Long(2));
+            Optional<BnRIntRate> optIntRate = bnRIntRateRepository.findById(new Long(1));
+            Optional<BnRLoanPeriod> optLoanPeriod = bnRLoanPeriodRepository.findById(new Long(5));
+            if (optLoanType.isPresent() && optIntRate.isPresent() && optLoanPeriod.isPresent()) {
+                BnRLoanProduct loanProduct;
+                loanProduct = BnRLoanProduct.builder()
+                        .bnRLoanType(optLoanType.get())
+                        .bnRIntRate(optIntRate.get())
+                        .bnRLoanPeriod(optLoanPeriod.get())
+                        .build();
+                bnRLoanProductRepository.save(loanProduct);
+                log.info("Education Loan Product is saved");
+            } else {
+                System.out.println("Loan Type or Interest Rate or Loan Period is not present");
+            }
+        }
+
+        Optional<BnRLoanProduct> optLoanProduct11 = bnRLoanProductRepository.findById(new Long(11));
+        if (optLoanProduct11.isPresent()) {
+            log.info("Student Loan Product is present");
+        } else {
+            Optional<BnRLoanType> optLoanType = bnRLoanTypeRepository.findById(new Long(2));
+            Optional<BnRIntRate> optIntRate = bnRIntRateRepository.findById(new Long(1));
+            Optional<BnRLoanPeriod> optLoanPeriod = bnRLoanPeriodRepository.findById(new Long(5));
+            if (optLoanType.isPresent() && optIntRate.isPresent() && optLoanPeriod.isPresent()) {
+                BnRLoanProduct loanProduct;
+                loanProduct = BnRLoanProduct.builder()
+                        .bnRLoanType(optLoanType.get())
+                        .bnRIntRate(optIntRate.get())
+                        .bnRLoanPeriod(optLoanPeriod.get())
+                        .build();
+                bnRLoanProductRepository.save(loanProduct);
+                log.info("Student Loan Product is saved");
+            } else {
+                System.out.println("Loan Type or Interest Rate or Loan Period is not present");
+            }
+        }
+
     }
 
 }
