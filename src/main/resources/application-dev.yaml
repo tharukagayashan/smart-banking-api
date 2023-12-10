@@ -7,5 +7,5 @@ spring:
     add-properties: false
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
       dialect: org.hibernate.dialect.PostgresSQL8Dialect

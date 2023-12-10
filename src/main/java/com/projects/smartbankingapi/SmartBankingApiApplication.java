@@ -186,7 +186,7 @@ public class SmartBankingApiApplication {
             BnRAccountType accountType;
             accountType = BnRAccountType.builder()
                     .name("Savings")
-                    .code("SAV")
+                    .code("001")
                     .build();
 
             bnRAccountTypeRepository.save(accountType);
@@ -200,7 +200,7 @@ public class SmartBankingApiApplication {
             BnRAccountType accountType;
             accountType = BnRAccountType.builder()
                     .name("Check")
-                    .code("CHK")
+                    .code("002")
                     .build();
 
             bnRAccountTypeRepository.save(accountType);
@@ -214,7 +214,7 @@ public class SmartBankingApiApplication {
             BnRAccountType accountType;
             accountType = BnRAccountType.builder()
                     .name("Fixed Deposit")
-                    .code("FIX")
+                    .code("003")
                     .build();
 
             bnRAccountTypeRepository.save(accountType);
@@ -229,7 +229,7 @@ public class SmartBankingApiApplication {
             BnRBank bank;
             bank = BnRBank.builder()
                     .name("Bank of Ceylon")
-                    .code("BOC")
+                    .code("001")
                     .isActive(true)
                     .build();
 
@@ -247,7 +247,7 @@ public class SmartBankingApiApplication {
                 BnRBranch branch;
                 branch = BnRBranch.builder()
                         .name("Head Office")
-                        .code("HDO")
+                        .code("001")
                         .isActive(true)
                         .bnRBank(optionalBank.get())
                         .build();
@@ -298,7 +298,7 @@ public class SmartBankingApiApplication {
                     .build();
             account = bnMAccountRepository.save(account);
             CustomMethods customMethods = new CustomMethods();
-            String accountNo = "HDOSAV23120001";
+            String accountNo = customMethods.generateAccountNumber(bnRBranchRepository.findById(1L).get().getCode(), bnRAccountTypeRepository.findById(1L).get().getCode(), account.getAccountId());
             account.setAccountNo(accountNo);
             bnMAccountRepository.save(account);
 
