@@ -19,8 +19,7 @@ public class StaffController {
 
     @GetMapping("/all")
     public ResponseEntity<List<BnMStaffDto>> getAllStaffs() {
-        ResponseEntity<List<BnMStaffDto>> response = staffService.getAllStaffs();
-        return response;
+        return staffService.getAllStaffs();
     }
 
     @GetMapping("/table")
@@ -31,14 +30,12 @@ public class StaffController {
             @RequestParam(defaultValue = "desc", required = false) String direction,
             @RequestParam(defaultValue = "", required = false) String search
     ) {
-        ResponseEntity<ApiResponseDto<List<BnMStaffDto>>> response = staffService.getStaffForTable(page, perPage, sort, direction, search);
-        return response;
+        return staffService.getStaffForTable(page, perPage, sort, direction, search);
     }
 
     @GetMapping("/{staffId}")
     public ResponseEntity<BnMStaffDto> getStaff(@PathVariable Long staffId) {
-        ResponseEntity<BnMStaffDto> response = staffService.getStaff(staffId);
-        return response;
+        return staffService.getStaff(staffId);
     }
 
 }

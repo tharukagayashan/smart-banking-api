@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -48,18 +49,17 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private static BnMCustomer getBnMCustomer(BnMCustomer entity, BnMCustomerDto bnMCustomerDto) {
-        BnMCustomer customer = entity;
-        customer.setCustomerId(bnMCustomerDto.getCustomerId());
-        customer.setFirstName(bnMCustomerDto.getFirstName());
-        customer.setLastName(bnMCustomerDto.getLastName());
-        customer.setDob(bnMCustomerDto.getDob());
-        customer.setAddress(bnMCustomerDto.getAddress());
-        customer.setEmail(bnMCustomerDto.getEmail());
-        customer.setMobileNo(bnMCustomerDto.getMobileNo());
-        customer.setNic(bnMCustomerDto.getNic());
-        customer.setGender(bnMCustomerDto.getGender());
-        customer.setIsActive(bnMCustomerDto.getIsActive());
-        return customer;
+        entity.setCustomerId(bnMCustomerDto.getCustomerId());
+        entity.setFirstName(bnMCustomerDto.getFirstName());
+        entity.setLastName(bnMCustomerDto.getLastName());
+        entity.setDob(bnMCustomerDto.getDob());
+        entity.setAddress(bnMCustomerDto.getAddress());
+        entity.setEmail(bnMCustomerDto.getEmail());
+        entity.setMobileNo(bnMCustomerDto.getMobileNo());
+        entity.setNic(bnMCustomerDto.getNic());
+        entity.setGender(bnMCustomerDto.getGender());
+        entity.setIsActive(bnMCustomerDto.getIsActive());
+        return entity;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class CustomerServiceImpl implements CustomerService {
 
             BnMCustomer customer = getBnMCustomer(customerCreateReqDto);
             customer = customerRepository.save(customer);
-            if (customer == null) {
+            if (customer.getCustomerId() == null) {
                 throw new BadRequestAlertException("Customer creation failed", "BnMCustomer", "error");
             } else {
                 BnMCustomerDto customerDto = customerMapper.toDto(customer);
@@ -124,7 +124,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public ResponseEntity<BnMCustomerDto> updateCustomer(Long customerId, BnMCustomerDto bnMCustomerDto) {
         try {
-            if (customerId != bnMCustomerDto.getCustomerId()) {
+            if (!Objects.equals(customerId, bnMCustomerDto.getCustomerId())) {
                 throw new BadRequestAlertException("Customer id mismatch", "BnMCustomer", "error");
             } else {
                 ResponseEntity<BnMCustomerDto> customerRes = getCustomer(customerId);
@@ -176,7 +176,7 @@ public class CustomerServiceImpl implements CustomerService {
             if (isActive == null) {
                 throw new BadRequestAlertException("isActive is required", "BnMCustomer", "error");
             } else {
-                boolean flag = false;
+                boolean flag;
                 if (isActive.equals(HardCodeConstant.ACTIVE.toString())) {
                     flag = true;
                 } else if (isActive.equals(HardCodeConstant.INACTIVE.toString())) {

@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -61,13 +62,13 @@ public class AccountServiceImpl implements AccountService {
     public ResponseEntity<ResponseDto> createAccount(AccountCreateReqDto accountCreateReqDto) {
         try {
             BnMAccount account = getBnMAccount(accountCreateReqDto);
-            Optional<BnMAccount> optAccount = accountRepository.findByBnMCustomerNic(account.getBnMCustomer().getNic());
+            Optional<BnMAccount> optAccount = accountRepository.findByBnMCustomerNicAndBnRAccountTypeAccountTypeId(account.getBnMCustomer().getNic(), account.getBnRAccountType().getAccountTypeId());
             if (optAccount.isPresent()) {
-                throw new BadRequestAlertException("Account already exists for given customer", "BnMAccount", "ALREADY_EXISTS");
+                throw new BadRequestAlertException("Account already exists for given customer nic and account type", "BnMAccount", "ALREADY_EXISTS");
             }
 
             account = accountRepository.save(account);
-            if (account == null) {
+            if (account.getAccountId() == null) {
                 throw new BadRequestAlertException("Error while creating account", "BnMAccount", "ERROR");
             } else {
                 ResponseDto response = new ResponseDto();
@@ -84,7 +85,7 @@ public class AccountServiceImpl implements AccountService {
                     minimumBalance = HardCodeConstant.CHECK_MIN_BALANCE;
                 } else if (account.getBnRAccountType().getAccountTypeId() == HardCodeConstant.FIXED_ACCOUNT_TYPE_ID.longValue()) {
                     minimumBalance = HardCodeConstant.FIXED_MIN_BALANCE;
-                }else {
+                } else {
                     throw new BadRequestAlertException("Account type not found", "BnRAccountType", "NOT_FOUND");
                 }
 
@@ -141,7 +142,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public ResponseEntity<BnMAccountDto> updateAccount(Long accountId, BnMAccountDto bnMAccountDto) {
         try {
-            if (accountId != bnMAccountDto.getAccountId()) {
+            if (!Objects.equals(accountId, bnMAccountDto.getAccountId())) {
                 throw new BadRequestAlertException("Account id mismatch", "BnMAccount", "MISMATCH");
             } else {
                 ResponseEntity<BnMAccountDto> accountDtoResponseEntity = getAccount(accountId);
@@ -188,7 +189,7 @@ public class AccountServiceImpl implements AccountService {
             if (isActive == null) {
                 throw new BadRequestAlertException("isActive is required", "BnMAccount", "REQUIRED");
             } else {
-                boolean flag = false;
+                boolean flag;
                 if (isActive.equals(HardCodeConstant.ACTIVE.toString())) {
                     flag = true;
                 } else if (isActive.equals(HardCodeConstant.INACTIVE.toString())) {
@@ -283,19 +284,19 @@ public class AccountServiceImpl implements AccountService {
             throw new BadRequestAlertException("Status not found", "BnRStatus", "NOT_FOUND");
         }
 
-        BnMAccount account = entity;
-        account.setAccountId(bnMAccountDto.getAccountId());
-        account.setAccountNo(bnMAccountDto.getAccountNo());
-        account.setCurrentBalance(bnMAccountDto.getCurrentBalance());
-        account.setAvailableBalance(bnMAccountDto.getAvailableBalance());
-        account.setHoldBalance(bnMAccountDto.getHoldBalance());
-        account.setOpenedDate(bnMAccountDto.getOpenedDate());
-        account.setBnMCustomer(optCustomer.get());
-        account.setBnRAccountType(optAccountType.get());
-        account.setBnRStatus(optStatus.get());
-        account.setBnRCurrency(optCurrency.get());
-        account.setBnRBranch(optBranch.get());
-        return account;
+        entity.setAccountId(bnMAccountDto.getAccountId());
+        entity.setAccountNo(bnMAccountDto.getAccountNo());
+        entity.setCurrentBalance(bnMAccountDto.getCurrentBalance());
+        entity.setAvailableBalance(bnMAccountDto.getAvailableBalance());
+        entity.setHoldBalance(bnMAccountDto.getHoldBalance());
+        entity.setOpenedDate(bnMAccountDto.getOpenedDate());
+        entity.setBnMCustomer(optCustomer.get());
+        entity.setBnRAccountType(optAccountType.get());
+        entity.setBnRStatus(optStatus.get());
+        entity.setBnRCurrency(optCurrency.get());
+        entity.setBnRBranch(optBranch.get());
+        entity.setIsFirstDepositDone(bnMAccountDto.getIsFirstDepositDone());
+        return entity;
     }
 
     private BnMAccount getBnMAccount(AccountCreateReqDto accountCreateReqDto) {
@@ -326,9 +327,9 @@ public class AccountServiceImpl implements AccountService {
 
         BnMAccount account = new BnMAccount();
 
-        account.setCurrentBalance(new Float(0));
-        account.setAvailableBalance(new Float(0));
-        account.setHoldBalance(new Float(0));
+        account.setCurrentBalance((float) 0);
+        account.setAvailableBalance((float) 0);
+        account.setHoldBalance((float) 0);
         account.setOpenedDate(LocalDate.now());
         account.setBnMCustomer(optCustomer.get());
         account.setBnRAccountType(optAccountType.get());

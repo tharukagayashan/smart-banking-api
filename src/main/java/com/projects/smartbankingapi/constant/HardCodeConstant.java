@@ -11,7 +11,7 @@ public class HardCodeConstant {
     public static final Integer TRAN_TYPE_DEBIT_ID = 1;
     public static final Integer TRAN_TYPE_CREDIT_ID = 2;
 
-    public static final String HEAD_OFFICE_ACCOUNT_NO = "010123110012";
+    public static final String HEAD_OFFICE_ACCOUNT_NO = "00100123120001";
 
     public static final Integer LOAN_TYPE_FLAT_ID = 1;
     public static final Integer LOAN_TYPE_REDUCING_ID = 2;
