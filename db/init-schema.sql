@@ -301,19 +301,19 @@ CREATE TABLE BN_R_TRAN_TYPE
 
 CREATE TABLE BN_T_TRAN
 (
-    TRAN_ID         BIGINT                 NOT NULL,
+    TRAN_ID         BIGINT       NOT NULL,
     CREATED_BY      VARCHAR(255),
     UPDATED_BY      VARCHAR(255),
     CREATED_ON      TIMESTAMP WITHOUT TIME ZONE,
     UPDATED_ON      TIMESTAMP WITHOUT TIME ZONE,
-    AMOUNT          FLOAT                  NOT NULL,
-    TRAN_DATE       DATE                   NOT NULL,
+    AMOUNT          FLOAT        NOT NULL,
+    TRAN_DATE       DATE         NOT NULL,
     TRAN_TIME       TIME WITHOUT TIME ZONE NOT NULL,
-    TRAN_TYPE_ID    BIGINT                 NOT NULL,
-    DESCRIPTION     VARCHAR(255)           NOT NULL,
-    FROM_ACCOUNT_NO VARCHAR(255)           NOT NULL,
-    TO_ACCOUNT_NO   VARCHAR(255)           NOT NULL,
-    STATUS_ID       BIGINT                 NOT NULL,
+    TRAN_TYPE_ID    BIGINT       NOT NULL,
+    DESCRIPTION     VARCHAR(255) NOT NULL,
+    FROM_ACCOUNT_NO VARCHAR(255) NOT NULL,
+    TO_ACCOUNT_NO   VARCHAR(255) NOT NULL,
+    STATUS_ID       BIGINT       NOT NULL,
     CONSTRAINT PK_BN_T_TRAN PRIMARY KEY (TRAN_ID)
 );
 
@@ -805,21 +805,21 @@ CREATE TABLE bn_r_tran_type
 
 CREATE TABLE bn_t_tran
 (
-    tran_id         BIGINT                 NOT NULL,
+    tran_id         BIGINT       NOT NULL,
     created_by      VARCHAR(255),
     updated_by      VARCHAR(255),
     created_on      TIMESTAMP WITHOUT TIME ZONE,
     updated_on      TIMESTAMP WITHOUT TIME ZONE,
-    amount          FLOAT                  NOT NULL,
-    tran_date       date                   NOT NULL,
+    amount          FLOAT        NOT NULL,
+    tran_date       date         NOT NULL,
     tran_time       time WITHOUT TIME ZONE NOT NULL,
-    tran_type_id    BIGINT                 NOT NULL,
-    description     VARCHAR(255)           NOT NULL,
-    from_account_no VARCHAR(255)           NOT NULL,
-    to_account_no   VARCHAR(255)           NOT NULL,
+    tran_type_id    BIGINT       NOT NULL,
+    description     VARCHAR(255) NOT NULL,
+    from_account_no VARCHAR(255) NOT NULL,
+    to_account_no   VARCHAR(255) NOT NULL,
     tran_reference  VARCHAR(200),
-    status_id       BIGINT                 NOT NULL,
-    branch_id       BIGINT                 NOT NULL,
+    status_id       BIGINT       NOT NULL,
+    branch_id       BIGINT       NOT NULL,
     CONSTRAINT pk_bn_t_tran PRIMARY KEY (tran_id)
 );
 

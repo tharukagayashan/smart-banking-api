@@ -28,4 +28,9 @@ public class HardCodeConstant {
     public static final float CHECK_MIN_BALANCE = 10000;
     public static final float FIXED_MIN_BALANCE = 25000;
 
+    public static final String CARD_TYPE_VISA = "VISA";
+    public static final String CARD_TYPE_MASTER = "MASTER";
+
+    public static final String CARD_NO_REGEX = "^[0-9]{16}$";
+
 }

@@ -35,4 +35,7 @@ public class BnMCardDetail extends AuditModel {
     @Column(name = "CVV", length = 3)
     private String cvv;
 
+    @Column(name = "PIN", length = 4)
+    private String pin;
+
 }

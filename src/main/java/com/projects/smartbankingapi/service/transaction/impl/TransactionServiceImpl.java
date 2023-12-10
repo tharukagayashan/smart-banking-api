@@ -8,6 +8,7 @@ import com.projects.smartbankingapi.dao.transaction.BnTTranRepository;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.miscellaneous.PaginationDto;
 import com.projects.smartbankingapi.dto.other.BankDepositTranCreateReqDto;
+import com.projects.smartbankingapi.dto.other.BankWithdrawReqDto;
 import com.projects.smartbankingapi.dto.other.DebitTranCreateReqDto;
 import com.projects.smartbankingapi.dto.other.TransactionReceiptDto;
 import com.projects.smartbankingapi.dto.transaction.BnTTranDto;
@@ -183,6 +184,22 @@ public class TransactionServiceImpl implements TransactionService {
             }
         } catch (Exception e) {
             log.error("Error occurred while getting transaction statement: ", e);
+            throw new BadRequestAlertException(e.getMessage(), "Transaction", "ERROR");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnTTranDto> createBankWithdrawTransaction(BankWithdrawReqDto bankWithdrawReqDto) {
+        try {
+            BnTTran createdTran = customMethods.createBankWithdrawTransaction(bankWithdrawReqDto, accountRepo, tranRepo, tranTypeRepo, statusRepo);
+            if (createdTran.getTranId() == null) {
+                throw new BadRequestAlertException("Error occurred while creating bank withdraw transaction", "Transaction", "ERROR");
+            } else {
+                BnTTranDto response = tranMapper.toDto(createdTran);
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating bank withdraw transaction: ", e);
             throw new BadRequestAlertException(e.getMessage(), "Transaction", "ERROR");
         }
     }

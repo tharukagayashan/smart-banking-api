@@ -2,6 +2,7 @@ package com.projects.smartbankingapi.service.transaction;
 
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.other.BankDepositTranCreateReqDto;
+import com.projects.smartbankingapi.dto.other.BankWithdrawReqDto;
 import com.projects.smartbankingapi.dto.other.DebitTranCreateReqDto;
 import com.projects.smartbankingapi.dto.other.TransactionReceiptDto;
 import com.projects.smartbankingapi.dto.transaction.BnTTranDto;
@@ -20,4 +21,6 @@ public interface TransactionService {
     ResponseEntity<ApiResponseDto<List<BnTTranDto>>> getTransactionsForTable(Integer page, Integer perPage, String direction, String sort, String search, String fromAccountNo, String toAccountNo, LocalDate fromDate, LocalDate toDate);
 
     ResponseEntity<TransactionReceiptDto> getTranStatement(Long tranId);
+
+    ResponseEntity<BnTTranDto> createBankWithdrawTransaction(BankWithdrawReqDto bankWithdrawReqDto);
 }

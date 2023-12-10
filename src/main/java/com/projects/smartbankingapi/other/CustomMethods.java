@@ -7,6 +7,7 @@ import com.projects.smartbankingapi.dao.reference.BnRStatusRepository;
 import com.projects.smartbankingapi.dao.reference.BnRTranTypeRepository;
 import com.projects.smartbankingapi.dao.transaction.BnTTranRepository;
 import com.projects.smartbankingapi.dto.other.BankDepositTranCreateReqDto;
+import com.projects.smartbankingapi.dto.other.BankWithdrawReqDto;
 import com.projects.smartbankingapi.dto.other.DebitTranCreateReqDto;
 import com.projects.smartbankingapi.dto.other.TranCreateReqDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
@@ -312,6 +313,55 @@ public class CustomMethods {
             return (amount / totInstallments) + (interest / remInstallments);
         } else {
             throw new BadRequestAlertException("Loan type not found", "Loan", "loan_type_not_found");
+        }
+    }
+
+    public BnTTran createBankWithdrawTransaction(BankWithdrawReqDto bankWithdrawReqDto, BnMAccountRepository accountRepo, BnTTranRepository tranRepo, BnRTranTypeRepository tranTypeRepo, BnRStatusRepository statusRepo) {
+        try {
+            Optional<BnMAccount> optAccount = accountRepo.findByAccountNo(bankWithdrawReqDto.getAccountNo());
+            if (!optAccount.isPresent()) {
+                throw new BadRequestAlertException("Account not found", "Transaction", "account_not_found");
+            } else {
+                BnMAccount account = optAccount.get();
+                if (account.getAvailableBalance() < bankWithdrawReqDto.getAmount()) {
+                    throw new BadRequestAlertException("Insufficient balance", "Transaction", "insufficient_balance");
+                } else {
+
+                    Optional<BnRTranType> optTranType = tranTypeRepo.findById(HardCodeConstant.TRAN_TYPE_DEBIT_ID.longValue());
+                    if (!optTranType.isPresent()) {
+                        throw new BadRequestAlertException("Transaction type not found", "Transaction", "transaction_type_not_found");
+                    }
+                    Optional<BnRStatus> optStatus = statusRepo.findById(HardCodeConstant.STATUS_APPROVED_ID.longValue());
+                    if (!optStatus.isPresent()) {
+                        throw new BadRequestAlertException("Status not found", "Transaction", "status_not_found");
+                    }
+
+                    Float availableBalance = account.getAvailableBalance() - bankWithdrawReqDto.getAmount();
+                    Float currentBalance = account.getCurrentBalance() - bankWithdrawReqDto.getAmount();
+                    account.setAvailableBalance(availableBalance);
+                    account.setCurrentBalance(currentBalance);
+                    accountRepo.save(account);
+                    log.info("Withdraw amount from account successfully");
+
+                    BnTTran tran = new BnTTran();
+                    tran.setAmount(bankWithdrawReqDto.getAmount());
+                    tran.setTranDate(LocalDate.now());
+                    tran.setTranTime(LocalTime.now());
+                    tran.setBnRTranType(optTranType.get());
+                    tran.setDescription("Bank withdraw");
+                    tran.setFromAccountNo(bankWithdrawReqDto.getAccountNo());
+                    tran.setToAccountNo(HardCodeConstant.HEAD_OFFICE_ACCOUNT_NO);
+                    tran.setBnRStatus(optStatus.get());
+                    tran.setTranReference(UUID.randomUUID().toString());
+                    tran.setBnRBranch(account.getBnRBranch());
+                    tranRepo.save(tran);
+                    log.info("Bank withdraw transaction created successfully");
+                    return tran;
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating bank withdraw transaction", e);
+            throw new BadRequestAlertException(e.getMessage(), "Transaction", "error");
         }
     }
 }
