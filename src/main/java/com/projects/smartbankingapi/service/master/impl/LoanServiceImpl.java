@@ -276,7 +276,7 @@ public class LoanServiceImpl implements LoanService {
                     } else {
                         loanRepository.deleteById(loanId);
                         Optional<BnMLoan> checkLoan = loanRepository.findById(loanId);
-                        if (checkLoan.isPresent()){
+                        if (checkLoan.isPresent()) {
                             throw new BadRequestAlertException("Error while deleting loan", "Loan", "deleteLoan");
                         }
                         return ResponseEntity.ok("Loan deleted successfully");

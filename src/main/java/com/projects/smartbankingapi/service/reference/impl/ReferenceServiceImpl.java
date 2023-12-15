@@ -43,8 +43,10 @@ public class ReferenceServiceImpl implements ReferenceService {
     private final BnRTranTypeMapper tranTypeMapper;
     private final BnRRoleRepository roleRepository;
     private final BnRRoleMapper roleMapper;
+    private final BnRCurrencyRateRepository currencyRateRepository;
+    private final BnRCurrencyRateMapper currencyRateMapper;
 
-    public ReferenceServiceImpl(BnRAccountTypeRepository accountTypeRepository, BnRAccountTypeMapper accountTypeMapper, BnRBankRepository bankRepository, BnRBankMapper bankMapper, BnRBranchRepository branchRepository, BnRBranchMapper branchMapper, BnRChargeRepository chargeRepository, BnRChargeMapper chargeMapper, BnRCurrencyRepository currencyRepository, BnRCurrencyMapper currencyMapper, BnRFeeTypeRepository feeTypeRepository, BnRFeeTypeMapper feeTypeMapper, BnRIntRateRepository intRateRepository, BnRIntRateMapper intRateMapper, BnRLoanPeriodRepository loanPeriodRepository, BnRLoanPeriodMapper loanPeriodMapper, BnRLoanProductRepository loanProductRepository, BnRLoanProductMapper loanProductMapper, BnRLoanTypeRepository loanTypeRepository, BnRLoanTypeMapper loanTypeMapper, BnRStatusRepository statusRepository, BnRStatusMapper statusMapper, BnRTranTypeRepository tranTypeRepository, BnRTranTypeMapper tranTypeMapper, BnRRoleRepository roleRepository, BnRRoleMapper roleMapper) {
+    public ReferenceServiceImpl(BnRAccountTypeRepository accountTypeRepository, BnRAccountTypeMapper accountTypeMapper, BnRBankRepository bankRepository, BnRBankMapper bankMapper, BnRBranchRepository branchRepository, BnRBranchMapper branchMapper, BnRChargeRepository chargeRepository, BnRChargeMapper chargeMapper, BnRCurrencyRepository currencyRepository, BnRCurrencyMapper currencyMapper, BnRFeeTypeRepository feeTypeRepository, BnRFeeTypeMapper feeTypeMapper, BnRIntRateRepository intRateRepository, BnRIntRateMapper intRateMapper, BnRLoanPeriodRepository loanPeriodRepository, BnRLoanPeriodMapper loanPeriodMapper, BnRLoanProductRepository loanProductRepository, BnRLoanProductMapper loanProductMapper, BnRLoanTypeRepository loanTypeRepository, BnRLoanTypeMapper loanTypeMapper, BnRStatusRepository statusRepository, BnRStatusMapper statusMapper, BnRTranTypeRepository tranTypeRepository, BnRTranTypeMapper tranTypeMapper, BnRRoleRepository roleRepository, BnRRoleMapper roleMapper, BnRCurrencyRateRepository currencyRateRepository, BnRCurrencyRateMapper currencyRateMapper) {
         this.accountTypeRepository = accountTypeRepository;
         this.accountTypeMapper = accountTypeMapper;
         this.bankRepository = bankRepository;
@@ -71,6 +73,8 @@ public class ReferenceServiceImpl implements ReferenceService {
         this.tranTypeMapper = tranTypeMapper;
         this.roleRepository = roleRepository;
         this.roleMapper = roleMapper;
+        this.currencyRateRepository = currencyRateRepository;
+        this.currencyRateMapper = currencyRateMapper;
     }
 
     @Override
@@ -1563,6 +1567,119 @@ public class ReferenceServiceImpl implements ReferenceService {
             }
         } catch (Exception e) {
             throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteRole");
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<BnRCurrencyRateDto>> getAllCurrencyRates() {
+        try {
+            List<BnRCurrencyRate> currencyRateList = currencyRateRepository.findAll();
+            if (currencyRateList.isEmpty()) {
+                throw new BadRequestAlertException("No currency rate found", "Reference", "getAllCurrencyRates");
+            } else {
+                List<BnRCurrencyRateDto> currencyRateDtoList = currencyRateMapper.entityListToDtoList(currencyRateList);
+                return ResponseEntity.ok(currencyRateDtoList);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getAllCurrencyRates");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRCurrencyRateDto> createCurrencyRate(CurrencyRateCreateReqDto currencyRateCreateReqDto) {
+        try {
+            Optional<BnRCurrency> optCurrency = currencyRepository.findById(currencyRateCreateReqDto.getCurrencyId());
+            if (!optCurrency.isPresent()) {
+                throw new BadRequestAlertException("Currency not found for given id", "Reference", "createCurrencyRate");
+            } else {
+                BnRCurrencyRate currencyRate = new BnRCurrencyRate();
+                currencyRate.setSellingRate(currencyRateCreateReqDto.getSellingRate());
+                currencyRate.setBuyingRate(currencyRateCreateReqDto.getBuyingRate());
+                currencyRate.setMiddleRate(currencyRateCreateReqDto.getMiddleRate());
+                currencyRate.setPublicationDate(currencyRateCreateReqDto.getPublicationDate());
+                currencyRate.setBnRCurrency(optCurrency.get());
+                currencyRate = currencyRateRepository.save(currencyRate);
+                if (currencyRate.getCurrencyRateId() == null) {
+                    throw new BadRequestAlertException("Currency rate creation failed", "Reference", "createCurrencyRate");
+                } else {
+                    return ResponseEntity.ok(currencyRateMapper.toDto(currencyRate));
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "createCurrencyRate");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRCurrencyRateDto> getCurrencyRateById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Currency rate id is required", "Reference", "getCurrencyRateById");
+            } else {
+                Optional<BnRCurrencyRate> optCurrencyRate = currencyRateRepository.findById(id);
+                if (!optCurrencyRate.isPresent()) {
+                    throw new BadRequestAlertException("Currency rate not found for given id", "Reference", "getCurrencyRateById");
+                } else {
+                    BnRCurrencyRateDto currencyRateDto = currencyRateMapper.toDto(optCurrencyRate.get());
+                    return ResponseEntity.ok(currencyRateDto);
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getCurrencyRateById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRCurrencyRateDto> updateCurrencyRate(Long id, BnRCurrencyRateDto bnRCurrencyRateDto) {
+        if (id == null) {
+            throw new BadRequestAlertException("Currency rate id is required", "Reference", "updateCurrencyRate");
+        } else if (!id.equals(bnRCurrencyRateDto.getCurrencyRateId())) {
+            throw new BadRequestAlertException("Currency rate id mismatch", "Reference", "updateCurrencyRate");
+        } else {
+
+            Optional<BnRCurrency> optCurrency = currencyRepository.findById(bnRCurrencyRateDto.getCurrencyId());
+            if (!optCurrency.isPresent()) {
+                throw new BadRequestAlertException("Currency not found for given id", "Reference", "updateCurrencyRate");
+            }
+
+            Optional<BnRCurrencyRate> optCurrencyRate = currencyRateRepository.findById(id);
+            if (!optCurrencyRate.isPresent()) {
+                throw new BadRequestAlertException("Currency rate not found for given id", "Reference", "updateCurrencyRate");
+            } else {
+                BnRCurrencyRate currencyRate = optCurrencyRate.get();
+                currencyRate.setSellingRate(bnRCurrencyRateDto.getSellingRate());
+                currencyRate.setBuyingRate(bnRCurrencyRateDto.getBuyingRate());
+                currencyRate.setMiddleRate(bnRCurrencyRateDto.getMiddleRate());
+                currencyRate.setPublicationDate(bnRCurrencyRateDto.getPublicationDate());
+                currencyRate.setBnRCurrency(optCurrency.get());
+                currencyRate = currencyRateRepository.save(currencyRate);
+                return ResponseEntity.ok(currencyRateMapper.toDto(currencyRate));
+            }
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteCurrencyRate(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Currency rate id is required", "Reference", "deleteCurrencyRate");
+            } else {
+                Optional<BnRCurrencyRate> optCurrencyRate = currencyRateRepository.findById(id);
+                if (!optCurrencyRate.isPresent()) {
+                    throw new BadRequestAlertException("Currency rate not found for given id", "Reference", "deleteCurrencyRate");
+                } else {
+                    currencyRateRepository.deleteById(id);
+                    if (currencyRateRepository.findById(id).isPresent()) {
+                        throw new BadRequestAlertException("Currency rate delete request failed", "Reference", "deleteCurrencyRate");
+                    } else {
+                        return ResponseEntity.ok("Currency rate deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteCurrencyRate");
         }
     }
 }

@@ -1,9 +1,7 @@
 package com.projects.smartbankingapi.rest.transaction;
 
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
-import com.projects.smartbankingapi.dto.other.BankDepositTranCreateReqDto;
-import com.projects.smartbankingapi.dto.other.DebitTranCreateReqDto;
-import com.projects.smartbankingapi.dto.other.TransactionReceiptDto;
+import com.projects.smartbankingapi.dto.other.*;
 import com.projects.smartbankingapi.dto.transaction.BnTTranDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.service.transaction.TransactionService;
@@ -12,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
@@ -20,7 +17,6 @@ import java.util.Objects;
 
 import static org.hibernate.id.IdentifierGenerator.ENTITY_NAME;
 
-@Transactional
 @Validated
 @RestController
 @RequestMapping("/transaction")
@@ -32,7 +28,7 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @PostMapping("/bank-deposit-transaction")
+    @PostMapping("/bank-deposit")
     public ResponseEntity<BnTTranDto> createBankDepositTransaction(@Valid @RequestBody BankDepositTranCreateReqDto bankDepositTranCreateReqDto) {
         return transactionService.createBankDepositTransaction(bankDepositTranCreateReqDto);
     }
@@ -70,6 +66,16 @@ public class TransactionController {
     @GetMapping("/generate-statement/{tranId}")
     public ResponseEntity<TransactionReceiptDto> getTranStatement(@PathVariable Long tranId) {
         return transactionService.getTranStatement(tranId);
+    }
+
+    @PostMapping("/bank-withdraw")
+    public ResponseEntity<BnTTranDto> createBankWithdrawTransaction(@Valid @RequestBody BankWithdrawReqDto bankWithdrawReqDto) {
+        return transactionService.createBankWithdrawTransaction(bankWithdrawReqDto);
+    }
+
+    @PostMapping("/foreign-currency-deposit")
+    public ResponseEntity<BnTTranDto> createForeignCurrencyDepositTransaction(@Valid @RequestBody ForeignCurrencyDepositReqDto foreignCurrencyDepositReqDto) {
+        return transactionService.createForeignCurrencyDepositTransaction(foreignCurrencyDepositReqDto);
     }
 
 }

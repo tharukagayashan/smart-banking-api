@@ -102,6 +102,11 @@ public class ReferenceController {
         return referenceService.getAllRoles();
     }
 
+    @GetMapping("/currency-rate/fdd")
+    public ResponseEntity<List<BnRCurrencyRateDto>> getAllCurrencyRates() {
+        return referenceService.getAllCurrencyRates();
+    }
+
     /* POST APIs */
 
     @PostMapping("/account-type")
@@ -167,6 +172,11 @@ public class ReferenceController {
     @PostMapping("/role")
     public ResponseEntity<BnRRoleDto> createRole(@Valid @RequestBody RoleCreateReqDto roleCreateReqDto) {
         return referenceService.createRole(roleCreateReqDto);
+    }
+
+    @PostMapping("/currency-rate")
+    public ResponseEntity<BnRCurrencyRateDto> createCurrencyRate(@Valid @RequestBody CurrencyRateCreateReqDto currencyRateCreateReqDto) {
+        return referenceService.createCurrencyRate(currencyRateCreateReqDto);
     }
 
     /*** GET BY ID APIs (FDD) ***/
@@ -236,6 +246,13 @@ public class ReferenceController {
         return referenceService.getRoleById(id);
     }
 
+
+    @GetMapping("/currency-rate/{id}")
+    public ResponseEntity<BnRCurrencyRateDto> getCurrencyRateById(@PathVariable Long id) {
+        return referenceService.getCurrencyRateById(id);
+    }
+
+
     /*** PUT APIs ***/
     @PutMapping("/account-type/{id}")
     public ResponseEntity<BnRAccountTypeDto> updateAccountType(@PathVariable Long id, @RequestBody BnRAccountTypeDto bnRAccountTypeDto) {
@@ -302,6 +319,12 @@ public class ReferenceController {
         return referenceService.updateRole(id, bnRRoleDto);
     }
 
+    @PutMapping("/currency-rate/{id}")
+    public ResponseEntity<BnRCurrencyRateDto> updateCurrencyRate(@PathVariable Long id, @RequestBody BnRCurrencyRateDto bnRCurrencyRateDto) {
+        return referenceService.updateCurrencyRate(id, bnRCurrencyRateDto);
+    }
+
+
     /* DELETE APIs */
     @DeleteMapping("/account-type/{id}")
     public ResponseEntity<String> deleteAccountType(@PathVariable Long id) {
@@ -366,6 +389,11 @@ public class ReferenceController {
     @DeleteMapping("/role/{id}")
     public ResponseEntity<String> deleteRole(@PathVariable Long id) {
         return referenceService.deleteRole(id);
+    }
+
+    @DeleteMapping("/currency-rate/{id}")
+    public ResponseEntity<String> deleteCurrencyRate(@PathVariable Long id) {
+        return referenceService.deleteCurrencyRate(id);
     }
 
 }

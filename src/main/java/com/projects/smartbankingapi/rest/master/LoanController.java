@@ -53,7 +53,7 @@ public class LoanController {
     }
 
     @PostMapping("/calculator")
-    public ResponseEntity<CalculatorResponseDto> calculator(@RequestBody CalculatorReqDto calculatorReqDto){
+    public ResponseEntity<CalculatorResponseDto> calculator(@RequestBody CalculatorReqDto calculatorReqDto) {
         return loanService.calculator(calculatorReqDto);
     }
 

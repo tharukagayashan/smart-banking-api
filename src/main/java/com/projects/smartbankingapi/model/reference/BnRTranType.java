@@ -1,10 +1,7 @@
 package com.projects.smartbankingapi.model.reference;
 
 import com.projects.smartbankingapi.audit.AuditModel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -12,7 +9,8 @@ import javax.persistence.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "BN_R_TRAN_TYPE", indexes = {
         @Index(name = "BN_R_TRAN_TYPE_TRAN_TYPE_ID_IDX", columnList = "TRAN_TYPE_ID"),
         @Index(name = "BN_R_TRAN_TYPE_TRAN_TYPE_CODE_IDX", columnList = "TRAN_TYPE_CODE", unique = true)
@@ -21,7 +19,7 @@ public class BnRTranType extends AuditModel {
 
     @Id
     @SequenceGenerator(name = "BN_R_TRAN_TYPE", sequenceName = "BN_R_TRAN_TYPE_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BN_R_TRAN_TYPE_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BN_R_TRAN_TYPE")
     @Column(name = "TRAN_TYPE_ID", nullable = false)
     private Long tranTypeId;
 

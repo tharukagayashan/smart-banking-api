@@ -2,15 +2,17 @@ package com.projects.smartbankingapi.model.master;
 
 import com.projects.smartbankingapi.audit.AuditModel;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "BN_M_ACC_CARD_DETAILS", indexes = {
         @Index(name = "BN_M_ACC_CARD_DETAILS_ACC_CARD_ID", columnList = "ACC_CARD_ID"),
         @Index(name = "BN_M_ACC_CARD_DETAILS_ACCOUNT_ID", columnList = "ACCOUNT_ID"),
@@ -20,7 +22,7 @@ public class BnMAccountCardDetail extends AuditModel {
 
     @Id
     @SequenceGenerator(name = "BN_M_ACC_CARD_DETAIL", sequenceName = "BN_M_ACC_CARD_DETAIL_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BN_M_ACC_CARD_DETAIL_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BN_M_ACC_CARD_DETAIL")
     @Column(name = "ACC_CARD_ID", nullable = false)
     private Long accCardId;
 

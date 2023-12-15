@@ -2,30 +2,58 @@ package com.projects.smartbankingapi.other;
 
 import com.projects.smartbankingapi.constant.HardCodeConstant;
 import com.projects.smartbankingapi.dao.master.BnMAccountRepository;
-import com.projects.smartbankingapi.dao.reference.BnRBranchRepository;
-import com.projects.smartbankingapi.dao.reference.BnRStatusRepository;
-import com.projects.smartbankingapi.dao.reference.BnRTranTypeRepository;
+import com.projects.smartbankingapi.dao.reference.*;
 import com.projects.smartbankingapi.dao.transaction.BnTTranRepository;
-import com.projects.smartbankingapi.dto.other.BankDepositTranCreateReqDto;
-import com.projects.smartbankingapi.dto.other.DebitTranCreateReqDto;
-import com.projects.smartbankingapi.dto.other.TranCreateReqDto;
+import com.projects.smartbankingapi.dto.other.*;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.model.master.BnMAccount;
-import com.projects.smartbankingapi.model.reference.BnRBranch;
-import com.projects.smartbankingapi.model.reference.BnRStatus;
-import com.projects.smartbankingapi.model.reference.BnRTranType;
+import com.projects.smartbankingapi.model.reference.*;
 import com.projects.smartbankingapi.model.transaction.BnTTran;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
 @Configuration
 public class CustomMethods {
+
+    private static float convertCurrency(Float amount, Long fromCurrencyId, Long toCurrencyId, BnRCurrencyRepository currencyRepo, BnRCurrencyRateRepository currencyRateRepo) {
+
+        Optional<BnRCurrency> optFromCurrency = currencyRepo.findById(fromCurrencyId);
+        Optional<BnRCurrency> optToCurrency = currencyRepo.findById(toCurrencyId);
+
+        if (!optFromCurrency.isPresent()) {
+            throw new BadRequestAlertException("From currency not found", "Transaction", "from_currency_not_found");
+        } else if (!optToCurrency.isPresent()) {
+            throw new BadRequestAlertException("To currency not found", "Transaction", "to_currency_not_found");
+        } else {
+            BnRCurrency fromCurrency = optFromCurrency.get();
+            BnRCurrency toCurrency = optToCurrency.get();
+
+            List<BnRCurrencyRate> fromCurrencyRateList = currencyRateRepo.findLatestCurrencyRateRecord(fromCurrency.getCurrencyId());
+            List<BnRCurrencyRate> toCurrencyRateList = currencyRateRepo.findLatestCurrencyRateRecord(toCurrency.getCurrencyId());
+
+            if (fromCurrencyRateList.isEmpty()) {
+                throw new BadRequestAlertException("From currency rate not found", "Transaction", "from_currency_rate_not_found");
+            } else if (toCurrencyRateList.isEmpty()) {
+                throw new BadRequestAlertException("To currency rate not found", "Transaction", "to_currency_rate_not_found");
+            } else {
+                BnRCurrencyRate fromCurrencyRate = fromCurrencyRateList.get(0);
+                BnRCurrencyRate toCurrencyRate = toCurrencyRateList.get(0);
+
+                float fromCurrencyRateValue = fromCurrencyRate.getMiddleRate();
+                float toCurrencyRateValue = toCurrencyRate.getMiddleRate();
+
+                return (amount * fromCurrencyRateValue) / toCurrencyRateValue;
+            }
+
+        }
+    }
 
     public String validateNIC(String nic) {
         String msg;
@@ -280,26 +308,10 @@ public class CustomMethods {
     }
 
     public Float calculateInterest(Float amount, Float rate, Integer month, Long loanTypeId) {
-        float interest;
-        float i;
-        float t;
-        float emi;
         if (loanTypeId == HardCodeConstant.LOAN_TYPE_FLAT_ID.longValue()) {
-            i = rate / 100;
-            t = month;
-            emi = (amount * i * t) / 12;
-
-            interest = emi * t - amount;
-
-            return interest;
+            return calculateFlatRateInterest(amount, rate, month);
         } else if (loanTypeId == HardCodeConstant.LOAN_TYPE_REDUCING_ID.longValue()) {
-            i = rate / (100 * 12);
-            t = month;
-            emi = (amount * i * (float) Math.pow(1 + i, t)) / ((float) Math.pow(1 + i, t) - 1);
-
-            interest = emi * t - amount;
-
-            return interest;
+            return calculateReducingBalanceInterest(amount, rate, month);
         } else {
             throw new BadRequestAlertException("Loan type not found", "Loan", "loan_type_not_found");
         }
@@ -314,4 +326,119 @@ public class CustomMethods {
             throw new BadRequestAlertException("Loan type not found", "Loan", "loan_type_not_found");
         }
     }
+
+    public BnTTran createBankWithdrawTransaction(BankWithdrawReqDto bankWithdrawReqDto, BnMAccountRepository accountRepo, BnTTranRepository tranRepo, BnRTranTypeRepository tranTypeRepo, BnRStatusRepository statusRepo, BnRBranchRepository branchRepo) {
+        try {
+            Optional<BnMAccount> optAccount = accountRepo.findByAccountNo(bankWithdrawReqDto.getAccountNo());
+            if (!optAccount.isPresent()) {
+                throw new BadRequestAlertException("Account not found", "Transaction", "account_not_found");
+            } else {
+                BnMAccount account = optAccount.get();
+                if (account.getAvailableBalance() < bankWithdrawReqDto.getAmount()) {
+                    throw new BadRequestAlertException("Insufficient balance", "Transaction", "insufficient_balance");
+                } else {
+
+                    Optional<BnRTranType> optTranType = tranTypeRepo.findById(HardCodeConstant.TRAN_TYPE_DEBIT_ID.longValue());
+                    if (!optTranType.isPresent()) {
+                        throw new BadRequestAlertException("Transaction type not found", "Transaction", "transaction_type_not_found");
+                    }
+                    Optional<BnRStatus> optStatus = statusRepo.findById(HardCodeConstant.STATUS_APPROVED_ID.longValue());
+                    if (!optStatus.isPresent()) {
+                        throw new BadRequestAlertException("Status not found", "Transaction", "status_not_found");
+                    }
+
+                    Float availableBalance = account.getAvailableBalance() - bankWithdrawReqDto.getAmount();
+                    Float currentBalance = account.getCurrentBalance() - bankWithdrawReqDto.getAmount();
+                    account.setAvailableBalance(availableBalance);
+                    account.setCurrentBalance(currentBalance);
+                    accountRepo.save(account);
+                    log.info("Withdraw amount from account successfully");
+
+                    TranCreateReqDto tranCreateReqDto = new TranCreateReqDto();
+                    tranCreateReqDto.setAmount(bankWithdrawReqDto.getAmount());
+                    tranCreateReqDto.setDescription("Bank Withdrawal");
+                    tranCreateReqDto.setFromAccountNo(bankWithdrawReqDto.getAccountNo());
+                    tranCreateReqDto.setToAccountNo("");
+                    tranCreateReqDto.setTranTypeId(optTranType.get().getTranTypeId());
+                    tranCreateReqDto.setStatusId(optStatus.get().getStatusId());
+                    tranCreateReqDto.setBranchId(account.getBnRBranch().getBranchId());
+                    BnTTran tran = createTranRecord(tranCreateReqDto, tranTypeRepo, statusRepo, tranRepo, branchRepo);
+                    if (tran.getTranId() != null) {
+                        log.info("Bank withdraw transaction created successfully");
+                        return tran;
+                    } else {
+                        throw new BadRequestAlertException("Error occurred while creating bank withdraw transaction", "Transaction", "error");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating bank withdraw transaction", e);
+            throw new BadRequestAlertException(e.getMessage(), "Transaction", "error");
+        }
+    }
+
+    public float calculateFlatRateInterest(float amount, float rate, int month) {
+        float i = rate / 100;
+        return (amount * i * month) / 12;
+    }
+
+    public float calculateReducingBalanceInterest(float amount, float rate, int month) {
+        float i = rate / (100 * 12);
+        return (amount * i * (float) Math.pow(1 + i, month)) / ((float) Math.pow(1 + i, month) - 1);
+    }
+
+    public BnTTran createForeignCurrencyDepositTransaction(ForeignCurrencyDepositReqDto foreignCurrencyDepositReqDto, BnMAccountRepository accountRepo, BnTTranRepository tranRepo, BnRTranTypeRepository tranTypeRepo, BnRStatusRepository statusRepo, BnRCurrencyRepository currencyRepo, BnRCurrencyRateRepository currencyRateRepo, BnRBranchRepository branchRepo) {
+        try {
+            Optional<BnRCurrency> optCurrency = currencyRepo.findById(foreignCurrencyDepositReqDto.getCurrencyId());
+            Optional<BnMAccount> optToAccount = accountRepo.findByAccountNo(foreignCurrencyDepositReqDto.getToAccountNo());
+            Optional<BnRTranType> optTranType = tranTypeRepo.findById(HardCodeConstant.TRAN_TYPE_CREDIT_ID.longValue());
+
+            BnRCurrency currency;
+            BnMAccount account;
+            BnRTranType tranType;
+            if (!optCurrency.isPresent()) {
+                throw new BadRequestAlertException("Currency not found", "Transaction", "currency_not_found");
+            }
+            if (!optToAccount.isPresent()) {
+                throw new BadRequestAlertException("Account not found", "Transaction", "account_not_found");
+            }
+            if (!optTranType.isPresent()) {
+                throw new BadRequestAlertException("Transaction type not found", "Transaction", "transaction_type_not_found");
+            }
+            currency = optCurrency.get();
+            account = optToAccount.get();
+            tranType = optTranType.get();
+
+            float amount = CustomMethods.convertCurrency(foreignCurrencyDepositReqDto.getAmount(), currency.getCurrencyId(), HardCodeConstant.CURRENCY_LKR_ID.longValue(), currencyRepo, currencyRateRepo);
+            log.info("Converted amount is {}", amount);
+            float newAvailableBalance = account.getAvailableBalance() + amount;
+            float newCurrentBalance = account.getCurrentBalance() + amount;
+
+            account.setAvailableBalance(newAvailableBalance);
+            account.setCurrentBalance(newCurrentBalance);
+            account = accountRepo.save(account);
+            log.info("Amount added to account successfully");
+
+            TranCreateReqDto tranCreateReqDto = new TranCreateReqDto();
+            tranCreateReqDto.setAmount(amount);
+            tranCreateReqDto.setDescription("Foreign currency deposit");
+            tranCreateReqDto.setFromAccountNo("");
+            tranCreateReqDto.setToAccountNo(account.getAccountNo());
+            tranCreateReqDto.setTranTypeId(tranType.getTranTypeId());
+            tranCreateReqDto.setStatusId(HardCodeConstant.STATUS_APPROVED_ID.longValue());
+            tranCreateReqDto.setBranchId(account.getBnRBranch().getBranchId());
+
+            BnTTran tran = createTranRecord(tranCreateReqDto, tranTypeRepo, statusRepo, tranRepo, branchRepo);
+            if (tran.getTranId() != null) {
+                log.info("Foreign currency deposit transaction created successfully");
+                return tran;
+            } else {
+                throw new BadRequestAlertException("Error occurred while creating foreign currency deposit transaction", "Transaction", "error");
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "Transaction", "error");
+        }
+    }
+
 }

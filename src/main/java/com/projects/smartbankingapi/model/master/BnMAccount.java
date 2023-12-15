@@ -5,10 +5,7 @@ import com.projects.smartbankingapi.model.reference.BnRAccountType;
 import com.projects.smartbankingapi.model.reference.BnRBranch;
 import com.projects.smartbankingapi.model.reference.BnRCurrency;
 import com.projects.smartbankingapi.model.reference.BnRStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -17,7 +14,8 @@ import java.time.LocalDate;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "BN_M_ACCOUNT", indexes = {
         @Index(name = "BN_M_ACCOUNT_ACCOUNT_ID_IDX", columnList = "ACCOUNT_ID"),
         @Index(name = "BN_M_ACCOUNT_ACCOUNT_NO_UNIQUE_IDX", columnList = "ACCOUNT_NO", unique = true),

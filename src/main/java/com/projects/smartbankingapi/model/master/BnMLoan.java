@@ -4,8 +4,9 @@ import com.projects.smartbankingapi.audit.AuditModel;
 import com.projects.smartbankingapi.model.reference.BnRLoanProduct;
 import com.projects.smartbankingapi.model.reference.BnRStatus;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -13,7 +14,8 @@ import java.time.LocalDate;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "BN_M_LOAN", indexes = {
         @Index(name = "BN_M_LOAN_LOAN_ID_IDX", columnList = "LOAN_ID"),
         @Index(name = "BN_M_LOAN_STATUS_ID_IDX", columnList = "STATUS_ID"),
