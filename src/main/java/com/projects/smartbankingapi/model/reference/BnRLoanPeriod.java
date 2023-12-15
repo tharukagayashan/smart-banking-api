@@ -1,10 +1,7 @@
 package com.projects.smartbankingapi.model.reference;
 
 import com.projects.smartbankingapi.audit.AuditModel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -13,12 +10,13 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "BN_R_LOAN_PERIOD")
 public class BnRLoanPeriod extends AuditModel {
     @Id
     @SequenceGenerator(name = "BN_R_LOAN_PERIOD", sequenceName = "BN_R_LOAN_PERIOD_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BN_R_LOAN_PERIOD_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BN_R_LOAN_PERIOD")
     @Column(name = "LOAN_PERIOD_ID", nullable = false)
     private Long periodId;
 

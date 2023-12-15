@@ -23,4 +23,5 @@ public class BnMCardDetailDto implements Serializable {
     private String cardNo;
     private String expiryDate;
     private String cvv;
+    private String pin;
 }

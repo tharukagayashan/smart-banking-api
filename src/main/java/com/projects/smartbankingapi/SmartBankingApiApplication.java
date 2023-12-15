@@ -37,6 +37,7 @@ public class SmartBankingApiApplication {
     private static BnRLoanPeriodRepository bnRLoanPeriodRepository = null;
     private static BnRLoanProductRepository bnRLoanProductRepository = null;
     private static BnRIntRateRepository bnRIntRateRepository = null;
+    private static BnRCurrencyRateRepository bnRCurrencyRateRepository = null;
 
     public SmartBankingApiApplication(BnMCustomerRepository bnMCustomerRepository, BnMAccountRepository bnMAccountRepository,
                                       BnRAccountTypeRepository bnRAccountTypeRepository,
@@ -50,7 +51,8 @@ public class SmartBankingApiApplication {
                                       BnRLoanTypeRepository bnRLoanTypeRepository,
                                       BnRLoanPeriodRepository bnRLoanPeriodRepository,
                                       BnRLoanProductRepository bnRLoanProductRepository,
-                                      BnRIntRateRepository bnRIntRateRepository) {
+                                      BnRIntRateRepository bnRIntRateRepository,
+                                      BnRCurrencyRateRepository bnRCurrencyRateRepository) {
         this.bnMCustomerRepository = bnMCustomerRepository;
         this.bnMAccountRepository = bnMAccountRepository;
         this.bnRAccountTypeRepository = bnRAccountTypeRepository;
@@ -65,13 +67,12 @@ public class SmartBankingApiApplication {
         this.bnRLoanPeriodRepository = bnRLoanPeriodRepository;
         this.bnRLoanProductRepository = bnRLoanProductRepository;
         this.bnRIntRateRepository = bnRIntRateRepository;
+        this.bnRCurrencyRateRepository = bnRCurrencyRateRepository;
     }
 
     public static void main(String[] args) {
         SpringApplication.run(SmartBankingApiApplication.class, args);
-
         insertRecordsFromCommandLine();
-
     }
 
     public static void insertRecordsFromCommandLine() {
@@ -104,9 +105,9 @@ public class SmartBankingApiApplication {
             log.info("Credit Tran Type is saved");
         }
 
-        Optional<BnRCurrency> optCurrency = bnRCurrencyRepository.findById(new Long(1));
-        if (optCurrency.isPresent()) {
-            log.info("Currency is present");
+        Optional<BnRCurrency> optCurrency1 = bnRCurrencyRepository.findById(new Long(1));
+        if (optCurrency1.isPresent()) {
+            log.info("LKR Currency is present");
         } else {
             BnRCurrency currency;
             currency = BnRCurrency.builder()
@@ -115,7 +116,189 @@ public class SmartBankingApiApplication {
                     .build();
 
             bnRCurrencyRepository.save(currency);
-            log.info("Currency is saved");
+            log.info("LKR Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency2 = bnRCurrencyRepository.findById(new Long(2));
+        if (optCurrency2.isPresent()) {
+            log.info("USD Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("United States Dollar")
+                    .code("USD")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("USD Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency3 = bnRCurrencyRepository.findById(new Long(3));
+        if (optCurrency3.isPresent()) {
+            log.info("EUR Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("Euro")
+                    .code("EUR")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("EUR Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency4 = bnRCurrencyRepository.findById(new Long(4));
+        if (optCurrency4.isPresent()) {
+            log.info("GBP Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("Pound Sterling")
+                    .code("GBP")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("GBP Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency5 = bnRCurrencyRepository.findById(new Long(5));
+        if (optCurrency5.isPresent()) {
+            log.info("AUD Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("Australian Dollar")
+                    .code("AUD")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("AUD Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency6 = bnRCurrencyRepository.findById(new Long(6));
+        if (optCurrency6.isPresent()) {
+            log.info("CAD Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("Canadian Dollar")
+                    .code("CAD")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("CAD Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency7 = bnRCurrencyRepository.findById(new Long(7));
+        if (optCurrency7.isPresent()) {
+            log.info("SGD Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("Singapore Dollar")
+                    .code("SGD")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("SGD Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency8 = bnRCurrencyRepository.findById(new Long(8));
+        if (optCurrency8.isPresent()) {
+            log.info("JPY Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("Japanese Yen")
+                    .code("JPY")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("JPY Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency9 = bnRCurrencyRepository.findById(new Long(9));
+        if (optCurrency9.isPresent()) {
+            log.info("CNY Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("Chinese Yuan")
+                    .code("CNY")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("CNY Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency10 = bnRCurrencyRepository.findById(new Long(10));
+        if (optCurrency10.isPresent()) {
+            log.info("INR Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("Indian Rupee")
+                    .code("INR")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("INR Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency11 = bnRCurrencyRepository.findById(new Long(11));
+        if (optCurrency11.isPresent()) {
+            log.info("MYR Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("Malaysian Ringgit")
+                    .code("MYR")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("MYR Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency12 = bnRCurrencyRepository.findById(new Long(12));
+        if (optCurrency12.isPresent()) {
+            log.info("NZD Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("New Zealand Dollar")
+                    .code("NZD")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("NZD Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency13 = bnRCurrencyRepository.findById(new Long(13));
+        if (optCurrency13.isPresent()) {
+            log.info("CHF Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("Swiss Franc")
+                    .code("CHF")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("CHF Currency is saved");
+        }
+
+        Optional<BnRCurrency> optCurrency14 = bnRCurrencyRepository.findById(new Long(14));
+        if (optCurrency14.isPresent()) {
+            log.info("RBL Currency is present");
+        } else {
+            BnRCurrency currency;
+            currency = BnRCurrency.builder()
+                    .name("Russian Ruble")
+                    .code("RBL")
+                    .build();
+
+            bnRCurrencyRepository.save(currency);
+            log.info("RBL Currency is saved");
         }
 
         Optional<BnRRole> optRole = bnRRoleRepository.findById(new Long(1));
@@ -698,24 +881,324 @@ public class SmartBankingApiApplication {
             }
         }
 
-        Optional<BnRLoanProduct> optLoanProduct11 = bnRLoanProductRepository.findById(new Long(11));
-        if (optLoanProduct11.isPresent()) {
-            log.info("Student Loan Product is present");
+        Optional<BnRCurrencyRate> optCurrencyRate1 = bnRCurrencyRateRepository.findById(new Long(1));
+        if (optCurrencyRate1.isPresent()) {
+            log.info("LKR Currency Rate is present");
         } else {
-            Optional<BnRLoanType> optLoanType = bnRLoanTypeRepository.findById(new Long(2));
-            Optional<BnRIntRate> optIntRate = bnRIntRateRepository.findById(new Long(1));
-            Optional<BnRLoanPeriod> optLoanPeriod = bnRLoanPeriodRepository.findById(new Long(5));
-            if (optLoanType.isPresent() && optIntRate.isPresent() && optLoanPeriod.isPresent()) {
-                BnRLoanProduct loanProduct;
-                loanProduct = BnRLoanProduct.builder()
-                        .bnRLoanType(optLoanType.get())
-                        .bnRIntRate(optIntRate.get())
-                        .bnRLoanPeriod(optLoanPeriod.get())
-                        .build();
-                bnRLoanProductRepository.save(loanProduct);
-                log.info("Student Loan Product is saved");
+
+            Optional<BnRCurrency> optLKRCurrency = bnRCurrencyRepository.findById(new Long(1));
+            if (!optLKRCurrency.isPresent()) {
+                System.out.println("LKR Currency is not present");
             } else {
-                System.out.println("Loan Type or Interest Rate or Loan Period is not present");
+                BnRCurrency currency = optLKRCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(1))
+                        .sellingRate(new Float(1))
+                        .middleRate(new Float(1))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("LKR Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate2 = bnRCurrencyRateRepository.findById(new Long(2));
+        if (optCurrencyRate2.isPresent()) {
+            log.info("USD Currency Rate is present");
+        } else {
+
+            Optional<BnRCurrency> optUSDCurrency = bnRCurrencyRepository.findById(new Long(2));
+            if (!optUSDCurrency.isPresent()) {
+                System.out.println("USD Currency is not present");
+            } else {
+                BnRCurrency currency = optUSDCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(330))
+                        .sellingRate(new Float(340))
+                        .middleRate(new Float(335))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("USD Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate3 = bnRCurrencyRateRepository.findById(new Long(3));
+        if (optCurrencyRate3.isPresent()) {
+            log.info("EUR Currency Rate is present");
+        } else {
+
+            Optional<BnRCurrency> optEURCurrency = bnRCurrencyRepository.findById(new Long(3));
+            if (!optEURCurrency.isPresent()) {
+                System.out.println("EUR Currency is not present");
+            } else {
+                BnRCurrency currency = optEURCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(380))
+                        .sellingRate(new Float(390))
+                        .middleRate(new Float(385))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("EUR Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate4 = bnRCurrencyRateRepository.findById(new Long(4));
+        if (optCurrencyRate4.isPresent()) {
+            log.info("GBP Currency Rate is present");
+        } else {
+
+            Optional<BnRCurrency> optGBPCurrency = bnRCurrencyRepository.findById(new Long(4));
+            if (!optGBPCurrency.isPresent()) {
+                System.out.println("GBP Currency is not present");
+            } else {
+                BnRCurrency currency = optGBPCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(420))
+                        .sellingRate(new Float(430))
+                        .middleRate(new Float(425))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("GBP Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate5 = bnRCurrencyRateRepository.findById(new Long(5));
+        if (optCurrencyRate5.isPresent()) {
+            log.info("AUD Currency Rate is present");
+        } else {
+
+            Optional<BnRCurrency> optAUDCurrency = bnRCurrencyRepository.findById(new Long(5));
+            if (!optAUDCurrency.isPresent()) {
+                System.out.println("AUD Currency is not present");
+            } else {
+                BnRCurrency currency = optAUDCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(240))
+                        .sellingRate(new Float(250))
+                        .middleRate(new Float(245))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("AUD Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate6 = bnRCurrencyRateRepository.findById(new Long(6));
+        if (optCurrencyRate6.isPresent()) {
+            log.info("CAD Currency Rate is present");
+        } else {
+
+            Optional<BnRCurrency> optCADCurrency = bnRCurrencyRepository.findById(new Long(6));
+            if (!optCADCurrency.isPresent()) {
+                System.out.println("CAD Currency is not present");
+            } else {
+                BnRCurrency currency = optCADCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(240))
+                        .sellingRate(new Float(250))
+                        .middleRate(new Float(245))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("CAD Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate7 = bnRCurrencyRateRepository.findById(new Long(7));
+        if (optCurrencyRate7.isPresent()) {
+            log.info("SGD Currency Rate is present");
+        } else {
+
+            Optional<BnRCurrency> optSGDCurrency = bnRCurrencyRepository.findById(new Long(7));
+            if (!optSGDCurrency.isPresent()) {
+                System.out.println("SGD Currency is not present");
+            } else {
+                BnRCurrency currency = optSGDCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(240))
+                        .sellingRate(new Float(250))
+                        .middleRate(new Float(245))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("SGD Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate8 = bnRCurrencyRateRepository.findById(new Long(8));
+        if (optCurrencyRate8.isPresent()) {
+            log.info("JPY Currency Rate is present");
+        } else {
+
+            Optional<BnRCurrency> optJPYCurrency = bnRCurrencyRepository.findById(new Long(8));
+            if (!optJPYCurrency.isPresent()) {
+                System.out.println("JPY Currency is not present");
+            } else {
+                BnRCurrency currency = optJPYCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(2.30))
+                        .sellingRate(new Float(2.50))
+                        .middleRate(new Float(2.40))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("JPY Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate9 = bnRCurrencyRateRepository.findById(new Long(9));
+        if (optCurrencyRate9.isPresent()) {
+            log.info("CNY Currency Rate is present");
+        } else {
+
+            Optional<BnRCurrency> optCNYCurrency = bnRCurrencyRepository.findById(new Long(9));
+            if (!optCNYCurrency.isPresent()) {
+                System.out.println("CNY Currency is not present");
+            } else {
+                BnRCurrency currency = optCNYCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(45.98))
+                        .sellingRate(new Float(50.50))
+                        .middleRate(new Float(47.50))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("CNY Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate10 = bnRCurrencyRateRepository.findById(new Long(10));
+        if (optCurrencyRate10.isPresent()) {
+            log.info("INR Currency Rate is present");
+        } else {
+
+            Optional<BnRCurrency> optINRCurrency = bnRCurrencyRepository.findById(new Long(10));
+            if (!optINRCurrency.isPresent()) {
+                System.out.println("INR Currency is not present");
+            } else {
+                BnRCurrency currency = optINRCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(4.98))
+                        .sellingRate(new Float(5.50))
+                        .middleRate(new Float(5.50))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("INR Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate11 = bnRCurrencyRateRepository.findById(new Long(11));
+        if (optCurrencyRate11.isPresent()) {
+            log.info("MYR Currency Rate is present");
+        } else {
+
+            Optional<BnRCurrency> optMYRCurrency = bnRCurrencyRepository.findById(new Long(11));
+            if (!optMYRCurrency.isPresent()) {
+                System.out.println("MYR Currency is not present");
+            } else {
+                BnRCurrency currency = optMYRCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(80))
+                        .sellingRate(new Float(90))
+                        .middleRate(new Float(85))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("MYR Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate12 = bnRCurrencyRateRepository.findById(new Long(12));
+        if (optCurrencyRate12.isPresent()) {
+            log.info("NZD Currency Rate is present");
+        } else {
+
+            Optional<BnRCurrency> optNZDCurrency = bnRCurrencyRepository.findById(new Long(12));
+            if (!optNZDCurrency.isPresent()) {
+                System.out.println("NZD Currency is not present");
+            } else {
+                BnRCurrency currency = optNZDCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(200))
+                        .sellingRate(new Float(202))
+                        .middleRate(new Float(201))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("NZD Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate13 = bnRCurrencyRateRepository.findById(new Long(13));
+        if (optCurrencyRate13.isPresent()) {
+            log.info("CHF Currency Rate is present");
+        } else {
+
+            Optional<BnRCurrency> optCHFCurrency = bnRCurrencyRepository.findById(new Long(13));
+            if (!optCHFCurrency.isPresent()) {
+                System.out.println("CHF Currency is not present");
+            } else {
+                BnRCurrency currency = optCHFCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(375))
+                        .sellingRate(new Float(390))
+                        .middleRate(new Float(384))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("CHF Currency Rate is saved");
+            }
+        }
+
+        Optional<BnRCurrencyRate> optCurrencyRate14 = bnRCurrencyRateRepository.findById(new Long(14));
+        if (optCurrencyRate14.isPresent()) {
+            log.info("RBL Currency Rate is present");
+        } else {
+            Optional<BnRCurrency> optRLBCurrency = bnRCurrencyRepository.findById(new Long(14));
+            if (!optRLBCurrency.isPresent()) {
+                System.out.println("RBL Currency is not present");
+            } else {
+                BnRCurrency currency = optRLBCurrency.get();
+                BnRCurrencyRate currencyRate;
+                currencyRate = BnRCurrencyRate.builder()
+                        .buyingRate(new Float(3.62))
+                        .sellingRate(new Float(4.20))
+                        .middleRate(new Float(3.90))
+                        .publicationDate(LocalDate.now())
+                        .bnRCurrency(currency)
+                        .build();
+                bnRCurrencyRateRepository.save(currencyRate);
+                log.info("RBL Currency Rate is saved");
             }
         }
 

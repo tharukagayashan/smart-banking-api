@@ -1,15 +1,11 @@
 package com.projects.smartbankingapi.service.transaction.impl;
 
 import com.projects.smartbankingapi.dao.master.BnMAccountRepository;
-import com.projects.smartbankingapi.dao.reference.BnRBranchRepository;
-import com.projects.smartbankingapi.dao.reference.BnRStatusRepository;
-import com.projects.smartbankingapi.dao.reference.BnRTranTypeRepository;
+import com.projects.smartbankingapi.dao.reference.*;
 import com.projects.smartbankingapi.dao.transaction.BnTTranRepository;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.miscellaneous.PaginationDto;
-import com.projects.smartbankingapi.dto.other.BankDepositTranCreateReqDto;
-import com.projects.smartbankingapi.dto.other.DebitTranCreateReqDto;
-import com.projects.smartbankingapi.dto.other.TransactionReceiptDto;
+import com.projects.smartbankingapi.dto.other.*;
 import com.projects.smartbankingapi.dto.transaction.BnTTranDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.mapper.transaction.BnTTranMapper;
@@ -38,8 +34,10 @@ public class TransactionServiceImpl implements TransactionService {
     private final BnTTranMapper tranMapper;
     private final BnMAccountRepository accountRepo;
     private final BnRBranchRepository branchRepo;
+    private final BnRCurrencyRepository currencyRepo;
+    private final BnRCurrencyRateRepository currencyRateRepo;
 
-    public TransactionServiceImpl(BnRStatusRepository statusRepo, BnRTranTypeRepository tranTypeRepo, CustomMethods customMethods, BnTTranRepository tranRepo, BnTTranMapper tranMapper, BnMAccountRepository accountRepo, BnRBranchRepository branchRepo) {
+    public TransactionServiceImpl(BnRStatusRepository statusRepo, BnRTranTypeRepository tranTypeRepo, CustomMethods customMethods, BnTTranRepository tranRepo, BnTTranMapper tranMapper, BnMAccountRepository accountRepo, BnRBranchRepository branchRepo, BnRCurrencyRepository currencyRepo, BnRCurrencyRateRepository currencyRateRepo) {
         this.statusRepo = statusRepo;
         this.tranTypeRepo = tranTypeRepo;
         this.customMethods = customMethods;
@@ -47,6 +45,8 @@ public class TransactionServiceImpl implements TransactionService {
         this.tranMapper = tranMapper;
         this.accountRepo = accountRepo;
         this.branchRepo = branchRepo;
+        this.currencyRepo = currencyRepo;
+        this.currencyRateRepo = currencyRateRepo;
     }
 
 
@@ -183,6 +183,38 @@ public class TransactionServiceImpl implements TransactionService {
             }
         } catch (Exception e) {
             log.error("Error occurred while getting transaction statement: ", e);
+            throw new BadRequestAlertException(e.getMessage(), "Transaction", "ERROR");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnTTranDto> createBankWithdrawTransaction(BankWithdrawReqDto bankWithdrawReqDto) {
+        try {
+            BnTTran createdTran = customMethods.createBankWithdrawTransaction(bankWithdrawReqDto, accountRepo, tranRepo, tranTypeRepo, statusRepo, branchRepo);
+            if (createdTran.getTranId() == null) {
+                throw new BadRequestAlertException("Error occurred while creating bank withdraw transaction", "Transaction", "ERROR");
+            } else {
+                BnTTranDto response = tranMapper.toDto(createdTran);
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating bank withdraw transaction: ", e);
+            throw new BadRequestAlertException(e.getMessage(), "Transaction", "ERROR");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnTTranDto> createForeignCurrencyDepositTransaction(ForeignCurrencyDepositReqDto foreignCurrencyDepositReqDto) {
+        try {
+            BnTTran createdTran = customMethods.createForeignCurrencyDepositTransaction(foreignCurrencyDepositReqDto, accountRepo, tranRepo, tranTypeRepo, statusRepo, currencyRepo, currencyRateRepo, branchRepo);
+            if (createdTran.getTranId() == null) {
+                throw new BadRequestAlertException("Error occurred while creating foreign currency deposit transaction", "Transaction", "ERROR");
+            } else {
+                BnTTranDto response = tranMapper.toDto(createdTran);
+                return ResponseEntity.ok(response);
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while creating foreign currency deposit transaction: ", e);
             throw new BadRequestAlertException(e.getMessage(), "Transaction", "ERROR");
         }
     }

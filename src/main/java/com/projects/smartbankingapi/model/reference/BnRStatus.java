@@ -2,10 +2,7 @@ package com.projects.smartbankingapi.model.reference;
 
 
 import com.projects.smartbankingapi.audit.AuditModel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -13,7 +10,8 @@ import javax.persistence.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "BN_R_STATUS", indexes = {
         @Index(name = "BN_R_STATUS_STATUS_ID_IDX", columnList = "STATUS_ID"),
         @Index(name = "BN_R_STATUS_STATUS_CODE_IDX", columnList = "STATUS_CODE", unique = true)
@@ -22,7 +20,7 @@ public class BnRStatus extends AuditModel {
 
     @Id
     @SequenceGenerator(name = "BN_R_STATUS", sequenceName = "BN_R_STATUS_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BN_R_STATUS_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BN_R_STATUS")
     @Column(name = "STATUS_ID", nullable = false)
     private Long statusId;
 
