@@ -3,10 +3,7 @@ package com.projects.smartbankingapi.model.master;
 import com.projects.smartbankingapi.audit.AuditModel;
 import com.projects.smartbankingapi.model.reference.BnRBranch;
 import com.projects.smartbankingapi.model.reference.BnRRole;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -14,7 +11,8 @@ import javax.persistence.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "BN_M_STAFF", indexes = {
         @Index(name = "BN_M_STAFF_STAFF_ID_IDX", columnList = "STAFF_ID"),
         @Index(name = "BN_M_STAFF_ROLE_ID_IDX", columnList = "ROLE_ID"),

@@ -140,4 +140,14 @@ public interface ReferenceService {
     ResponseEntity<String> deleteTranType(Long id);
 
     ResponseEntity<String> deleteRole(Long id);
+
+    ResponseEntity<List<BnRCurrencyRateDto>> getAllCurrencyRates();
+
+    ResponseEntity<BnRCurrencyRateDto> createCurrencyRate(CurrencyRateCreateReqDto currencyRateCreateReqDto);
+
+    ResponseEntity<BnRCurrencyRateDto> getCurrencyRateById(Long id);
+
+    ResponseEntity<BnRCurrencyRateDto> updateCurrencyRate(Long id, BnRCurrencyRateDto bnRCurrencyRateDto);
+
+    ResponseEntity<String> deleteCurrencyRate(Long id);
 }

@@ -1,10 +1,7 @@
 package com.projects.smartbankingapi.model.reference;
 
 import com.projects.smartbankingapi.audit.AuditModel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -12,7 +9,8 @@ import javax.persistence.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "BN_R_BRANCH", indexes = {
         @Index(name = "BN_R_BRANCH_BRANCH_ID_IDX", columnList = "BRANCH_ID"),
         @Index(name = "BN_R_BRANCH_BRANCH_CODE_IDX", columnList = "BRANCH_CODE", unique = true),

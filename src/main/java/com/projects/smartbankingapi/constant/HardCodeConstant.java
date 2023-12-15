@@ -33,4 +33,14 @@ public class HardCodeConstant {
 
     public static final String CARD_NO_REGEX = "^[0-9]{16}$";
 
+
+    public static final float CURRENCY_USD_BUYING_RATE = 325;
+    public static final float CURRENCY_USD_SELLING_RATE = 330;
+    public static final float CURRENCY_EUR_BUYING_RATE = 375;
+    public static final float CURRENCY_EUR_SELLING_RATE = 380;
+    public static final float CURRENCY_AUD_BUYING_RATE = 225;
+    public static final float CURRENCY_AUD_SELLING_RATE = 230;
+    public static final float CURRENCY_LKR_BUYING_RATE = 1;
+    public static final float CURRENCY_LKR_SELLING_RATE = 1;
+
 }

@@ -2,8 +2,9 @@ package com.projects.smartbankingapi.model.reference;
 
 import com.projects.smartbankingapi.audit.AuditModel;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -11,7 +12,8 @@ import java.time.LocalDate;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "BN_R_CHARGE", indexes = {
         @Index(name = "BN_R_CHARGE_CHARGE_ID_IDX", columnList = "CHARGE_ID"),
         @Index(name = "BN_R_CHARGE_FEE_TYPE_ID_IDX", columnList = "FEE_TYPE_ID"),
@@ -21,7 +23,7 @@ public class BnRCharge extends AuditModel {
 
     @Id
     @SequenceGenerator(name = "BN_R_CHARGE", sequenceName = "BN_R_CHARGE_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BN_R_CHARGE_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BN_R_CHARGE")
     @Column(name = "CHARGE_ID", nullable = false)
     private Long chargeId;
 
