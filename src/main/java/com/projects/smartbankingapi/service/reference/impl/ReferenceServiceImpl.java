@@ -45,8 +45,10 @@ public class ReferenceServiceImpl implements ReferenceService {
     private final BnRRoleMapper roleMapper;
     private final BnRCurrencyRateRepository currencyRateRepository;
     private final BnRCurrencyRateMapper currencyRateMapper;
+    private final BnRLoanPayTypeRepository loanPayTypeRepository;
+    private final BnRLoanPayTypeMapper loanPayTypeMapper;
 
-    public ReferenceServiceImpl(BnRAccountTypeRepository accountTypeRepository, BnRAccountTypeMapper accountTypeMapper, BnRBankRepository bankRepository, BnRBankMapper bankMapper, BnRBranchRepository branchRepository, BnRBranchMapper branchMapper, BnRChargeRepository chargeRepository, BnRChargeMapper chargeMapper, BnRCurrencyRepository currencyRepository, BnRCurrencyMapper currencyMapper, BnRFeeTypeRepository feeTypeRepository, BnRFeeTypeMapper feeTypeMapper, BnRIntRateRepository intRateRepository, BnRIntRateMapper intRateMapper, BnRLoanPeriodRepository loanPeriodRepository, BnRLoanPeriodMapper loanPeriodMapper, BnRLoanProductRepository loanProductRepository, BnRLoanProductMapper loanProductMapper, BnRLoanTypeRepository loanTypeRepository, BnRLoanTypeMapper loanTypeMapper, BnRStatusRepository statusRepository, BnRStatusMapper statusMapper, BnRTranTypeRepository tranTypeRepository, BnRTranTypeMapper tranTypeMapper, BnRRoleRepository roleRepository, BnRRoleMapper roleMapper, BnRCurrencyRateRepository currencyRateRepository, BnRCurrencyRateMapper currencyRateMapper) {
+    public ReferenceServiceImpl(BnRAccountTypeRepository accountTypeRepository, BnRAccountTypeMapper accountTypeMapper, BnRBankRepository bankRepository, BnRBankMapper bankMapper, BnRBranchRepository branchRepository, BnRBranchMapper branchMapper, BnRChargeRepository chargeRepository, BnRChargeMapper chargeMapper, BnRCurrencyRepository currencyRepository, BnRCurrencyMapper currencyMapper, BnRFeeTypeRepository feeTypeRepository, BnRFeeTypeMapper feeTypeMapper, BnRIntRateRepository intRateRepository, BnRIntRateMapper intRateMapper, BnRLoanPeriodRepository loanPeriodRepository, BnRLoanPeriodMapper loanPeriodMapper, BnRLoanProductRepository loanProductRepository, BnRLoanProductMapper loanProductMapper, BnRLoanTypeRepository loanTypeRepository, BnRLoanTypeMapper loanTypeMapper, BnRStatusRepository statusRepository, BnRStatusMapper statusMapper, BnRTranTypeRepository tranTypeRepository, BnRTranTypeMapper tranTypeMapper, BnRRoleRepository roleRepository, BnRRoleMapper roleMapper, BnRCurrencyRateRepository currencyRateRepository, BnRCurrencyRateMapper currencyRateMapper, BnRLoanPayTypeRepository loanPayTypeRepository, BnRLoanPayTypeMapper loanPayTypeMapper) {
         this.accountTypeRepository = accountTypeRepository;
         this.accountTypeMapper = accountTypeMapper;
         this.bankRepository = bankRepository;
@@ -75,6 +77,8 @@ public class ReferenceServiceImpl implements ReferenceService {
         this.roleMapper = roleMapper;
         this.currencyRateRepository = currencyRateRepository;
         this.currencyRateMapper = currencyRateMapper;
+        this.loanPayTypeRepository = loanPayTypeRepository;
+        this.loanPayTypeMapper = loanPayTypeMapper;
     }
 
     @Override
@@ -1680,6 +1684,114 @@ public class ReferenceServiceImpl implements ReferenceService {
             }
         } catch (Exception e) {
             throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteCurrencyRate");
+        }
+    }
+
+    @Override
+    public ResponseEntity<List<BnRLoanPayTypeDto>> getAllLoanPayTypes() {
+        try {
+            List<BnRLoanPayType> loanPayTypeList = loanPayTypeRepository.findAll();
+            if (loanPayTypeList.isEmpty()) {
+                throw new BadRequestAlertException("No loan pay type found", "Reference", "getAllLoanPayTypes");
+            } else {
+                List<BnRLoanPayTypeDto> loanPayTypeDtoList = loanPayTypeMapper.entityListToDtoList(loanPayTypeList);
+                return ResponseEntity.ok(loanPayTypeDtoList);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getAllLoanPayTypes");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRLoanPayTypeDto> createLoanPayType(LoanPayTypeCreateReqDto loanPayTypeCreateReqDto) {
+        try {
+            Optional<BnRLoanPayType> optLoanPayType = loanPayTypeRepository.findByPayTypeCode(loanPayTypeCreateReqDto.getPayTypeCode());
+            if (optLoanPayType.isPresent()) {
+                throw new BadRequestAlertException("Loan pay type already exists", "Reference", "createLoanPayType");
+            } else {
+                BnRLoanPayType loanPayType = new BnRLoanPayType();
+                loanPayType.setPayTypeCode(loanPayTypeCreateReqDto.getPayTypeCode());
+                loanPayType.setPayType(loanPayTypeCreateReqDto.getPayType());
+                loanPayType = loanPayTypeRepository.save(loanPayType);
+                if (loanPayType.getLoanPayTypeId() == null) {
+                    throw new BadRequestAlertException("Loan pay type creation failed", "Reference", "createLoanPayType");
+                } else {
+                    return ResponseEntity.ok(loanPayTypeMapper.toDto(loanPayType));
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "createLoanPayType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRLoanPayTypeDto> getLoanPayTypeById(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Loan pay type id is required", "Reference", "getLoanPayTypeById");
+            } else {
+                Optional<BnRLoanPayType> optLoanPayType = loanPayTypeRepository.findById(id);
+                if (!optLoanPayType.isPresent()) {
+                    throw new BadRequestAlertException("Loan pay type not found for given id", "Reference", "getLoanPayTypeById");
+                } else {
+                    BnRLoanPayTypeDto loanPayTypeDto = loanPayTypeMapper.toDto(optLoanPayType.get());
+                    return ResponseEntity.ok(loanPayTypeDto);
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "getLoanPayTypeById");
+        }
+    }
+
+    @Override
+    public ResponseEntity<BnRLoanPayTypeDto> updateLoanPayType(Long id, BnRLoanPayTypeDto bnRLoanPayTypeDto) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Loan pay type id is required", "Reference", "updateLoanPayType");
+            } else if (!id.equals(bnRLoanPayTypeDto.getLoanPayTypeId())) {
+                throw new BadRequestAlertException("Loan pay type id mismatch", "Reference", "updateLoanPayType");
+            } else {
+                Optional<BnRLoanPayType> optLoanPayType = loanPayTypeRepository.findById(id);
+                if (!optLoanPayType.isPresent()) {
+                    throw new BadRequestAlertException("Loan pay type not found for given id", "Reference", "updateLoanPayType");
+                } else {
+                    BnRLoanPayType loanPayType = optLoanPayType.get();
+                    loanPayType.setPayTypeCode(bnRLoanPayTypeDto.getPayTypeCode());
+                    loanPayType.setPayType(bnRLoanPayTypeDto.getPayType());
+                    loanPayType = loanPayTypeRepository.save(loanPayType);
+                    return ResponseEntity.ok(loanPayTypeMapper.toDto(loanPayType));
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "updateLoanPayType");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteLoanPayType(Long id) {
+        try {
+            if (id == null) {
+                throw new BadRequestAlertException("Loan pay type id is required", "Reference", "deleteLoanPayType");
+            } else {
+                Optional<BnRLoanPayType> optLoanPayType = loanPayTypeRepository.findById(id);
+                if (!optLoanPayType.isPresent()) {
+                    throw new BadRequestAlertException("Loan pay type not found for given id", "Reference", "deleteLoanPayType");
+                } else {
+                    loanPayTypeRepository.deleteById(id);
+                    if (loanPayTypeRepository.findById(id).isPresent()) {
+                        throw new BadRequestAlertException("Loan pay type delete request failed", "Reference", "deleteLoanPayType");
+                    } else {
+                        return ResponseEntity.ok("Loan pay type deleted successfully");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "Reference", "deleteLoanPayType");
         }
     }
 }

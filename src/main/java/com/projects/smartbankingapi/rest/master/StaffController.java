@@ -38,4 +38,9 @@ public class StaffController {
         return staffService.getStaff(staffId);
     }
 
+    @PutMapping("/{staffId}")
+    public ResponseEntity<BnMStaffDto> updateStaff(@PathVariable Long staffId, @RequestBody BnMStaffDto bnMStaffDto) {
+        return staffService.updateStaff(staffId, bnMStaffDto);
+    }
+
 }

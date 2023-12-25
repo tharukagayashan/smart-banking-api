@@ -3,21 +3,23 @@ package com.projects.smartbankingapi.service.master.impl;
 import com.projects.smartbankingapi.constant.HardCodeConstant;
 import com.projects.smartbankingapi.dao.master.BnMAccountRepository;
 import com.projects.smartbankingapi.dao.master.BnMLoanRepository;
+import com.projects.smartbankingapi.dao.reference.BnRLoanPayTypeRepository;
 import com.projects.smartbankingapi.dao.reference.BnRLoanProductRepository;
 import com.projects.smartbankingapi.dao.reference.BnRStatusRepository;
+import com.projects.smartbankingapi.dao.transaction.BnTLoanTranRepository;
 import com.projects.smartbankingapi.dto.master.BnMLoanDto;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.miscellaneous.PaginationDto;
-import com.projects.smartbankingapi.dto.other.CalculatorReqDto;
-import com.projects.smartbankingapi.dto.other.CalculatorResponseDto;
-import com.projects.smartbankingapi.dto.other.LoanCreateReqDto;
-import com.projects.smartbankingapi.dto.other.LoanDisburseReqDto;
+import com.projects.smartbankingapi.dto.other.*;
+import com.projects.smartbankingapi.dto.transaction.BnTTranDto;
 import com.projects.smartbankingapi.error.BadRequestAlertException;
 import com.projects.smartbankingapi.mapper.master.BnMLoanMapper;
 import com.projects.smartbankingapi.model.master.BnMAccount;
 import com.projects.smartbankingapi.model.master.BnMLoan;
 import com.projects.smartbankingapi.model.reference.*;
+import com.projects.smartbankingapi.model.transaction.BnTLoanTran;
 import com.projects.smartbankingapi.other.CustomMethods;
+import com.projects.smartbankingapi.rest.transaction.TransactionController;
 import com.projects.smartbankingapi.service.master.LoanService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,9 +29,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -40,14 +44,20 @@ public class LoanServiceImpl implements LoanService {
     private final BnMAccountRepository accountRepository;
     private final BnRStatusRepository statusRepository;
     private final CustomMethods customMethods;
+    private final BnRLoanPayTypeRepository loanPayTypeRepository;
+    private final BnTLoanTranRepository loanTranRepository;
+    private final TransactionController transactionController;
 
-    public LoanServiceImpl(BnMLoanRepository loanRepository, BnMLoanMapper loanMapper, BnRLoanProductRepository loanProductRepository, BnMAccountRepository accountRepository, BnRStatusRepository statusRepository, CustomMethods customMethods) {
+    public LoanServiceImpl(BnMLoanRepository loanRepository, BnMLoanMapper loanMapper, BnRLoanProductRepository loanProductRepository, BnMAccountRepository accountRepository, BnRStatusRepository statusRepository, CustomMethods customMethods, BnRLoanPayTypeRepository loanPayTypeRepository, BnTLoanTranRepository loanTranRepository, TransactionController transactionController) {
         this.loanRepository = loanRepository;
         this.loanMapper = loanMapper;
         this.loanProductRepository = loanProductRepository;
         this.accountRepository = accountRepository;
         this.statusRepository = statusRepository;
         this.customMethods = customMethods;
+        this.loanPayTypeRepository = loanPayTypeRepository;
+        this.loanTranRepository = loanTranRepository;
+        this.transactionController = transactionController;
     }
 
     @Override
@@ -185,6 +195,12 @@ public class LoanServiceImpl implements LoanService {
             } else if (!loanId.equals(loanDisburseReqDto.getLoanId())) {
                 throw new BadRequestAlertException("Loan Id is not match", "Loan", "disburseLoan");
             } else {
+
+                Optional<BnRStatus> optStatus = statusRepository.findById(HardCodeConstant.STATUS_DISBURSED_ID.longValue());
+                if (!optStatus.isPresent()) {
+                    throw new BadRequestAlertException("Status not found", "Loan", "disburseLoan");
+                }
+
                 Optional<BnMLoan> optLoan = loanRepository.findById(loanId);
                 if (!optLoan.isPresent()) {
                     throw new BadRequestAlertException("Loan not found", "Loan", "disburseLoan");
@@ -196,8 +212,33 @@ public class LoanServiceImpl implements LoanService {
                     loan.setNextInstallmentDate(LocalDate.now().plusMonths(1));
                     loan.setNextInstallmentAmt(nextInstallmentAmt);
                     loan.setDistributedAmt(loanDisburseReqDto.getDisburseAmt());
+                    loan.setBnRStatus(optStatus.get());
 
                     loan = loanRepository.save(loan);
+
+                    log.info("Loan disbursed successfully");
+                    BnTLoanTran loanTran = new BnTLoanTran();
+
+                    Optional<BnRLoanPayType> optLoanPayType = loanPayTypeRepository.findById(HardCodeConstant.LOAN_PAY_TYPE_DISBURSE_ID.longValue());
+                    if (!optLoanPayType.isPresent()) {
+                        throw new BadRequestAlertException("Loan Pay Type not found", "Loan", "disburseLoan");
+                    } else {
+                        loanTran.setBnRLoanPayType(optLoanPayType.get());
+                    }
+
+                    loanTran.setAmount(loanDisburseReqDto.getDisburseAmt());
+                    loanTran.setDescription("Disbursement of loan");
+                    loanTran.setTranReference(UUID.randomUUID().toString());
+                    loanTran.setTranDate(LocalDate.now());
+                    loanTran.setTranTime(LocalTime.now());
+                    loanTran.setBnMLoan(loan);
+                    loanTran.setBnRLoanPayType(optLoanPayType.get());
+                    loanTran = loanTranRepository.save(loanTran);
+                    if (loanTran.getLoanTranId() == null) {
+                        throw new BadRequestAlertException("Error while saving loan transaction", "Loan", "disburseLoan");
+                    }
+                    log.info("Loan transaction saved successfully");
+
                     return ResponseEntity.ok(loanMapper.toDto(loan));
                 }
             }
@@ -286,6 +327,98 @@ public class LoanServiceImpl implements LoanService {
         } catch (Exception e) {
             log.error("Error while deleting loan", e);
             throw new BadRequestAlertException(e.getMessage(), "Loan", "deleteLoan");
+        }
+    }
+
+    @Override
+    public ResponseEntity<ResponseDto> recoveryRun() {
+        try {
+            List<BnMLoan> loans = loanRepository.findByBnRStatusStatusId(HardCodeConstant.STATUS_DISBURSED_ID.longValue());
+            if (loans.isEmpty()) {
+                throw new BadRequestAlertException("No disbursed loans found", "Loan", "recoveryRun");
+            } else {
+                BnRLoanPayType loanPayType;
+                Optional<BnRLoanPayType> optLoanPayType = loanPayTypeRepository.findById(HardCodeConstant.LOAN_PAY_TYPE_REPAYMENT_ID.longValue());
+                if (!optLoanPayType.isPresent()) {
+                    throw new BadRequestAlertException("Loan Pay Type not found", "Loan", "recoveryRun");
+                } else {
+                    loanPayType = optLoanPayType.get();
+                }
+
+                for (BnMLoan loan : loans) {
+                    if (loan.getNextInstallmentDate().isEqual(LocalDate.now())) {
+
+                        Long accountId = loan.getBnMAccount().getAccountId();
+                        Optional<BnMAccount> optAccount = accountRepository.findById(accountId);
+                        if (!optAccount.isPresent()) {
+                            throw new BadRequestAlertException("Account not found", "Loan", "recoveryRun");
+                        } else {
+
+                            DebitTranCreateReqDto debitTranCreateReqDto = new DebitTranCreateReqDto();
+                            debitTranCreateReqDto.setFromAccountNo(optAccount.get().getAccountNo());
+                            debitTranCreateReqDto.setToAccountNo(HardCodeConstant.HEAD_OFFICE_ACCOUNT_NO);
+
+                            BnMAccount account = optAccount.get();
+                            if (account.getAvailableBalance() < loan.getNextInstallmentAmt()) {
+                                log.warn("Insufficient balance in account. Account ID : {}", account.getAccountId());
+                                if (account.getAvailableBalance() > 0) {
+                                    float arrearsAmt = loan.getNextInstallmentAmt() - account.getAvailableBalance();
+                                    loan.setTotArrearsAmt(loan.getTotArrearsAmt() + arrearsAmt);
+
+                                    //Set debit transaction amount to available balance
+                                    debitTranCreateReqDto.setAmount(account.getAvailableBalance());
+                                } else {
+                                    loan.setTotArrearsAmt(loan.getTotArrearsAmt() + loan.getNextInstallmentAmt());
+                                }
+                            } else {
+                                loan.setRemInstallments(loan.getRemInstallments() - 1);
+                                loan.setNextInstallmentDate(LocalDate.now().plusMonths(1));
+                                loan.setNextInstallmentAmt(customMethods.calculateNextInstallmentAmt(loan.getAmount(), loan.getInterest(), loan.getTotInstallments(), loan.getRemInstallments(), loan.getBnRLoanProduct().getBnRLoanType().getLoanTypeId()));
+                                loan.setTotInterestPaid(loan.getTotInterestPaid() + loan.getInterest());
+                                loan.setTotPaid(loan.getTotPaid() + loan.getNextInstallmentAmt());
+                                loan = loanRepository.save(loan);
+                                log.info("Loan recover successfully. Loan ID : {}", loan.getLoanId());
+
+                                BnTLoanTran loanTran = new BnTLoanTran();
+
+                                loanTran.setAmount(loan.getNextInstallmentAmt());
+                                loanTran.setDescription("Recovery of loan");
+                                loanTran.setTranReference(UUID.randomUUID().toString());
+                                loanTran.setTranDate(LocalDate.now());
+                                loanTran.setTranTime(LocalTime.now());
+                                loanTran.setBnMLoan(loan);
+                                loanTran.setBnRLoanPayType(loanPayType);
+                                loanTran = loanTranRepository.save(loanTran);
+                                if (loanTran.getLoanTranId() == null) {
+                                    throw new BadRequestAlertException("Error while saving loan transaction", "Loan", "recoveryRun");
+                                }
+                                log.info("Loan transaction saved successfully");
+
+                                //Set debit transaction amount to next installment amount
+                                debitTranCreateReqDto.setAmount(loan.getNextInstallmentAmt());
+                            }
+                            ResponseEntity<BnTTranDto> debitTranResponse = transactionController.createDebitTransaction(debitTranCreateReqDto);
+                            if (debitTranResponse.getStatusCodeValue() != 200) {
+                                throw new BadRequestAlertException("Error while creating debit transaction", "Loan", "recoveryRun");
+                            } else {
+                                log.info("Debit transaction created successfully");
+                            }
+                        }
+                    }
+                }
+                ResponseDto responseDto = new ResponseDto();
+                responseDto.setMessage("Recovery run completed successfully");
+                responseDto.setStatus(200);
+                responseDto.setData(null);
+                return ResponseEntity.ok(responseDto);
+            }
+        } catch (Exception e) {
+            log.error("Error while recovery run", e);
+            ResponseDto responseDto = new ResponseDto();
+            responseDto.setMessage(e.getMessage());
+            responseDto.setStatus(400);
+            responseDto.setData(null);
+            return ResponseEntity.badRequest().body(responseDto);
         }
     }
 }

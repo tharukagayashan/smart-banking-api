@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://smart-bank-db-tharukagayashan1.a.aivencloud.com:16735/defaultdb?currentSchema=smart-bank
-    username: avnadmin
-    password: AVNS_BIViiL_nM5dJXJXupPU
+    url: jdbc:mysql://localhost:3306/smart-bank
+    username: root
+    password: 9926
   devtools:
     add-properties: false
   jpa:

@@ -17,11 +17,13 @@ public interface AccountService {
 
     ResponseEntity<BnMAccountDto> updateAccount(Long accountId, BnMAccountDto bnMAccountDto);
 
-    ResponseEntity<BnMAccountDto> deleteAccount(Long accountId);
+    ResponseEntity<String> deleteAccount(Long accountId);
 
     ResponseEntity<List<BnMAccountDto>> getAllAccountsByIsActive(String isActive);
 
     ResponseEntity<ApiResponseDto<List<BnMAccountDto>>> getAccountsForTable(Integer page, Integer perPage, String sort, String direction, String search);
 
     ResponseEntity<BnMAccountDto> getAccountByAccountNo(String accountNo);
+
+    ResponseEntity<String> deactivateAccount(Long accountId);
 }
