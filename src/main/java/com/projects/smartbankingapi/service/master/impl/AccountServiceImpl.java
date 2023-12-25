@@ -162,7 +162,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public ResponseEntity<BnMAccountDto> deleteAccount(Long accountId) {
+    public ResponseEntity<String> deleteAccount(Long accountId) {
         try {
             if (accountId == null) {
                 throw new BadRequestAlertException("Account id is required", "BnMAccount", "REQUIRED");
@@ -171,10 +171,13 @@ public class AccountServiceImpl implements AccountService {
                 if (accountDtoRes.getStatusCode() != HttpStatus.OK) {
                     throw new BadRequestAlertException("Account not found", "BnMAccount", "NOT_FOUND");
                 } else {
-                    BnMAccount account = accountMapper.toEntity(accountDtoRes.getBody());
-                    account.setIsActive(false);
-                    account = accountRepository.save(account);
-                    return ResponseEntity.ok(accountMapper.toDto(account));
+                    accountRepository.deleteById(accountId);
+                    ResponseEntity<BnMAccountDto> accountAfterDelete = getAccount(accountId);
+                    if (accountAfterDelete.getStatusCode() == HttpStatus.OK) {
+                        throw new BadRequestAlertException("Error while deleting account", "BnMAccount", "ERROR");
+                    } else {
+                        return ResponseEntity.ok("Account successfully deleted");
+                    }
                 }
             }
         } catch (Exception e) {
@@ -254,6 +257,32 @@ public class AccountServiceImpl implements AccountService {
             }
         } catch (Exception e) {
             log.error("Error while getting account by accountNo: {}", e.getMessage());
+            throw new BadRequestAlertException(e.getMessage(), "BnMAccount", "ERROR");
+        }
+    }
+
+    @Override
+    public ResponseEntity<String> deactivateAccount(Long accountId) {
+        try {
+            if (accountId == null) {
+                throw new BadRequestAlertException("Account id is required", "BnMAccount", "REQUIRED");
+            } else {
+                ResponseEntity<BnMAccountDto> accountDtoRes = getAccount(accountId);
+                if (accountDtoRes.getStatusCode() != HttpStatus.OK) {
+                    throw new BadRequestAlertException("Account not found", "BnMAccount", "NOT_FOUND");
+                } else {
+                    BnMAccount account = accountMapper.toEntity(accountDtoRes.getBody());
+                    account.setIsActive(false);
+                    account = accountRepository.save(account);
+                    if (!account.getIsActive()) {
+                        return ResponseEntity.ok("Account deactivated");
+                    } else {
+                        throw new BadRequestAlertException("Error while deactivating account", "BnMAccount", "ERROR");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error while deactivating account: {}", e.getMessage());
             throw new BadRequestAlertException(e.getMessage(), "BnMAccount", "ERROR");
         }
     }

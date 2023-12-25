@@ -19,4 +19,5 @@ public interface BnMAccountRepository extends JpaRepository<BnMAccount, Long> {
     Page<BnMAccount> findAllForTable(String search, PageRequest of);
 
     Optional<BnMAccount> findByAccountNo(String accountNo);
+
 }

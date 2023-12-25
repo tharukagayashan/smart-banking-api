@@ -44,7 +44,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/{accountId}")
-    public ResponseEntity<BnMAccountDto> deleteAccount(@PathVariable Long accountId) {
+    public ResponseEntity<String> deleteAccount(@PathVariable Long accountId) {
         return accountService.deleteAccount(accountId);
     }
 
@@ -67,6 +67,11 @@ public class AccountController {
     @GetMapping("/accountNo/{accountNo}")
     public ResponseEntity<BnMAccountDto> getAccountByAccountNo(@PathVariable String accountNo) {
         return accountService.getAccountByAccountNo(accountNo);
+    }
+
+    @PutMapping("/deactivate/{accountId}")
+    public ResponseEntity<String> deactivateAccount(@PathVariable Long accountId) {
+        return accountService.deactivateAccount(accountId);
     }
 
 }
