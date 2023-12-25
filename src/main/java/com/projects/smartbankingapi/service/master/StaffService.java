@@ -12,4 +12,6 @@ public interface StaffService {
     ResponseEntity<ApiResponseDto<List<BnMStaffDto>>> getStaffForTable(Integer page, Integer perPage, String sort, String direction, String search);
 
     ResponseEntity<BnMStaffDto> getStaff(Long staffId);
+
+    ResponseEntity<BnMStaffDto> updateStaff(Long staffId, BnMStaffDto bnMStaffDto);
 }
