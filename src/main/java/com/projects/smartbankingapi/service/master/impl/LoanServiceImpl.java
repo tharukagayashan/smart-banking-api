@@ -3,8 +3,10 @@ package com.projects.smartbankingapi.service.master.impl;
 import com.projects.smartbankingapi.constant.HardCodeConstant;
 import com.projects.smartbankingapi.dao.master.BnMAccountRepository;
 import com.projects.smartbankingapi.dao.master.BnMLoanRepository;
+import com.projects.smartbankingapi.dao.reference.BnRLoanPayTypeRepository;
 import com.projects.smartbankingapi.dao.reference.BnRLoanProductRepository;
 import com.projects.smartbankingapi.dao.reference.BnRStatusRepository;
+import com.projects.smartbankingapi.dao.transaction.BnTLoanTranRepository;
 import com.projects.smartbankingapi.dto.master.BnMLoanDto;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.miscellaneous.PaginationDto;
@@ -17,6 +19,7 @@ import com.projects.smartbankingapi.mapper.master.BnMLoanMapper;
 import com.projects.smartbankingapi.model.master.BnMAccount;
 import com.projects.smartbankingapi.model.master.BnMLoan;
 import com.projects.smartbankingapi.model.reference.*;
+import com.projects.smartbankingapi.model.transaction.BnTLoanTran;
 import com.projects.smartbankingapi.other.CustomMethods;
 import com.projects.smartbankingapi.service.master.LoanService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +30,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -40,14 +45,18 @@ public class LoanServiceImpl implements LoanService {
     private final BnMAccountRepository accountRepository;
     private final BnRStatusRepository statusRepository;
     private final CustomMethods customMethods;
+    private final BnRLoanPayTypeRepository loanPayTypeRepository;
+    private final BnTLoanTranRepository loanTranRepository;
 
-    public LoanServiceImpl(BnMLoanRepository loanRepository, BnMLoanMapper loanMapper, BnRLoanProductRepository loanProductRepository, BnMAccountRepository accountRepository, BnRStatusRepository statusRepository, CustomMethods customMethods) {
+    public LoanServiceImpl(BnMLoanRepository loanRepository, BnMLoanMapper loanMapper, BnRLoanProductRepository loanProductRepository, BnMAccountRepository accountRepository, BnRStatusRepository statusRepository, CustomMethods customMethods, BnRLoanPayTypeRepository loanPayTypeRepository, BnTLoanTranRepository loanTranRepository) {
         this.loanRepository = loanRepository;
         this.loanMapper = loanMapper;
         this.loanProductRepository = loanProductRepository;
         this.accountRepository = accountRepository;
         this.statusRepository = statusRepository;
         this.customMethods = customMethods;
+        this.loanPayTypeRepository = loanPayTypeRepository;
+        this.loanTranRepository = loanTranRepository;
     }
 
     @Override
@@ -198,6 +207,30 @@ public class LoanServiceImpl implements LoanService {
                     loan.setDistributedAmt(loanDisburseReqDto.getDisburseAmt());
 
                     loan = loanRepository.save(loan);
+
+                    log.info("Loan disbursed successfully");
+                    BnTLoanTran loanTran = new BnTLoanTran();
+
+                    Optional<BnRLoanPayType> optLoanPayType = loanPayTypeRepository.findById(HardCodeConstant.LOAN_PAY_TYPE_DISBURSE_ID.longValue());
+                    if (!optLoanPayType.isPresent()) {
+                        throw new BadRequestAlertException("Loan Pay Type not found", "Loan", "disburseLoan");
+                    } else {
+                        loanTran.setBnRLoanPayType(optLoanPayType.get());
+                    }
+
+                    loanTran.setAmount(loanDisburseReqDto.getDisburseAmt());
+                    loanTran.setDescription("Disbursement of loan");
+                    loanTran.setTranReference(UUID.randomUUID().toString());
+                    loanTran.setTranDate(LocalDate.now());
+                    loanTran.setTranTime(LocalTime.now());
+                    loanTran.setBnMLoan(loan);
+                    loanTran.setBnRLoanPayType(optLoanPayType.get());
+                    loanTran = loanTranRepository.save(loanTran);
+                    if (loanTran.getLoanTranId() == null) {
+                        throw new BadRequestAlertException("Error while saving loan transaction", "Loan", "disburseLoan");
+                    }
+                    log.info("Loan transaction saved successfully");
+
                     return ResponseEntity.ok(loanMapper.toDto(loan));
                 }
             }
