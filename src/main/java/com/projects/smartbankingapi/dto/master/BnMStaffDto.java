@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -27,7 +28,9 @@ public class BnMStaffDto implements Serializable {
     private String address;
     private Boolean isActive;
 
+    @NotNull
     private Long roleId;
+    @NotNull
     private Long branchId;
 
     private BnRRoleDto bnRRole;

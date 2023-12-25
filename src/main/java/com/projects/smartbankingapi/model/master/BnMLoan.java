@@ -3,6 +3,7 @@ package com.projects.smartbankingapi.model.master;
 import com.projects.smartbankingapi.audit.AuditModel;
 import com.projects.smartbankingapi.model.reference.BnRLoanProduct;
 import com.projects.smartbankingapi.model.reference.BnRStatus;
+import com.projects.smartbankingapi.model.transaction.BnTLoanTran;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -74,5 +76,8 @@ public class BnMLoan extends AuditModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "LOAN_PRODUCT_ID", referencedColumnName = "LOAN_PRODUCT_ID", nullable = false)
     private BnRLoanProduct bnRLoanProduct;
+
+    @OneToMany(mappedBy = "bnMLoan", fetch = FetchType.LAZY)
+    private List<BnTLoanTran> bnTLoanTrans;
 
 }

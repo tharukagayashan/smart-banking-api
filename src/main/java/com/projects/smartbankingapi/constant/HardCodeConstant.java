@@ -4,6 +4,8 @@ public class HardCodeConstant {
     public static final Integer STATUS_NEW_ID = 1;
     public static final Integer STATUS_PENDING_ID = 2;
     public static final Integer STATUS_APPROVED_ID = 3;
+    public static final Integer STATUS_DISBURSED_ID = 4;
+    public static final Integer STATUS_SETTLED_ID = 5;
 
     public static final Boolean ACTIVE = true;
     public static final Boolean INACTIVE = false;
@@ -43,4 +45,10 @@ public class HardCodeConstant {
     public static final float CURRENCY_LKR_BUYING_RATE = 1;
     public static final float CURRENCY_LKR_SELLING_RATE = 1;
 
+    public static final Integer LOAN_PAY_TYPE_DISBURSE_ID = 1;
+    public static final Integer LOAN_PAY_TYPE_REPAYMENT_ID = 2;
+    public static final Integer LOAN_PAY_TYPE_INTEREST_ID = 3;
+    public static final Integer LOAN_PAY_TYPE_PENALTY_ID = 4;
+    public static final Integer LOAN_PAY_TYPE_INSTALLMENT_ID = 5;
+    public static final Integer LOAN_PAY_TYPE_INS_AND_INT_ID = 6;
 }

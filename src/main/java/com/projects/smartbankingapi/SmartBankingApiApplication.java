@@ -38,6 +38,7 @@ public class SmartBankingApiApplication {
     private static BnRLoanProductRepository bnRLoanProductRepository = null;
     private static BnRIntRateRepository bnRIntRateRepository = null;
     private static BnRCurrencyRateRepository bnRCurrencyRateRepository = null;
+    private static BnRLoanPayTypeRepository bnRLoanPayTypeRepository = null;
 
     public SmartBankingApiApplication(BnMCustomerRepository bnMCustomerRepository, BnMAccountRepository bnMAccountRepository,
                                       BnRAccountTypeRepository bnRAccountTypeRepository,
@@ -52,7 +53,8 @@ public class SmartBankingApiApplication {
                                       BnRLoanPeriodRepository bnRLoanPeriodRepository,
                                       BnRLoanProductRepository bnRLoanProductRepository,
                                       BnRIntRateRepository bnRIntRateRepository,
-                                      BnRCurrencyRateRepository bnRCurrencyRateRepository) {
+                                      BnRCurrencyRateRepository bnRCurrencyRateRepository,
+                                      BnRLoanPayTypeRepository bnRLoanPayTypeRepository) {
         this.bnMCustomerRepository = bnMCustomerRepository;
         this.bnMAccountRepository = bnMAccountRepository;
         this.bnRAccountTypeRepository = bnRAccountTypeRepository;
@@ -68,6 +70,7 @@ public class SmartBankingApiApplication {
         this.bnRLoanProductRepository = bnRLoanProductRepository;
         this.bnRIntRateRepository = bnRIntRateRepository;
         this.bnRCurrencyRateRepository = bnRCurrencyRateRepository;
+        this.bnRLoanPayTypeRepository = bnRLoanPayTypeRepository;
     }
 
     public static void main(String[] args) {
@@ -359,6 +362,36 @@ public class SmartBankingApiApplication {
 
             bnRStatusRepository.save(status);
             log.info("Approve Status is saved");
+        }
+
+        Optional<BnRStatus> optStatus4 = bnRStatusRepository.findById(new Long(4));
+        if (optStatus4.isPresent()) {
+            log.info("Disburse Status is present");
+        } else {
+            BnRStatus status;
+            status = BnRStatus.builder()
+                    .name("Disburse")
+                    .code("DIS")
+                    .type("A")
+                    .build();
+
+            bnRStatusRepository.save(status);
+            log.info("Disburse Status is saved");
+        }
+
+        Optional<BnRStatus> optStatus5 = bnRStatusRepository.findById(new Long(5));
+        if (optStatus5.isPresent()) {
+            log.info("Settle Status is present");
+        } else {
+            BnRStatus status;
+            status = BnRStatus.builder()
+                    .name("Settle")
+                    .code("SET")
+                    .type("A")
+                    .build();
+
+            bnRStatusRepository.save(status);
+            log.info("Settle Status is saved");
         }
 
         String accountTypeCode = "";
@@ -1200,6 +1233,84 @@ public class SmartBankingApiApplication {
                 bnRCurrencyRateRepository.save(currencyRate);
                 log.info("RBL Currency Rate is saved");
             }
+        }
+
+        Optional<BnRLoanPayType> optLoanPayType1 = bnRLoanPayTypeRepository.findById(new Long(1));
+        if (optLoanPayType1.isPresent()) {
+            log.info("Disbursement Loan Pay Type is present");
+        } else {
+            BnRLoanPayType loanPayType;
+            loanPayType = BnRLoanPayType.builder()
+                    .payType("Disbursement")
+                    .payTypeCode("DISB")
+                    .build();
+            bnRLoanPayTypeRepository.save(loanPayType);
+            log.info("Disbursement Loan Type is saved");
+        }
+
+        Optional<BnRLoanPayType> optLoanPayType2 = bnRLoanPayTypeRepository.findById(new Long(2));
+        if (optLoanPayType2.isPresent()) {
+            log.info("Repayment Loan Pay Type is present");
+        } else {
+            BnRLoanPayType loanPayType;
+            loanPayType = BnRLoanPayType.builder()
+                    .payType("Repayment")
+                    .payTypeCode("REPAY")
+                    .build();
+            bnRLoanPayTypeRepository.save(loanPayType);
+            log.info("Repayment Loan Type is saved");
+        }
+
+        Optional<BnRLoanPayType> optLoanPayType3 = bnRLoanPayTypeRepository.findById(new Long(3));
+        if (optLoanPayType3.isPresent()) {
+            log.info("Interest Loan Pay Type is present");
+        } else {
+            BnRLoanPayType loanPayType;
+            loanPayType = BnRLoanPayType.builder()
+                    .payType("Interest")
+                    .payTypeCode("INT")
+                    .build();
+            bnRLoanPayTypeRepository.save(loanPayType);
+            log.info("Interest Loan Type is saved");
+        }
+
+        Optional<BnRLoanPayType> optLoanPayType4 = bnRLoanPayTypeRepository.findById(new Long(4));
+        if (optLoanPayType4.isPresent()) {
+            log.info("Penalty Loan Pay Type is present");
+        } else {
+            BnRLoanPayType loanPayType;
+            loanPayType = BnRLoanPayType.builder()
+                    .payType("Penalty")
+                    .payTypeCode("PEN")
+                    .build();
+            bnRLoanPayTypeRepository.save(loanPayType);
+            log.info("Penalty Loan Type is saved");
+        }
+
+        Optional<BnRLoanPayType> optLoanPayType5 = bnRLoanPayTypeRepository.findById(new Long(5));
+        if (optLoanPayType5.isPresent()) {
+            log.info("Installment Pay Type is present");
+        } else {
+            BnRLoanPayType loanPayType;
+            loanPayType = BnRLoanPayType.builder()
+                    .payType("Installment")
+                    .payTypeCode("INST")
+                    .build();
+            bnRLoanPayTypeRepository.save(loanPayType);
+            log.info("Installment Loan Type is saved");
+        }
+
+        Optional<BnRLoanPayType> optLoanPayType6 = bnRLoanPayTypeRepository.findById(new Long(6));
+        if (optLoanPayType6.isPresent()) {
+            log.info("Installment + Interest Type is present");
+        } else {
+            BnRLoanPayType loanPayType;
+            loanPayType = BnRLoanPayType.builder()
+                    .payType("Installment and Interest")
+                    .payTypeCode("INSTINT")
+                    .build();
+            bnRLoanPayTypeRepository.save(loanPayType);
+            log.info("Installment and Interest Loan Type is saved");
         }
 
     }

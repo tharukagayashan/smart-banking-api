@@ -203,6 +203,7 @@ public class CardDetailsServiceImpl implements CardDetailsService {
                 if (accountCardDetail.getAccCardId() == null) {
                     throw new BadRequestAlertException("Error linking card to account", "card-details", "error-linking-card-to-account");
                 } else {
+                    log.info("Card linked to account successfully");
                     return ResponseEntity.ok(accountCardDetailMapper.toDto(accountCardDetail));
                 }
 

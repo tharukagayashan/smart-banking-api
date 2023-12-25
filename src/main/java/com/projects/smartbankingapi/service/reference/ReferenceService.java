@@ -150,4 +150,14 @@ public interface ReferenceService {
     ResponseEntity<BnRCurrencyRateDto> updateCurrencyRate(Long id, BnRCurrencyRateDto bnRCurrencyRateDto);
 
     ResponseEntity<String> deleteCurrencyRate(Long id);
+
+    ResponseEntity<List<BnRLoanPayTypeDto>> getAllLoanPayTypes();
+
+    ResponseEntity<BnRLoanPayTypeDto> createLoanPayType(LoanPayTypeCreateReqDto loanPayTypeCreateReqDto);
+
+    ResponseEntity<BnRLoanPayTypeDto> getLoanPayTypeById(Long id);
+
+    ResponseEntity<BnRLoanPayTypeDto> updateLoanPayType(Long id, BnRLoanPayTypeDto bnRLoanPayTypeDto);
+
+    ResponseEntity<String> deleteLoanPayType(Long id);
 }
