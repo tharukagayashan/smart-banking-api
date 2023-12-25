@@ -107,6 +107,11 @@ public class ReferenceController {
         return referenceService.getAllCurrencyRates();
     }
 
+    @GetMapping("/loan-pay-type/fdd")
+    public ResponseEntity<List<BnRLoanPayTypeDto>> getAllLoanPayTypes() {
+        return referenceService.getAllLoanPayTypes();
+    }
+
     /* POST APIs */
 
     @PostMapping("/account-type")
@@ -177,6 +182,11 @@ public class ReferenceController {
     @PostMapping("/currency-rate")
     public ResponseEntity<BnRCurrencyRateDto> createCurrencyRate(@Valid @RequestBody CurrencyRateCreateReqDto currencyRateCreateReqDto) {
         return referenceService.createCurrencyRate(currencyRateCreateReqDto);
+    }
+
+    @PostMapping("/loan-pay-type")
+    public ResponseEntity<BnRLoanPayTypeDto> createLoanPayType(@Valid @RequestBody LoanPayTypeCreateReqDto loanPayTypeCreateReqDto) {
+        return referenceService.createLoanPayType(loanPayTypeCreateReqDto);
     }
 
     /*** GET BY ID APIs (FDD) ***/
@@ -252,6 +262,11 @@ public class ReferenceController {
         return referenceService.getCurrencyRateById(id);
     }
 
+    @GetMapping("/loan-pay-type/{id}")
+    public ResponseEntity<BnRLoanPayTypeDto> getLoanPayTypeById(@PathVariable Long id) {
+        return referenceService.getLoanPayTypeById(id);
+    }
+
 
     /*** PUT APIs ***/
     @PutMapping("/account-type/{id}")
@@ -324,6 +339,11 @@ public class ReferenceController {
         return referenceService.updateCurrencyRate(id, bnRCurrencyRateDto);
     }
 
+    @PutMapping("/loan-pay-type/{id}")
+    public ResponseEntity<BnRLoanPayTypeDto> updateLoanPayType(@PathVariable Long id, @RequestBody BnRLoanPayTypeDto bnRLoanPayTypeDto) {
+        return referenceService.updateLoanPayType(id, bnRLoanPayTypeDto);
+    }
+
 
     /* DELETE APIs */
     @DeleteMapping("/account-type/{id}")
@@ -394,6 +414,11 @@ public class ReferenceController {
     @DeleteMapping("/currency-rate/{id}")
     public ResponseEntity<String> deleteCurrencyRate(@PathVariable Long id) {
         return referenceService.deleteCurrencyRate(id);
+    }
+
+    @DeleteMapping("/loan-pay-type/{id}")
+    public ResponseEntity<String> deleteLoanPayType(@PathVariable Long id) {
+        return referenceService.deleteLoanPayType(id);
     }
 
 }
