@@ -2,15 +2,11 @@ package com.projects.smartbankingapi.rest.master;
 
 import com.projects.smartbankingapi.dto.master.BnMLoanDto;
 import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
-import com.projects.smartbankingapi.dto.other.CalculatorReqDto;
-import com.projects.smartbankingapi.dto.other.CalculatorResponseDto;
-import com.projects.smartbankingapi.dto.other.LoanCreateReqDto;
-import com.projects.smartbankingapi.dto.other.LoanDisburseReqDto;
+import com.projects.smartbankingapi.dto.other.*;
 import com.projects.smartbankingapi.service.master.LoanService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
@@ -61,6 +57,11 @@ public class LoanController {
     @DeleteMapping("/{loanId}")
     public ResponseEntity<String> deleteLoan(@PathVariable Long loanId) {
         return loanService.deleteLoan(loanId);
+    }
+
+    @PutMapping("/recovery-run")
+    public ResponseEntity<ResponseDto> recoveryRun() {
+        return loanService.recoveryRun();
     }
 
 }

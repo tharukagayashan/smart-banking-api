@@ -364,6 +364,36 @@ public class SmartBankingApiApplication {
             log.info("Approve Status is saved");
         }
 
+        Optional<BnRStatus> optStatus4 = bnRStatusRepository.findById(new Long(4));
+        if (optStatus4.isPresent()) {
+            log.info("Disburse Status is present");
+        } else {
+            BnRStatus status;
+            status = BnRStatus.builder()
+                    .name("Disburse")
+                    .code("DIS")
+                    .type("A")
+                    .build();
+
+            bnRStatusRepository.save(status);
+            log.info("Disburse Status is saved");
+        }
+
+        Optional<BnRStatus> optStatus5 = bnRStatusRepository.findById(new Long(5));
+        if (optStatus5.isPresent()) {
+            log.info("Settle Status is present");
+        } else {
+            BnRStatus status;
+            status = BnRStatus.builder()
+                    .name("Settle")
+                    .code("SET")
+                    .type("A")
+                    .build();
+
+            bnRStatusRepository.save(status);
+            log.info("Settle Status is saved");
+        }
+
         String accountTypeCode = "";
         Optional<BnRAccountType> optAccountType1 = bnRAccountTypeRepository.findById(new Long(1));
         if (optAccountType1.isPresent()) {

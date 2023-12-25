@@ -1,11 +1,11 @@
 package com.projects.smartbankingapi.constant;
 
-import javafx.beans.binding.DoubleExpression;
-
 public class HardCodeConstant {
     public static final Integer STATUS_NEW_ID = 1;
     public static final Integer STATUS_PENDING_ID = 2;
     public static final Integer STATUS_APPROVED_ID = 3;
+    public static final Integer STATUS_DISBURSED_ID = 4;
+    public static final Integer STATUS_SETTLED_ID = 5;
 
     public static final Boolean ACTIVE = true;
     public static final Boolean INACTIVE = false;
