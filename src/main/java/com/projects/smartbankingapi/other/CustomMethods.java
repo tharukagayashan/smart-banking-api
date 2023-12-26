@@ -319,7 +319,7 @@ public class CustomMethods {
 
     public float calculateNextInstallmentAmt(Float amount, Float interest, Integer totInstallments, Integer remInstallments, Long loanTypeId) {
         if (loanTypeId == HardCodeConstant.LOAN_TYPE_FLAT_ID.longValue()) {
-            return (amount + interest) / remInstallments;
+            return (amount + interest) / totInstallments;
         } else if (loanTypeId == HardCodeConstant.LOAN_TYPE_REDUCING_ID.longValue()) {
             return (amount / totInstallments) + (interest / remInstallments);
         } else {
@@ -379,7 +379,7 @@ public class CustomMethods {
 
     public float calculateFlatRateInterest(float amount, float rate, int month) {
         float i = rate / 100;
-        return (amount * i * month) / 12;
+        return amount * i;
     }
 
     public float calculateReducingBalanceInterest(float amount, float rate, int month) {
@@ -441,4 +441,18 @@ public class CustomMethods {
         }
     }
 
+    public float calculateMonthlyInterest(Float amount, Float interest, Integer totInstallments, Integer remInstallments, Long loanTypeId) {
+        try {
+            if (loanTypeId == HardCodeConstant.LOAN_TYPE_FLAT_ID.longValue()) {
+                return interest / totInstallments;
+            } else if (loanTypeId == HardCodeConstant.LOAN_TYPE_REDUCING_ID.longValue()) {
+                return (amount / totInstallments) + (interest / remInstallments);
+            } else {
+                throw new BadRequestAlertException("Loan type not found", "Loan", "loan_type_not_found");
+            }
+        } catch (Exception e) {
+            log.error("Error occurred while calculating monthly interest", e);
+            throw new BadRequestAlertException(e.getMessage(), "Loan", "error");
+        }
+    }
 }
