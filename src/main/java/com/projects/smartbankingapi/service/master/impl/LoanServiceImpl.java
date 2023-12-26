@@ -251,14 +251,14 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public ResponseEntity<CalculatorResponseDto> calculator(CalculatorReqDto calculatorReqDto) {
         try {
-            float interest = 0;
-            float i = 0;
-            float p = 0;
-            int t = 0;
-            float totalPayable = 0;
-            float emi = 0;
+            float interest;
+            float i;
+            float p;
+            int t;
+            float totalPayable;
+            float emi;
             CalculatorResponseDto calculatorResponseDto = new CalculatorResponseDto();
-            if (calculatorReqDto.getLoanTypeId() == HardCodeConstant.LOAN_TYPE_FLAT_ID) {
+            if (Objects.equals(calculatorReqDto.getLoanTypeId(), HardCodeConstant.LOAN_TYPE_FLAT_ID)) {
 
                 i = calculatorReqDto.getInterestRate();
                 p = calculatorReqDto.getLoanAmount();
@@ -348,60 +348,66 @@ public class LoanServiceImpl implements LoanService {
                 }
 
                 for (BnMLoan loan : loans) {
-                    if (loan.getNextInstallmentDate().isEqual(LocalDate.now())) {
+                    Long accountId = loan.getBnMAccount().getAccountId();
 
-                        Long accountId = loan.getBnMAccount().getAccountId();
-                        Optional<BnMAccount> optAccount = accountRepository.findById(accountId);
-                        if (!optAccount.isPresent()) {
+                    //Arrears recovery run
+                    arrearsRecoverRun(accountId, loan, loanPayType);
+
+                    if (loan.getNextInstallmentDate().isEqual(LocalDate.now())) {
+                        log.info("Installment recovery started. Loan ID : {}", loan.getLoanId());
+                        Optional<BnMAccount> optAccountForLoanRecovery = accountRepository.findById(accountId);
+                        if (!optAccountForLoanRecovery.isPresent()) {
                             throw new BadRequestAlertException("Account not found", "Loan", "recoveryRun");
                         } else {
+                            BnMAccount recoveryAccount = optAccountForLoanRecovery.get();
 
                             DebitTranCreateReqDto debitTranCreateReqDto = new DebitTranCreateReqDto();
-                            debitTranCreateReqDto.setFromAccountNo(optAccount.get().getAccountNo());
+                            debitTranCreateReqDto.setFromAccountNo(recoveryAccount.getAccountNo());
                             debitTranCreateReqDto.setToAccountNo(HardCodeConstant.HEAD_OFFICE_ACCOUNT_NO);
 
-                            BnMAccount account = optAccount.get();
-                            if (account.getAvailableBalance() < loan.getNextInstallmentAmt()) {
-                                log.warn("Insufficient balance in account. Account ID : {}", account.getAccountId());
-                                if (account.getAvailableBalance() > 0) {
-                                    float arrearsAmt = loan.getNextInstallmentAmt() - account.getAvailableBalance();
+                            float monthlyInterest = customMethods.calculateMonthlyInterest(loan.getAmount(), loan.getInterest(), loan.getTotInstallments(), loan.getRemInstallments(), loan.getBnRLoanProduct().getBnRLoanType().getLoanTypeId());
+                            if (recoveryAccount.getAvailableBalance() < loan.getNextInstallmentAmt()) {
+                                log.warn("Insufficient balance in account. Account ID : {}", recoveryAccount.getAccountId());
+                                if (recoveryAccount.getAvailableBalance() > 0) {
+                                    float arrearsAmt = loan.getNextInstallmentAmt() - recoveryAccount.getAvailableBalance();
                                     loan.setTotArrearsAmt(loan.getTotArrearsAmt() + arrearsAmt);
 
                                     //Set debit transaction amount to available balance
-                                    debitTranCreateReqDto.setAmount(account.getAvailableBalance());
+                                    debitTranCreateReqDto.setAmount(recoveryAccount.getAvailableBalance());
 
                                     float amount;
-                                    if (account.getAvailableBalance() > loan.getInterest()) {
-                                        loan.setTotInterestPaid(loan.getTotInterestPaid() + loan.getInterest());
-                                        amount = account.getAvailableBalance() - loan.getInterest();
+                                    if (recoveryAccount.getAvailableBalance() > monthlyInterest) {
+                                        loan.setTotInterestPaid(loan.getTotInterestPaid() + monthlyInterest);
+                                        amount = recoveryAccount.getAvailableBalance() - monthlyInterest;
                                         loan = loanRepository.save(loan);
 
                                         if (amount > 0) {
                                             loan.setTotPaid(loan.getTotPaid() + amount);
+                                            loan.setTotSettledAmt(loan.getTotSettledAmt() + amount);
                                             loan = loanRepository.save(loan);
                                         } else {
                                             log.info("Loan recover only interest. Loan ID : {}", loan.getLoanId());
                                         }
                                     } else {
-                                        loan.setTotInterestPaid(loan.getTotInterestPaid() + account.getAvailableBalance());
+                                        loan.setTotInterestPaid(loan.getTotInterestPaid() + recoveryAccount.getAvailableBalance());
                                         loan = loanRepository.save(loan);
                                     }
-
                                     loan = loanRepository.save(loan);
 
                                     BnTLoanTran loanTran = new BnTLoanTran();
-
-                                    loanTran.setAmount(account.getAvailableBalance());
+                                    loanTran.setAmount(recoveryAccount.getAvailableBalance());
                                     createLoanTran(loanPayType, loan, loanTran);
                                 } else {
                                     loan.setTotArrearsAmt(loan.getTotArrearsAmt() + loan.getNextInstallmentAmt());
                                 }
                             } else {
+                                float installmentOnly = loan.getNextInstallmentAmt() - monthlyInterest;
                                 loan.setRemInstallments(loan.getRemInstallments() - 1);
                                 loan.setNextInstallmentDate(loan.getNextInstallmentDate().plusMonths(1));
                                 loan.setNextInstallmentAmt(customMethods.calculateNextInstallmentAmt(loan.getAmount(), loan.getInterest(), loan.getTotInstallments(), loan.getRemInstallments(), loan.getBnRLoanProduct().getBnRLoanType().getLoanTypeId()));
-                                loan.setTotInterestPaid(loan.getTotInterestPaid() + loan.getInterest());
-                                loan.setTotPaid(loan.getTotPaid() + loan.getNextInstallmentAmt());
+                                loan.setTotInterestPaid(loan.getTotInterestPaid() + monthlyInterest);
+                                loan.setTotPaid(loan.getTotPaid() + installmentOnly);
+                                loan.setTotSettledAmt(loan.getTotSettledAmt() + installmentOnly);
                                 loan = loanRepository.save(loan);
                                 log.info("Loan recover successfully. Loan ID : {}", loan.getLoanId());
 
@@ -436,6 +442,52 @@ public class LoanServiceImpl implements LoanService {
             responseDto.setData(null);
             return ResponseEntity.badRequest().body(responseDto);
         }
+
+    }
+
+    private void arrearsRecoverRun(Long accountId, BnMLoan loan, BnRLoanPayType loanPayType) {
+//        Optional<BnMAccount> optAccountForArrears = accountRepository.findById(accountId);
+//        if (!optAccountForArrears.isPresent()) {
+//            throw new BadRequestAlertException("Account not found", "Loan", "recoveryRun");
+//        } else {
+//            BnMAccount arrearsAccount = optAccountForArrears.get();
+//
+//            float monthlyInterest = customMethods.calculateMonthlyInterest(loan.getAmount(), loan.getInterest(), loan.getTotInstallments(), loan.getRemInstallments(), loan.getBnRLoanProduct().getBnRLoanType().getLoanTypeId());
+//
+//            if (loan.getTotArrearsAmt() > 0) {
+//                if (arrearsAccount.getAvailableBalance() > loan.getTotArrearsAmt()) {
+//                    arrearsAccount.setAvailableBalance(arrearsAccount.getAvailableBalance() - loan.getTotArrearsAmt());
+//
+//                    loan.setTotArrearsAmt((float) 0);
+//                    loan = loanRepository.save(loan);
+//                    log.info("Arrears paid successfully. Loan ID : {}", loan.getLoanId());
+//
+//                    BnTLoanTran loanTran = new BnTLoanTran();
+//                    loanTran.setAmount(loan.getTotArrearsAmt());
+//                    createLoanTran(loanPayType, loan, loanTran);
+//                } else {
+//                    loan.setTotArrearsAmt(loan.getTotArrearsAmt() - arrearsAccount.getAvailableBalance());
+//
+//                    float paidAmount = loan.getNextInstallmentAmt() - loan.getTotArrearsAmt();
+//                    if (paidAmount < monthlyInterest) {
+//                        float tobePaidInterest = monthlyInterest - paidAmount;
+//                        loan.setTotInterestPaid(loan.getTotInterestPaid() + tobePaidInterest);
+//                        loan.setTotArrearsAmt(loan.getTotArrearsAmt() - tobePaidInterest);
+//                        loan.setTotPaid(loan.getTotPaid() + loan.getTotArrearsAmt() - tobePaidInterest);
+//                        loan = loanRepository.save(loan);
+//                    }
+//
+//                    log.info("Arrears paid successfully. Loan ID : {}", loan.getLoanId());
+//
+//                    BnTLoanTran loanTran = new BnTLoanTran();
+//                    loanTran.setAmount(arrearsAccount.getAvailableBalance());
+//                    createLoanTran(loanPayType, loan, loanTran);
+//                }
+//            } else {
+//                log.info("No arrears to pay. Loan ID : {}", loan.getLoanId());
+//            }
+//
+//        }
     }
 
     private void createLoanTran(BnRLoanPayType loanPayType, BnMLoan loan, BnTLoanTran loanTran) {
