@@ -14,4 +14,7 @@ public interface BnMLoanRepository extends JpaRepository<BnMLoan, Long> {
     Page<BnMLoan> getLoanForTable(String search, PageRequest of);
 
     List<BnMLoan> findByBnRStatusStatusId(Long statusId);
+
+    @Query("SELECT L FROM BnMLoan L WHERE L.totArrearsAmt > 0")
+    List<BnMLoan> findArrearsLoans();
 }
