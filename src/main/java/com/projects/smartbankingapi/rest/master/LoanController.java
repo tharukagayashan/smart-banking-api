@@ -5,9 +5,11 @@ import com.projects.smartbankingapi.dto.miscellaneous.ApiResponseDto;
 import com.projects.smartbankingapi.dto.other.*;
 import com.projects.smartbankingapi.service.master.LoanService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/loan")
@@ -59,6 +61,7 @@ public class LoanController {
         return loanService.deleteLoan(loanId);
     }
 
+    @Scheduled(timeUnit = TimeUnit.DAYS, fixedRate = 1)
     @PutMapping("/recovery-run")
     public ResponseEntity<ResponseDto> recoveryRun() {
         return loanService.recoveryRun();

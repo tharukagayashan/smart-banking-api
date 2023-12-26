@@ -333,6 +333,8 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public ResponseEntity<ResponseDto> recoveryRun() {
         try {
+            log.info("Recovery run started");
+
             List<BnMLoan> loans = loanRepository.findByBnRStatusStatusId(HardCodeConstant.STATUS_DISBURSED_ID.longValue());
             if (loans.isEmpty()) {
                 throw new BadRequestAlertException("No disbursed loans found", "Loan", "recoveryRun");
@@ -396,7 +398,7 @@ public class LoanServiceImpl implements LoanService {
                                 }
                             } else {
                                 loan.setRemInstallments(loan.getRemInstallments() - 1);
-                                loan.setNextInstallmentDate(LocalDate.now().plusMonths(1));
+                                loan.setNextInstallmentDate(loan.getNextInstallmentDate().plusMonths(1));
                                 loan.setNextInstallmentAmt(customMethods.calculateNextInstallmentAmt(loan.getAmount(), loan.getInterest(), loan.getTotInstallments(), loan.getRemInstallments(), loan.getBnRLoanProduct().getBnRLoanType().getLoanTypeId()));
                                 loan.setTotInterestPaid(loan.getTotInterestPaid() + loan.getInterest());
                                 loan.setTotPaid(loan.getTotPaid() + loan.getNextInstallmentAmt());
