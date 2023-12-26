@@ -367,6 +367,30 @@ public class LoanServiceImpl implements LoanService {
 
                                     //Set debit transaction amount to available balance
                                     debitTranCreateReqDto.setAmount(account.getAvailableBalance());
+
+                                    float amount;
+                                    if (account.getAvailableBalance() > loan.getInterest()) {
+                                        loan.setTotInterestPaid(loan.getTotInterestPaid() + loan.getInterest());
+                                        amount = account.getAvailableBalance() - loan.getInterest();
+                                        loan = loanRepository.save(loan);
+
+                                        if (amount > 0) {
+                                            loan.setTotPaid(loan.getTotPaid() + amount);
+                                            loan = loanRepository.save(loan);
+                                        } else {
+                                            log.info("Loan recover only interest. Loan ID : {}", loan.getLoanId());
+                                        }
+                                    } else {
+                                        loan.setTotInterestPaid(loan.getTotInterestPaid() + account.getAvailableBalance());
+                                        loan = loanRepository.save(loan);
+                                    }
+
+                                    loan = loanRepository.save(loan);
+
+                                    BnTLoanTran loanTran = new BnTLoanTran();
+
+                                    loanTran.setAmount(account.getAvailableBalance());
+                                    createLoanTran(loanPayType, loan, loanTran);
                                 } else {
                                     loan.setTotArrearsAmt(loan.getTotArrearsAmt() + loan.getNextInstallmentAmt());
                                 }
@@ -382,17 +406,7 @@ public class LoanServiceImpl implements LoanService {
                                 BnTLoanTran loanTran = new BnTLoanTran();
 
                                 loanTran.setAmount(loan.getNextInstallmentAmt());
-                                loanTran.setDescription("Recovery of loan");
-                                loanTran.setTranReference(UUID.randomUUID().toString());
-                                loanTran.setTranDate(LocalDate.now());
-                                loanTran.setTranTime(LocalTime.now());
-                                loanTran.setBnMLoan(loan);
-                                loanTran.setBnRLoanPayType(loanPayType);
-                                loanTran = loanTranRepository.save(loanTran);
-                                if (loanTran.getLoanTranId() == null) {
-                                    throw new BadRequestAlertException("Error while saving loan transaction", "Loan", "recoveryRun");
-                                }
-                                log.info("Loan transaction saved successfully");
+                                createLoanTran(loanPayType, loan, loanTran);
 
                                 //Set debit transaction amount to next installment amount
                                 debitTranCreateReqDto.setAmount(loan.getNextInstallmentAmt());
@@ -420,5 +434,19 @@ public class LoanServiceImpl implements LoanService {
             responseDto.setData(null);
             return ResponseEntity.badRequest().body(responseDto);
         }
+    }
+
+    private void createLoanTran(BnRLoanPayType loanPayType, BnMLoan loan, BnTLoanTran loanTran) {
+        loanTran.setDescription("Recovery of loan");
+        loanTran.setTranReference(UUID.randomUUID().toString());
+        loanTran.setTranDate(LocalDate.now());
+        loanTran.setTranTime(LocalTime.now());
+        loanTran.setBnMLoan(loan);
+        loanTran.setBnRLoanPayType(loanPayType);
+        loanTran = loanTranRepository.save(loanTran);
+        if (loanTran.getLoanTranId() == null) {
+            throw new BadRequestAlertException("Error while saving loan transaction", "Loan", "recoveryRun");
+        }
+        log.info("Loan transaction saved successfully");
     }
 }
